@@ -1,0 +1,1123 @@
+{
+  "info": {
+    "_postman_id": "b3e981df-8524-4f51-b842-888e7279a7bc",
+    "name": "Project Mingler API (Parts 1, 2, 3 & 4)",
+    "description": "Postman collection for testing Project Mingler Django DRF backend (Auth, Profiles, UK GDPR Privacy Guard, Venues, Mingles, Bookings, Payments, Webhooks, Mutual Matching).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "my_profile_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "venue_slug",
+      "value": "the-shoreditch-social-cocktail-lounge",
+      "type": "string"
+    },
+    {
+      "key": "mingle_id",
+      "value": "3eb6ded8-39c1-4e29-9b6e-31284af4ef0f",
+      "type": "string"
+    },
+    {
+      "key": "booking_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "connection_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register New Member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.profile) {",
+                  "        pm.collectionVariables.set('my_profile_id', jsonData.profile.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"meriam@mingler.co.uk\",\n  \"password\": \"SecureMingle2026!\",\n  \"password_confirm\": \"SecureMingle2026!\",\n  \"display_name\": \"Meriam London\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register", ""]
+            },
+            "description": "Registers a new member (inactive and unverified by default) and sends 6-digit OTP to user's email. Tokens are issued once verified."
+          }
+        },
+        {
+          "name": "Verify Email (6-Digit OTP)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.tokens) {",
+                  "        pm.collectionVariables.set('access_token', jsonData.tokens.access);",
+                  "        pm.collectionVariables.set('refresh_token', jsonData.tokens.refresh);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"meriam@mingler.co.uk\",\n  \"code\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/verify-email/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "verify-email", ""]
+            },
+            "description": "Submits 6-digit OTP code to verify the member's email address and mark account verified."
+          }
+        },
+        {
+          "name": "Resend Verification Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"meriam@mingler.co.uk\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/resend-verification/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "resend-verification", ""]
+            },
+            "description": "Dispatches a new 6-digit OTP verification code to the registered email address (enforces 60-second cooldown)."
+          }
+        },
+        {
+          "name": "Password Reset 1: Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"meriam@mingler.co.uk\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/password-reset/request/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "password-reset", "request", ""]
+            },
+            "description": "Dispatches a 6-digit password reset OTP code to the registered email address (valid for 15 minutes)."
+          }
+        },
+        {
+          "name": "Password Reset 2: Verify Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"meriam@mingler.co.uk\",\n  \"code\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/password-reset/verify-code/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "password-reset", "verify-code", ""]
+            },
+            "description": "Verifies that the 6-digit password reset OTP is valid before rendering new password input form."
+          }
+        },
+        {
+          "name": "Password Reset 3: Confirm & Set New Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"meriam@mingler.co.uk\",\n  \"code\": \"123456\",\n  \"new_password\": \"NewSecurePassword2026!\",\n  \"new_password_confirm\": \"NewSecurePassword2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/password-reset/confirm/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "password-reset", "confirm", ""]
+            },
+            "description": "Validates the 6-digit OTP code and updates the account with the new password."
+          }
+        },
+        {
+          "name": "Login (Obtain JWT Tokens)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.tokens.access);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.tokens.refresh);",
+                  "    pm.collectionVariables.set('my_profile_id', jsonData.profile.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"meriam@mingler.co.uk\",\n  \"password\": \"SecureMingle2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login", ""]
+            },
+            "description": "Authenticates member and populates access_token variable automatically."
+          }
+        },
+        {
+          "name": "Refresh Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.access);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/token/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "token", "refresh", ""]
+            },
+            "description": "Obtain new 15-minute access token using refresh token."
+          }
+        },
+        {
+          "name": "Logout (Blacklist Refresh Token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/logout/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "logout", ""]
+            },
+            "description": "Invalidates the refresh token in the blacklist."
+          }
+        },
+        {
+          "name": "Social Auth - 1. Get Consent URL (Google, Apple, Facebook, Instagram, TikTok, LinkedIn)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/social/url/?provider=google&redirect_uri=http://localhost:3000/auth/callback&state=random_csrf_token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "social", "url", ""],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "google",
+                  "description": "google | apple | facebook | instagram | tiktok | linkedin"
+                },
+                {
+                  "key": "redirect_uri",
+                  "value": "http://localhost:3000/auth/callback"
+                },
+                {
+                  "key": "state",
+                  "value": "random_csrf_token"
+                }
+              ]
+            },
+            "description": "Generates provider-specific OAuth2 authorization URL with required scopes and credentials."
+          }
+        },
+        {
+          "name": "Social Auth - 2. Login / Register (Token or Code Exchange)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.tokens.access);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.tokens.refresh);",
+                  "    if (jsonData.profile) {",
+                  "        pm.collectionVariables.set('my_profile_id', jsonData.profile.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider\": \"google\",\n  \"token\": \"<ID_TOKEN_OR_ACCESS_TOKEN_FROM_CLIENT_SDK>\",\n  \"code\": \"\",\n  \"redirect_uri\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/social/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "social", "login", ""]
+            },
+            "description": "Authenticates or registers a member via Google, Apple, Facebook, Instagram, TikTok, or LinkedIn. Automatically provisions profile and sets JWT tokens."
+          }
+        },
+        {
+          "name": "Social Auth - 3. List Connected Social Accounts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/social/accounts/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "social", "accounts", ""]
+            },
+            "description": "Lists all third-party social accounts linked to the authenticated user."
+          }
+        },
+        {
+          "name": "Social Auth - 4. Disconnect Social Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/social/accounts/google/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "social", "accounts", "google", ""]
+            },
+            "description": "Unlinks a social provider account (protected against accidental lockout if no password exists)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Member Profiles (UK GDPR)",
+      "item": [
+        {
+          "name": "Get My Private Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profiles", "me", ""]
+            },
+            "description": "Retrieve authenticated user's private profile (includes date_of_birth, notification preferences)."
+          }
+        },
+        {
+          "name": "Update My Profile & Socials",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Meriam K.\",\n  \"gender\": \"Female\",\n  \"relationship_status\": \"Single\",\n  \"date_of_birth\": \"1996-06-12\",\n  \"bio\": \"Founder of Mingler. Passionate about art, cocktails, and London social scenes.\",\n  \"interests\": [\"Wine Tasting\", \"Art Galleries\", \"Tech\"],\n  \"instagram_handle\": \"meriam_mingler\",\n  \"linkedin_url\": \"https://linkedin.com/in/meriam-founder\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profiles", "me", ""]
+            },
+            "description": "Update bio, validated Instagram handle, validated LinkedIn URL, and date of birth."
+          }
+        },
+        {
+          "name": "Upload Profile Photo (multipart/form-data)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": "",
+                  "description": "Select an image file (JPEG, PNG, WEBP) from your device"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profiles", "me", ""]
+            },
+            "description": "Upload a profile photo file directly from your computer or phone gallery via multipart/form-data."
+          }
+        },
+        {
+          "name": "Public Profiles Batch (UK GDPR Sanitized)",
+
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles/public/?ids={{my_profile_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profiles", "public", ""],
+              "query": [
+                {
+                  "key": "ids",
+                  "value": "{{my_profile_id}}"
+                }
+              ]
+            },
+            "description": "UK GDPR test endpoint: Inspect output to confirm date_of_birth and email are NEVER returned."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Venues Directory",
+      "item": [
+        {
+          "name": "List Venues (Filter by Area/Category)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/venues/?area=Shoreditch&category=Rooftop Bar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "venues", ""],
+              "query": [
+                {
+                  "key": "area",
+                  "value": "Shoreditch"
+                },
+                {
+                  "key": "category",
+                  "value": "Rooftop Bar"
+                }
+              ]
+            },
+            "description": "List approved London venues with filtering and aggregated ratings."
+          }
+        },
+        {
+          "name": "Get Venue Details (By Slug or UUID)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/venues/{{venue_slug}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "venues", "{{venue_slug}}", ""]
+            },
+            "description": "Retrieve detailed venue profile with opening hours schedule."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Mingles Catalog & Dynamic Roster",
+      "item": [
+        {
+          "name": "Browse Mingles Catalog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mingles/?upcoming_only=true&experience_type=cocktails",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mingles", ""],
+              "query": [
+                {
+                  "key": "upcoming_only",
+                  "value": "true"
+                },
+                {
+                  "key": "experience_type",
+                  "value": "cocktails"
+                }
+              ]
+            },
+            "description": "List live published Mingle experiences with real-time remaining capacity."
+          }
+        },
+        {
+          "name": "Get Mingle Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mingles/{{mingle_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mingles", "{{mingle_id}}", ""]
+            },
+            "description": "Full Mingle details with venue info, ticket price, and spots remaining."
+          }
+        },
+        {
+          "name": "Who's Going (Dynamic Attendee Roster - UK GDPR Sanitized)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mingles/{{mingle_id}}/attendees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mingles", "{{mingle_id}}", "attendees", ""]
+            },
+            "description": "Dynamic attendee roster backed by real confirmed bookings. Zero PII leakage."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Bookings & Concurrency",
+      "item": [
+        {
+          "name": "Create Reservation (Concurrency Safe)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.booking && jsonData.booking.id) {",
+                  "        pm.collectionVariables.set('booking_id', jsonData.booking.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mingle_id\": \"{{mingle_id}}\",\n  \"places_booked\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "bookings", ""]
+            },
+            "description": "Reserve 1 to 5 seats. Employs select_for_update() row lock and past-date guard."
+          }
+        },
+        {
+          "name": "My Bookings History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/my-bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "bookings", "my-bookings", ""]
+            },
+            "description": "Lists all past and upcoming reservations for the logged-in member."
+          }
+        },
+        {
+          "name": "Cancel Reservation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Schedule conflict\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings/{{booking_id}}/cancel/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "bookings", "{{booking_id}}", "cancel", ""]
+            },
+            "description": "Cancels reservation and immediately releases seats back to the Mingle."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Payments & Stripe Webhooks",
+      "item": [
+        {
+          "name": "Initiate Stripe Checkout Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": \"{{booking_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/checkout-session/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "payments", "checkout-session", ""]
+            },
+            "description": "Initiates a Stripe Checkout session for a pending reservation. Returns session_id and checkout_url."
+          }
+        },
+        {
+          "name": "Stripe Webhook (checkout.session.completed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test_checkout_completed_001\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"cs_test_001\",\n      \"client_reference_id\": \"{{booking_id}}\",\n      \"payment_intent\": \"pi_test_001\",\n      \"amount_total\": 6400,\n      \"currency\": \"gbp\",\n      \"metadata\": {\n        \"booking_id\": \"{{booking_id}}\"\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/webhook/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "payments", "webhook", ""]
+            },
+            "description": "Simulates Stripe webhook confirmation. Validates idempotency, confirms booking, and dispatches .ics calendar invite."
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Post-Mingle Feedback & Mutual Matching",
+      "item": [
+        {
+          "name": "Submit Mingle Feedback (Attendance Gated - Defect #4)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"overall_rating\": 5,\n  \"comment\": \"Fantastic curated cocktail evening! Met great people and loved the host.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mingles/{{mingle_id}}/feedback/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mingles", "{{mingle_id}}", "feedback", ""]
+            },
+            "description": "Attendance-gated: only members with confirmed bookings can submit feedback (fixes Base44 Defect #4)."
+          }
+        },
+        {
+          "name": "Submit Venue Review (3NF - Defect #7)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Incredible rooftop views and impeccable cocktail service!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/venues/{{venue_slug}}/reviews/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "venues", "{{venue_slug}}", "reviews", ""]
+            },
+            "description": "Direct venue review maintaining 3NF relationship (fixes Base44 Defect #7)."
+          }
+        },
+        {
+          "name": "Submit Attendee Selections (Mutual Matching)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_profile_ids\": [\n    \"{{my_profile_id}}\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mingles/{{mingle_id}}/select/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mingles", "{{mingle_id}}", "select", ""]
+            },
+            "description": "Secretly select attendees. When two attendees mutually select each other, a Connection is formed."
+          }
+        },
+        {
+          "name": "List My Mutual Connections",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.results && jsonData.results.length > 0) {",
+                  "        pm.collectionVariables.set('connection_id', jsonData.results[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/interactions/connections/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "interactions", "connections", ""]
+            },
+            "description": "Lists all mutual connections for the authenticated member with sanitized public profiles."
+          }
+        },
+        {
+          "name": "Mark Connection Celebrated",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/interactions/connections/{{connection_id}}/celebrate/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "interactions", "connections", "{{connection_id}}", "celebrate", ""]
+            },
+            "description": "Marks the connection celebration screen as viewed."
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Venue Manager & Founder Approvals",
+      "item": [
+        {
+          "name": "Register New Venue (Self-Service)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"The Shoreditch Botanical Bar\",\n  \"category\": \"Cocktail Bar\",\n  \"area\": \"Shoreditch\",\n  \"address\": \"88 Commercial St\",\n  \"postcode\": \"E1 6LZ\",\n  \"description\": \"Botanical infusions and plant-forward cocktails in heart of East London.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/venues/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "venues", "register", ""]
+            },
+            "description": "Registers a new venue application with status='pending', automatically promoting the caller to venue_manager."
+          }
+        },
+        {
+          "name": "Get My Managed Venues",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/venues/mine/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "venues", "mine", ""]
+            },
+            "description": "Returns all venues managed by the authenticated venue manager."
+          }
+        },
+        {
+          "name": "Submit Mingle Proposal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"venue_id\": \"{{venue_id}}\",\n  \"title\": \"Thursday Botanical Cocktail Tasting\",\n  \"description\": \"Curated small-group cocktail tasting.\",\n  \"experience_type\": \"cocktails\",\n  \"event_date\": \"2026-11-26\",\n  \"start_time\": \"19:00:00\",\n  \"duration_minutes\": 120,\n  \"ticket_price\": \"32.00\",\n  \"capacity\": 12,\n  \"age_min\": 21,\n  \"age_max\": 45\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mingles/submit/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mingles", "submit", ""]
+            },
+            "description": "Venue manager submits a proposed Mingle for founder review."
+          }
+        },
+        {
+          "name": "Founder Queue: Pending Venues",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/approvals/venues/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "approvals", "venues", ""]
+            },
+            "description": "Founder queue listing all pending venue registrations."
+          }
+        },
+        {
+          "name": "Founder Action: Approve/Reject Venue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"approve\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/approvals/venues/{{venue_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "approvals", "venues", "{{venue_id}}", ""]
+            },
+            "description": "Founder approves ('approve') or declines ('reject') a venue application."
+          }
+        },
+        {
+          "name": "Founder Queue: Pending Mingles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/approvals/mingles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "approvals", "mingles", ""]
+            },
+            "description": "Founder queue of submitted Mingle proposals."
+          }
+        },
+        {
+          "name": "Founder Action: Approve/Reject Mingle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"approve\",\n  \"curator_notes\": \"Approved for live bookings!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/approvals/mingles/{{mingle_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "approvals", "mingles", "{{mingle_id}}", ""]
+            },
+            "description": "Founder approves ('approve'), requests changes ('changes_requested'), or rejects ('reject') a Mingle proposal."
+          }
+        },
+        {
+          "name": "Get / Update Platform Commission Rate",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commission_rate\": 12.50,\n  \"notes\": \"Standard Q4 commission update\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/platform-settings/commission/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "platform-settings", "commission", ""]
+            },
+            "description": "Platform admin views and dynamically updates the platform commission fee."
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. API Documentation",
+      "item": [
+        {
+          "name": "Swagger UI Documentation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/docs/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "docs", ""]
+            },
+            "description": "Interactive Swagger UI documentation."
+          }
+        },
+        {
+          "name": "OpenAPI 3.0 Schema JSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/schema/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "schema", ""]
+            },
+            "description": "OpenAPI 3.0 raw schema specification."
+          }
+        }
+      ]
+    }
+  ]
+}

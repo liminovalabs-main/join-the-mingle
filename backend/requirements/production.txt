@@ -1,0 +1,13 @@
+# ============================================================
+# Mingler — Production Dependencies
+# ============================================================
+-r base.txt
+
+# WSGI Server
+gunicorn>=22.0
+
+# Database URL parsing for Render/VPS
+dj-database-url>=2.2
+
+# Error monitoring (optional — configure in production.py)
+sentry-sdk>=2.0

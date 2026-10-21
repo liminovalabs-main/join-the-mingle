@@ -1,0 +1,92 @@
+# ============================================================
+# Project Mingler — Universal Monorepo .gitignore
+# ============================================================
+
+# --- Environment Variables (CRITICAL SECURITY) ---
+.env
+.env.*
+*.env
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+# Explicitly permit template example files:
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# --- Python & Virtual Environments ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+backend/venv/
+backend/.venv/
+
+# --- Django, Database & Local Media ---
+*.sqlite3
+backend/*.sqlite3
+media/
+backend/media/
+staticfiles/
+backend/staticfiles/
+static_collected/
+
+# --- Python Testing & Coverage ---
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+backend/.pytest_cache/
+
+# --- Celery ---
+celerybeat-schedule
+celerybeat.pid
+
+# --- Node.js & Next.js Frontend ---
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+frontend/out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+frontend/.vercel/
+.npm/
+
+# --- Docker & Databases ---
+postgres_data/
+
+# --- IDE & Editors ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# --- OS-Specific Files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/
+backend/logs/
+
+# --- Legacy Prototype & Scratch Assets ---
+join-the-mingle/
+sample_images/
+*.png
+*.jpg
+*.jpeg
