@@ -1,13 +1,23 @@
 "use client";
 
 import * as React from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Volume2, Bell } from "lucide-react";
-import { InstagramIcon, LinkedinIcon } from "@/components/ui/social-icons";
+import { ShieldCheck, Volume2, Bell, Loader2 } from "lucide-react";
+import {
+  AppleIcon,
+  FacebookIcon,
+  GoogleIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  TikTokIcon,
+} from "@/components/ui/social-icons";
+import { apiClient, extractErrorMessage } from "@/lib/api/client";
+import { SocialAccount, SocialAccountListResponse, SocialProvider } from "@/types/auth";
 
 const SUGGESTED_INTERESTS = [
   "Wine Tasting",
@@ -24,8 +34,21 @@ const SUGGESTED_INTERESTS = [
   "Coffee & Roasteries",
 ];
 
+const SOCIAL_PROVIDERS: Array<{
+  id: SocialProvider;
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+}> = [
+  { id: "google", name: "Google", icon: GoogleIcon },
+  { id: "apple", name: "Apple", icon: AppleIcon },
+  { id: "facebook", name: "Facebook", icon: FacebookIcon },
+  { id: "instagram", name: "Instagram", icon: InstagramIcon },
+  { id: "tiktok", name: "TikTok", icon: TikTokIcon },
+  { id: "linkedin", name: "LinkedIn", icon: LinkedinIcon },
+];
+
 export function ProfileEditor() {
-  const { profile, updateProfile, refreshProfile } = useAuth();
+  const { profile, updateProfile, refreshProfile, initiateSocialAuth } = useAuth();
 
   const [displayName, setDisplayName] = React.useState(profile?.display_name || "");
   const [photo, setPhoto] = React.useState(profile?.photo || "");
@@ -49,6 +72,51 @@ export function ProfileEditor() {
 
   const [isSaving, setIsSaving] = React.useState(false);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const [linkedAccounts, setLinkedAccounts] = React.useState<SocialAccount[]>([]);
+  const [unlinkingProvider, setUnlinkingProvider] = React.useState<SocialProvider | null>(null);
+  const [connectingProvider, setConnectingProvider] = React.useState<SocialProvider | null>(null);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    apiClient
+      .get<SocialAccountListResponse>("/auth/social/accounts/")
+      .then((res) => {
+        if (isMounted && res.data?.social_accounts) {
+          setLinkedAccounts(res.data.social_accounts);
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load linked social accounts", err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleDisconnect = async (provider: SocialProvider) => {
+    try {
+      setUnlinkingProvider(provider);
+      await apiClient.delete(`/auth/social/accounts/${provider}/`);
+      setLinkedAccounts((prev) => prev.filter((acc) => acc.provider !== provider));
+      toast.success(
+        `Disconnected ${provider.charAt(0).toUpperCase() + provider.slice(1)} account.`
+      );
+    } catch (err) {
+      toast.error(extractErrorMessage(err));
+    } finally {
+      setUnlinkingProvider(null);
+    }
+  };
+
+  const handleConnect = async (provider: SocialProvider) => {
+    try {
+      setConnectingProvider(provider);
+      await initiateSocialAuth(provider);
+    } finally {
+      setConnectingProvider(null);
+    }
+  };
 
   const toggleInterest = (tag: string) => {
     setInterests((prev) =>
@@ -373,6 +441,82 @@ export function ProfileEditor() {
               className="h-4 w-4 rounded text-brand-coral accent-brand-coral cursor-pointer"
             />
           </label>
+        </div>
+      </div>
+
+      {/* Connected Social Accounts */}
+      <div className="p-6 rounded-2xl bg-white border border-border shadow-xs space-y-4">
+        <div className="border-b border-border pb-3">
+          <h3 className="text-base font-heading font-black tracking-tight text-brand-navy">
+            Connected Accounts
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Link your social profiles for one-click authentication and verified profile badges.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {SOCIAL_PROVIDERS.map((provider) => {
+            const Icon = provider.icon;
+            const isLinked = linkedAccounts.some((acc) => acc.provider === provider.id);
+            const isUnlinking = unlinkingProvider === provider.id;
+            const isConnecting = connectingProvider === provider.id;
+
+            return (
+              <div
+                key={provider.id}
+                className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-brand-stone/10 hover:bg-brand-stone/20 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-border flex items-center justify-center text-brand-navy shadow-2xs">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-brand-navy">{provider.name}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {isLinked ? (
+                        <span className="text-emerald-600 font-medium">Connected</span>
+                      ) : (
+                        <span>Not connected</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {isLinked ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isUnlinking}
+                    onClick={() => handleDisconnect(provider.id)}
+                    className="h-8 px-3 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 cursor-pointer"
+                  >
+                    {isUnlinking ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      "Disconnect"
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isConnecting}
+                    onClick={() => handleConnect(provider.id)}
+                    className="h-8 px-3 text-xs text-brand-navy hover:text-brand-navy hover:bg-white border-border cursor-pointer"
+                  >
+                    {isConnecting ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      "Connect"
+                    )}
+                  </Button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 

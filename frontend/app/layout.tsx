@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Inter } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Providers } from "@/components/layout/providers";
@@ -58,7 +59,9 @@ export default function RootLayout({
         className="min-h-full flex flex-col bg-brand-ivory text-brand-ink selection:bg-brand-coral selection:text-white"
       >
         <Providers>
-          <Navbar />
+          <Suspense fallback={<div className="h-20 bg-brand-navy" />}>
+            <Navbar />
+          </Suspense>
           <main className="flex-1 flex flex-col">{children}</main>
           <Footer />
         </Providers>

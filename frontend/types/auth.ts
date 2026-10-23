@@ -52,6 +52,8 @@ export interface PrivateProfile extends PublicProfile {
 export interface AuthApiResponse {
   success: boolean;
   message?: string;
+  is_new_user?: boolean;
+  provider?: SocialProvider;
   tokens?: AuthTokens;
   user?: User;
   profile?: PrivateProfile;
@@ -60,6 +62,33 @@ export interface AuthApiResponse {
     message?: string;
     details?: Record<string, string | string[]>;
   };
+}
+
+export type SocialProvider =
+  | "google"
+  | "apple"
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "linkedin";
+
+export interface SocialAccount {
+  id: string;
+  provider: SocialProvider;
+  uid: string;
+  created_at: string;
+  extra_data?: Record<string, unknown>;
+}
+
+export interface SocialAuthUrlResponse {
+  success: boolean;
+  provider: SocialProvider;
+  authorization_url: string;
+}
+
+export interface SocialAccountListResponse {
+  success: boolean;
+  social_accounts: SocialAccount[];
 }
 
 export type AuthModalType =

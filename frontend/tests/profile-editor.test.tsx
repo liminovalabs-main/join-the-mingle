@@ -103,4 +103,20 @@ describe("ProfileEditor (Defect #6 Regex Validation & UK GDPR Verification)", ()
       screen.getByText(/you must be at least 18 years old to join mingler/i)
     ).toBeInTheDocument();
   });
+
+  it("renders Connected Accounts section with provider cards", async () => {
+    render(
+      <AuthProvider>
+        <ProfileEditor />
+      </AuthProvider>
+    );
+
+    expect(screen.getByText("Connected Accounts")).toBeInTheDocument();
+    expect(screen.getByText("Google")).toBeInTheDocument();
+    expect(screen.getByText("Apple")).toBeInTheDocument();
+    expect(screen.getByText("Facebook")).toBeInTheDocument();
+    expect(screen.getByText("Instagram")).toBeInTheDocument();
+    expect(screen.getByText("TikTok")).toBeInTheDocument();
+    expect(screen.getByText("LinkedIn")).toBeInTheDocument();
+  });
 });

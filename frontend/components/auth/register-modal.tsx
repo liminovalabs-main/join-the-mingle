@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
 import { MinglerLogo } from "@/components/brand/mingler-logo";
+import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 
 function RegisterForm({ initialEmail }: { initialEmail: string }) {
   const { openModal, register } = useAuth();
@@ -51,7 +52,22 @@ function RegisterForm({ initialEmail }: { initialEmail: string }) {
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={handleSubmit} className="space-y-3.5 mt-3">
+      <div className="mt-4">
+        <SocialAuthButtons mode="register" />
+      </div>
+
+      <div className="relative my-3.5">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-brand-ivory/15" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase tracking-wider">
+          <span className="bg-brand-navy px-2 text-brand-ivory/50 font-medium">
+            or with email
+          </span>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-3 mt-2">
         {error && (
           <div className="rounded-lg bg-red-500/15 border border-red-500/30 p-2.5 text-xs text-red-200">
             {error}

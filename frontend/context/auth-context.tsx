@@ -8,6 +8,8 @@ import {
   AuthModalType,
   AuthTokens,
   PrivateProfile,
+  SocialAuthUrlResponse,
+  SocialProvider,
   User,
   UserRole,
 } from "@/types/auth";
@@ -23,6 +25,17 @@ interface AuthContextType {
   prefilledEmail: string;
   openModal: (modal: AuthModalType, email?: string) => void;
   closeModal: () => void;
+  saveSession: (
+    newTokens: AuthTokens,
+    newUser: User,
+    newProfile?: PrivateProfile
+  ) => void;
+  initiateSocialAuth: (provider: SocialProvider) => Promise<void>;
+  handleSocialCallback: (
+    provider: SocialProvider,
+    code: string,
+    state?: string
+  ) => Promise<boolean>;
   login: (email: string, password: string) => Promise<boolean>;
   register: (
     email: string,
@@ -138,6 +151,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("mingler_refresh_token");
     localStorage.removeItem("mingler_user");
     localStorage.removeItem("mingler_profile");
+  };
+
+  const initiateSocialAuth = async (provider: SocialProvider): Promise<void> => {
+    try {
+      const callbackUri = `${window.location.origin}/auth/callback/${provider}`;
+      const res = await apiClient.get<SocialAuthUrlResponse>(
+        "/auth/social/url/",
+        {
+          params: {
+            provider,
+            redirect_uri: callbackUri,
+          },
+        }
+      );
+
+      if (res.data?.authorization_url) {
+        window.location.href = res.data.authorization_url;
+      } else {
+        toast.error(`Unable to get authorization URL for ${provider}.`);
+      }
+    } catch (error) {
+      toast.error(extractErrorMessage(error));
+    }
+  };
+
+  const handleSocialCallback = async (
+    provider: SocialProvider,
+    code: string,
+    state?: string
+  ): Promise<boolean> => {
+    try {
+      const redirectUri = `${window.location.origin}/auth/callback/${provider}`;
+      const res = await apiClient.post<AuthApiResponse>("/auth/social/login/", {
+        provider,
+        code,
+        redirect_uri: redirectUri,
+        state: state || undefined,
+      });
+
+      if (res.data.tokens && res.data.user) {
+        saveSession(res.data.tokens, res.data.user, res.data.profile);
+        const welcomeMsg = res.data.is_new_user
+          ? "Welcome to Mingler! Account created successfully."
+          : res.data.message || "Social login successful.";
+        toast.success(welcomeMsg);
+        closeModal();
+        return true;
+      }
+      return false;
+    } catch (error) {
+      toast.error(extractErrorMessage(error));
+      return false;
+    }
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -350,6 +416,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         prefilledEmail,
         openModal,
         closeModal,
+        saveSession,
+        initiateSocialAuth,
+        handleSocialCallback,
         login,
         register,
         verifyEmail,
