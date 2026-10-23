@@ -331,6 +331,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         {
           email,
           code,
+          new_password: password,
+          new_password_confirm: passwordConfirm,
           password,
           password_confirm: passwordConfirm,
         }

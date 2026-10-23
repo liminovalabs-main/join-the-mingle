@@ -311,6 +311,15 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         style={'input_type': 'password'},
     )
 
+    def to_internal_value(self, data: Any) -> Dict[str, Any]:
+        """Support both 'new_password' and 'password' key variations gracefully."""
+        mutable_data = data.copy() if hasattr(data, 'copy') else dict(data)
+        if 'password' in mutable_data and 'new_password' not in mutable_data:
+            mutable_data['new_password'] = mutable_data['password']
+        if 'password_confirm' in mutable_data and 'new_password_confirm' not in mutable_data:
+            mutable_data['new_password_confirm'] = mutable_data['password_confirm']
+        return super().to_internal_value(mutable_data)
+
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         from apps.users.models import PasswordResetCode
 

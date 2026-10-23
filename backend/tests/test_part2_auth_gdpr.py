@@ -348,6 +348,23 @@ class TestPart2Authentication:
         assert new_login.status_code == status.HTTP_200_OK
         assert 'tokens' in new_login.data
 
+    def test_password_reset_confirm_with_password_alias(self, api_client, member_user):
+        """Confirming password reset using 'password' and 'password_confirm' field aliases succeeds."""
+        from apps.users.models import PasswordResetCode
+
+        code = PasswordResetCode.generate_code_for_user(member_user)
+        confirm_url = '/api/v1/auth/password-reset/confirm/'
+        new_pwd = 'AliasPassword2026!'
+
+        confirm_res = api_client.post(confirm_url, {
+            'email': member_user.email,
+            'code': code,
+            'password': new_pwd,
+            'password_confirm': new_pwd,
+        }, format='json')
+        assert confirm_res.status_code == status.HTTP_200_OK
+        assert confirm_res.data['success'] is True
+
     def test_password_reset_expired_or_used_code_rejected(self, api_client, member_user):
         """Expired code or already-used code cannot reset password."""
         from datetime import timedelta
