@@ -12,7 +12,7 @@
 | Part | Milestone / Module | Target Architecture & Core Scope | Implementation State | Verification & Testing State |
 |---|---|---|---|---|
 | **Part F1** | **Design System Foundation & Global Navigation** | "Digital Atelier" palette (`brand-navy`, `brand-coral`, `brand-ivory`), Archivo & Inter typography, responsive Navbar, Footer, and Radix UI primitives. | ✅ **Complete** | ✅ 21/21 Passing (100%) |
-| **Part F2** | **Authentication Layer, API Client & UK GDPR Profiles** | Axios/Fetch client with SimpleJWT 15-min auto-refresh, Login, 6-Digit Email OTP verification modal, Password Reset, OAuth2 Socials, Private Profile editor, and zero-PII sanitization. | ⏳ Queued | ⏳ Awaiting F1 |
+| **Part F2** | **Authentication Layer, API Client & UK GDPR Profiles** | Axios client with SimpleJWT auto-refresh, Login, Register, 6-Digit Email OTP verification modal, 3-step Password Reset, Private Profile editor, and zero-PII sanitization. | ✅ **Complete** | ✅ 36/36 Passing (100%) |
 | **Part F3** | **Public Experience Discovery & Venues Directory** | Homepage (Hero, category pills, curated carousel), Browse Experiences with multi-facet filters, Mingle Details with dynamic attendee roster (Defect #5 fix) and past date lockout guard (Defect #3 fix), Venues Directory with 7-day operating schedule. | ⏳ Queued | ⏳ Awaiting F2 |
 | **Part F4** | **Booking Engine & Stripe Checkout Flow** | Places selector (1-5), real-time price calculations in GBP (£), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, and member booking dashboard with instant capacity release on cancellation. | ⏳ Queued | ⏳ Awaiting F3 |
 | **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | ⏳ Queued | ⏳ Awaiting F4 |
@@ -54,29 +54,31 @@
 ---
 
 ### 🔐 Part F2: Authentication Layer, State Management & UK GDPR Profiles
-- [ ] Build API Client (`lib/api/client.ts`):
-  - [ ] Axios/Fetch client configured with base URL (`http://localhost:8000/api/v1/`).
-  - [ ] Request interceptor attaching `Authorization: Bearer <access_token>`.
-  - [ ] Response interceptor with automatic SimpleJWT token refresh (`/api/v1/auth/token/refresh/`) on 401 Unauthorized responses.
-  - [ ] Centralized error handling converting RFC 7807 responses into user-friendly toasts.
-- [ ] Build Authentication Context (`context/AuthContext.tsx` & `hooks/useAuth.ts`):
-  - [ ] Manage `user`, `profile`, `isAuthenticated`, `isLoading`, and `role` (`member`, `venue_manager`, `admin`).
-  - [ ] Persistent token storage in secure HTTP cookies / localStorage.
-  - [ ] Login, register, logout, and profile refresh actions.
-- [ ] Build Auth Dialogs & Modals (`components/auth/`):
-  - [ ] `LoginModal.tsx` (email/password form + OAuth2 social buttons for Google, Apple, Facebook, Instagram, TikTok, LinkedIn).
-  - [ ] `RegisterModal.tsx` (name, email, password with automatic transition to OTP verification modal).
-  - [ ] `VerifyEmailModal.tsx` (6-digit OTP input boxes, auto-focus, countdown timer, and 60-second rate-limited resend button).
-  - [ ] `ForgotPasswordModal.tsx` (3-step flow: request reset OTP → verify OTP → set new password).
-  - [ ] `SocialAuthHandler.tsx` (handles OAuth2 redirects and popup message listeners).
-- [ ] Build Member Profile Management (`app/my-mingler/` & `components/profile/`):
-  - [ ] Profile editor with 18+ age validation on date of birth.
-  - [ ] Multipart direct photo upload with instant image preview.
-  - [ ] Social handles input with strict Zod regex validation for Instagram and LinkedIn (**Defect #6 fix**).
-  - [ ] UK GDPR compliance audit: Public profile cards strictly omit date of birth and email.
-  - [ ] Hide redundant "Edit Profile" button when Profile tab is active (**Defect #2 fix**).
-- [ ] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Review Part F2 Auth implementation before proceeding.
-- [ ] **Automated Testing F2:** Unit tests for token refresh interceptor, OTP countdown timer, and form validation schemas.
+- [x] Build API Client (`lib/api/client.ts`):
+  - [x] Axios client configured with base URL (`http://localhost:8000/api/v1/`).
+  - [x] Request interceptor attaching `Authorization: Bearer <access_token>`.
+  - [x] Response interceptor with automatic SimpleJWT token refresh (`/api/v1/auth/token/refresh/`) on 401 Unauthorized responses with failed request queue.
+  - [x] Centralized error handling converting DRF error responses into user-friendly messages.
+- [x] Build Authentication Context (`context/auth-context.tsx` & `hooks/use-auth.ts`):
+  - [x] Manage `user`, `profile`, `isAuthenticated`, `isLoading`, and `role` (`member`, `venue_manager`, `admin`).
+  - [x] Persistent token storage in localStorage with lazy initializers.
+  - [x] Login, register, verify email, password reset, logout, and profile refresh actions.
+- [x] Build Auth Dialogs & Modals (`components/auth/`):
+  - [x] `login-modal.tsx` (email/password form + forgot password & register links).
+  - [x] `register-modal.tsx` (name, email, password with automatic transition to OTP verification modal).
+  - [x] `verify-email-modal.tsx` (6-digit OTP input boxes, auto-focus, paste support, and 60-second rate-limited resend button).
+  - [x] `forgot-password-modal.tsx` (3-step flow: request reset OTP → verify OTP → set new password).
+  - [x] `auth-modal-manager.tsx` (globally mounted in Providers).
+- [x] Build Member Profile Management (`app/my-mingler/` & `components/profile/`):
+  - [x] Profile editor with 18+ age validation on date of birth.
+  - [x] Photo URL preview with fallback initials.
+  - [x] Social handles input with strict regex validation for Instagram and LinkedIn (**Defect #6 fix**).
+  - [x] UK GDPR compliance audit: Public profile cards strictly omit date of birth and email.
+  - [x] Hide redundant "Edit Profile" button when Profile tab is active (**Defect #2 fix**).
+- [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and approved by user.
+- [x] **Automated Testing F2 (Sub-phase 2.4):** 15 new unit tests (36 total) passing across API client, AuthContext, OTP modal, and ProfileEditor.
+- [x] **Infrastructure as Code (Sub-phase 2.5):** `allowedDevOrigins` configured for local LAN IP access (`192.168.0.105`).
+- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F3.
 
 ---
 

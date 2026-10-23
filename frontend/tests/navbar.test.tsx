@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Navbar } from "@/components/layout/navbar";
+import { AuthProvider } from "@/context/auth-context";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
@@ -8,7 +9,11 @@ vi.mock("next/navigation", () => ({
 
 describe("Navbar Component", () => {
   it("renders the brand logo and desktop navigation links", () => {
-    render(<Navbar />);
+    render(
+      <AuthProvider>
+        <Navbar />
+      </AuthProvider>
+    );
 
     // Brand link
     const brandLink = screen.getByLabelText(/mingler — home/i);
@@ -26,7 +31,11 @@ describe("Navbar Component", () => {
   });
 
   it("toggles the mobile menu when the hamburger button is clicked", () => {
-    render(<Navbar />);
+    render(
+      <AuthProvider>
+        <Navbar />
+      </AuthProvider>
+    );
 
     const menuButton = screen.getByLabelText(/open menu/i);
     expect(menuButton).toBeInTheDocument();

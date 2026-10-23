@@ -3,8 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User as UserIcon, LogOut } from "lucide-react";
 import { MinglerLogo } from "@/components/brand/mingler-logo";
+import { useAuth } from "@/context/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface NavLink {
@@ -20,10 +22,20 @@ const PUBLIC_LINKS: NavLink[] = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { isAuthenticated, user, profile, openModal, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const navLinkClass =
     "text-xs font-bold uppercase tracking-[0.16em] text-brand-ivory/70 hover:text-brand-ivory transition-colors";
+
+  const getInitials = (name?: string) => {
+    if (!name) return "M";
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-brand-navy/95 backdrop-blur-md border-b border-brand-ivory/10">
@@ -41,26 +53,62 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={cn(
-                  navLinkClass,
-                  isActive && "text-brand-ivory"
-                )}
+                className={cn(navLinkClass, isActive && "text-brand-ivory")}
               >
                 {link.label}
               </Link>
             );
           })}
 
-          {/* Action CTAs */}
-          <Link href="/login" className={navLinkClass}>
-            Log in
-          </Link>
-          <Link
-            href="/register"
-            className="rounded-full bg-brand-coral px-6 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white transition-all hover:bg-brand-coral/90 shadow-md shadow-brand-coral/25 active:scale-95"
-          >
-            Join Mingler
-          </Link>
+          {/* Authentication State */}
+          {isAuthenticated ? (
+            <div className="flex items-center gap-5">
+              <Link
+                href="/my-mingler"
+                className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.16em] text-brand-ivory hover:text-brand-coral transition-colors"
+              >
+                <Avatar className="h-8 w-8 border-brand-ivory/30">
+                  {profile?.photo && (
+                    <AvatarImage
+                      src={profile.photo}
+                      alt={profile.display_name || "Member avatar"}
+                    />
+                  )}
+                  <AvatarFallback className="bg-brand-coral/20 text-brand-coral text-[11px]">
+                    {getInitials(profile?.display_name || user?.email)}
+                  </AvatarFallback>
+                </Avatar>
+                <span>My Mingler</span>
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.16em] text-brand-ivory/60 hover:text-brand-coral transition-colors cursor-pointer"
+                title="Log out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Log out</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() => openModal("login")}
+                className={`${navLinkClass} cursor-pointer`}
+              >
+                Log in
+              </button>
+              <button
+                type="button"
+                onClick={() => openModal("register")}
+                className="rounded-full bg-brand-coral px-6 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white transition-all hover:bg-brand-coral/90 shadow-md shadow-brand-coral/25 active:scale-95 cursor-pointer"
+              >
+                Join Mingler
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -87,20 +135,51 @@ export function Navbar() {
             </Link>
           ))}
           <div className="pt-4 border-t border-brand-ivory/10 space-y-3">
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm font-bold uppercase tracking-[0.16em] text-brand-ivory/80 hover:text-brand-ivory"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center rounded-full bg-brand-coral py-3 text-xs font-bold uppercase tracking-[0.16em] text-white hover:bg-brand-coral/90 shadow-sm"
-            >
-              Join Mingler
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/my-mingler"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 text-sm font-bold uppercase tracking-[0.16em] text-brand-ivory"
+                >
+                  <UserIcon className="w-4 h-4 text-brand-coral" />
+                  My Mingler Profile
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm font-bold uppercase tracking-[0.16em] text-brand-coral"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    openModal("login");
+                  }}
+                  className="block w-full text-left px-3 py-2 text-sm font-bold uppercase tracking-[0.16em] text-brand-ivory/80 hover:text-brand-ivory cursor-pointer"
+                >
+                  Log in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    openModal("register");
+                  }}
+                  className="block w-full text-center rounded-full bg-brand-coral py-3 text-xs font-bold uppercase tracking-[0.16em] text-white hover:bg-brand-coral/90 shadow-sm cursor-pointer"
+                >
+                  Join Mingler
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

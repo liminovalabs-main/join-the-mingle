@@ -1,0 +1,391 @@
+"use client";
+
+import * as React from "react";
+import { useAuth } from "@/context/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { ShieldCheck, Volume2, Bell } from "lucide-react";
+import { InstagramIcon, LinkedinIcon } from "@/components/ui/social-icons";
+
+const SUGGESTED_INTERESTS = [
+  "Wine Tasting",
+  "Cocktail Mixing",
+  "Supper Clubs",
+  "Jazz & Live Music",
+  "Contemporary Art",
+  "Theater & West End",
+  "Culinary Arts",
+  "Tech & Startups",
+  "Running & Fitness",
+  "Book Clubs",
+  "Philosophy",
+  "Coffee & Roasteries",
+];
+
+export function ProfileEditor() {
+  const { profile, updateProfile, refreshProfile } = useAuth();
+
+  const [displayName, setDisplayName] = React.useState(profile?.display_name || "");
+  const [photo, setPhoto] = React.useState(profile?.photo || "");
+  const [bio, setBio] = React.useState(profile?.bio || "");
+  const [gender, setGender] = React.useState(profile?.gender || "");
+  const [relationshipStatus, setRelationshipStatus] = React.useState(
+    profile?.relationship_status || ""
+  );
+  const [dateOfBirth, setDateOfBirth] = React.useState(profile?.date_of_birth || "");
+  const [interests, setInterests] = React.useState<string[]>(profile?.interests || []);
+  const [instagramHandle, setInstagramHandle] = React.useState(
+    profile?.instagram_handle || ""
+  );
+  const [linkedinUrl, setLinkedinUrl] = React.useState(profile?.linkedin_url || "");
+  const [soundEnabled, setSoundEnabled] = React.useState(
+    profile?.sound_enabled ?? true
+  );
+  const [notificationsEnabled, setNotificationsEnabled] = React.useState(
+    profile?.notifications_enabled ?? true
+  );
+
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const toggleInterest = (tag: string) => {
+    setInterests((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const validate = (): boolean => {
+    const errs: Record<string, string> = {};
+
+    if (!displayName.trim()) {
+      errs.displayName = "Display name is required.";
+    }
+
+    // Defect #6 Fix: Instagram Regex Validation
+    if (instagramHandle.trim()) {
+      const cleanHandle = instagramHandle.trim().replace(/^@/, "");
+      const igRegex = /^[a-zA-Z0-9._]{1,30}$/;
+      if (!igRegex.test(cleanHandle)) {
+        errs.instagramHandle =
+          "Valid handle letters, numbers, dots, and underscores (max 30 chars).";
+      }
+    }
+
+    // Defect #6 Fix: LinkedIn URL Regex Validation
+    if (linkedinUrl.trim()) {
+      const liRegex = /^https?:\/\/(www\.)?linkedin\.com\/in\/[\w-]+\/?$/;
+      if (!liRegex.test(linkedinUrl.trim())) {
+        errs.linkedinUrl =
+          "Enter a valid profile URL (e.g., https://linkedin.com/in/your-name).";
+      }
+    }
+
+    // 18+ Age Guard (UK GDPR Compliance)
+    if (dateOfBirth) {
+      const birthDate = new Date(dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (age < 18) {
+        errs.dateOfBirth = "You must be at least 18 years old to join Mingler.";
+      }
+    }
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setIsSaving(true);
+    await updateProfile({
+      display_name: displayName.trim(),
+      photo: photo.trim(),
+      bio: bio.trim(),
+      gender: gender as "Male" | "Female" | "Prefer not to say" | "",
+      relationship_status: relationshipStatus as
+        | "Single"
+        | "Married"
+        | "It's complicated"
+        | "",
+      date_of_birth: dateOfBirth || undefined,
+      interests,
+      instagram_handle: instagramHandle.trim().replace(/^@/, ""),
+      linkedin_url: linkedinUrl.trim(),
+      sound_enabled: soundEnabled,
+      notifications_enabled: notificationsEnabled,
+    });
+    setIsSaving(false);
+    await refreshProfile();
+  };
+
+  const getInitials = (name?: string) => {
+    if (!name) return "M";
+    return name
+      .trim()
+      .split(" ")
+      .map((p) => p[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
+  return (
+    <form onSubmit={handleSave} className="space-y-8 max-w-2xl">
+      {/* Profile Header & Avatar Card */}
+      <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-2xl bg-white border border-border shadow-xs">
+        {/* Defect #1 permanent enforcement: aspect-square shrink-0 object-cover */}
+        <Avatar className="h-24 w-24 border-2 border-brand-coral/40 shadow-sm shrink-0 aspect-square">
+          {photo && <AvatarImage src={photo} alt={displayName} className="object-cover" />}
+          <AvatarFallback className="text-xl font-black bg-brand-coral/15 text-brand-coral">
+            {getInitials(displayName)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 text-center sm:text-left space-y-2">
+          <div className="flex items-center justify-center sm:justify-start gap-2">
+            <h2 className="text-xl font-heading font-black tracking-tight text-brand-navy">
+              {displayName || "Member"}
+            </h2>
+            <Badge variant="coral" className="text-[10px] font-bold">
+              {profile?.role || "Member"}
+            </Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {profile?.email}
+          </p>
+          <div className="pt-1">
+            <Input
+              type="url"
+              placeholder="Paste photo URL (https://...)"
+              value={photo}
+              onChange={(e) => setPhoto(e.target.value)}
+              className="h-9 text-xs"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Basic Profile Details */}
+      <div className="p-6 rounded-2xl bg-white border border-border shadow-xs space-y-5">
+        <h3 className="text-base font-heading font-black tracking-tight text-brand-navy border-b border-border pb-3">
+          Personal Information
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Display Name *
+            </label>
+            <Input
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              error={errors.displayName}
+              placeholder="e.g. Alex Henderson"
+              required
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="dob-input"
+              className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+            >
+              Date of Birth (18+ requirement)
+            </label>
+            <Input
+              id="dob-input"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              error={errors.dateOfBirth}
+            />
+            <p className="text-[11px] text-muted-foreground flex items-center gap-1 pt-0.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>UK GDPR Private — Never shared on public attendee lists.</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Gender
+            </label>
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="flex h-11 w-full rounded-xl border border-input bg-white px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral cursor-pointer"
+            >
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Relationship Status
+            </label>
+            <select
+              value={relationshipStatus}
+              onChange={(e) => setRelationshipStatus(e.target.value)}
+              className="flex h-11 w-full rounded-xl border border-input bg-white px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral cursor-pointer"
+            >
+              <option value="">Select status</option>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="It's complicated">It&apos;s complicated</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Bio (Tell fellow minglers about yourself)
+          </label>
+          <textarea
+            rows={3}
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Architecture lover, jazz enthusiast, and East London foodie..."
+            className="flex w-full rounded-xl border border-input bg-white p-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral"
+          />
+        </div>
+      </div>
+
+      {/* Defect #6 Fix: Social Media Handles with Strict Validation */}
+      <div className="p-6 rounded-2xl bg-white border border-border shadow-xs space-y-4">
+        <h3 className="text-base font-heading font-black tracking-tight text-brand-navy border-b border-border pb-3">
+          Social Links (Shared with mutual matches only)
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <InstagramIcon className="w-3.5 h-3.5 text-pink-600" />
+              Instagram Handle
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-3 text-sm text-muted-foreground">@</span>
+              <Input
+                value={instagramHandle}
+                onChange={(e) => setInstagramHandle(e.target.value)}
+                error={errors.instagramHandle}
+                placeholder="username"
+                className="pl-7"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <LinkedinIcon className="w-3.5 h-3.5 text-blue-600" />
+              LinkedIn Profile URL
+            </label>
+            <Input
+              type="url"
+              value={linkedinUrl}
+              onChange={(e) => setLinkedinUrl(e.target.value)}
+              error={errors.linkedinUrl}
+              placeholder="https://linkedin.com/in/alex"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Interests Picker */}
+      <div className="p-6 rounded-2xl bg-white border border-border shadow-xs space-y-4">
+        <h3 className="text-base font-heading font-black tracking-tight text-brand-navy border-b border-border pb-3">
+          Interests & Vibes
+        </h3>
+        <p className="text-xs text-muted-foreground">
+          Select topics you enjoy discussing at curated tables.
+        </p>
+
+        <div className="flex flex-wrap gap-2 pt-1">
+          {SUGGESTED_INTERESTS.map((tag) => {
+            const isSelected = interests.includes(tag);
+            return (
+              <button
+                type="button"
+                key={tag}
+                onClick={() => toggleInterest(tag)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-brand-coral text-white shadow-xs"
+                    : "bg-brand-stone/40 text-brand-navy hover:bg-brand-stone/70"
+                }`}
+              >
+                {isSelected ? `✓ ${tag}` : `+ ${tag}`}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* App Preferences */}
+      <div className="p-6 rounded-2xl bg-white border border-border shadow-xs space-y-4">
+        <h3 className="text-base font-heading font-black tracking-tight text-brand-navy border-b border-border pb-3">
+          App Preferences
+        </h3>
+
+        <div className="space-y-3">
+          <label className="flex items-center justify-between p-3 rounded-xl border border-border hover:bg-brand-stone/10 cursor-pointer">
+            <div className="flex items-center gap-3">
+              <Volume2 className="w-5 h-5 text-brand-navy/80" />
+              <div>
+                <p className="text-xs font-bold text-brand-navy">Sound Effects</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Play melodic Web Audio chimes on connection reveals.
+                </p>
+              </div>
+            </div>
+            <input
+              type="checkbox"
+              checked={soundEnabled}
+              onChange={(e) => setSoundEnabled(e.target.checked)}
+              className="h-4 w-4 rounded text-brand-coral accent-brand-coral cursor-pointer"
+            />
+          </label>
+
+          <label className="flex items-center justify-between p-3 rounded-xl border border-border hover:bg-brand-stone/10 cursor-pointer">
+            <div className="flex items-center gap-3">
+              <Bell className="w-5 h-5 text-brand-navy/80" />
+              <div>
+                <p className="text-xs font-bold text-brand-navy">Email Notifications</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Receive booking confirmations and post-mingle matching invitations.
+                </p>
+              </div>
+            </div>
+            <input
+              type="checkbox"
+              checked={notificationsEnabled}
+              onChange={(e) => setNotificationsEnabled(e.target.checked)}
+              className="h-4 w-4 rounded text-brand-coral accent-brand-coral cursor-pointer"
+            />
+          </label>
+        </div>
+      </div>
+
+      <div className="flex justify-end pt-2">
+        <Button
+          type="submit"
+          variant="coral"
+          isLoading={isSaving}
+          className="px-8 h-12 text-sm font-bold uppercase tracking-wider rounded-xl shadow-md"
+        >
+          Save Changes
+        </Button>
+      </div>
+    </form>
+  );
+}
