@@ -22,7 +22,7 @@ const PUBLIC_LINKS: NavLink[] = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { isAuthenticated, user, profile, openModal, logout } = useAuth();
+  const { isAuthenticated, isLoading, isMounted, user, profile, openModal, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const navLinkClass =
@@ -61,7 +61,11 @@ export function Navbar() {
           })}
 
           {/* Authentication State */}
-          {isAuthenticated ? (
+          {!isMounted || isLoading ? (
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-24 rounded-full bg-brand-ivory/10 animate-pulse" />
+            </div>
+          ) : isAuthenticated ? (
             <div className="flex items-center gap-5">
               <Link
                 href="/my-mingler"

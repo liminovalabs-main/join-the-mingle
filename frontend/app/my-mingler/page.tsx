@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { User, Calendar, Heart, Lock } from "lucide-react";
 
 export default function MyMinglerPage() {
-  const { isAuthenticated, isLoading, openModal } = useAuth();
+  const { isAuthenticated, isLoading, isMounted, openModal } = useAuth();
   const [activeTab, setActiveTab] = React.useState<"profile" | "mingles" | "connections">("profile");
 
-  if (isLoading) {
+  if (!isMounted || isLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">

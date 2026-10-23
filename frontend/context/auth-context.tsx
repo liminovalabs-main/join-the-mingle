@@ -20,6 +20,7 @@ interface AuthContextType {
   tokens: AuthTokens | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isMounted: boolean;
   role: UserRole;
   activeModal: AuthModalType;
   prefilledEmail: string;
@@ -61,38 +62,35 @@ interface AuthContextType {
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<User | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const stored = localStorage.getItem("mingler_user");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = React.useState<User | null>(null);
+  const [profile, setProfile] = React.useState<PrivateProfile | null>(null);
+  const [tokens, setTokens] = React.useState<AuthTokens | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isMounted, setIsMounted] = React.useState(false);
 
-  const [profile, setProfile] = React.useState<PrivateProfile | null>(() => {
-    if (typeof window === "undefined") return null;
+  React.useEffect(() => {
     try {
-      const stored = localStorage.getItem("mingler_profile");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [tokens, setTokens] = React.useState<AuthTokens | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
+      const storedUser = localStorage.getItem("mingler_user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+      const storedProfile = localStorage.getItem("mingler_profile");
+      if (storedProfile) {
+        setProfile(JSON.parse(storedProfile));
+      }
       const access = localStorage.getItem("mingler_access_token");
       const refresh = localStorage.getItem("mingler_refresh_token");
-      return access && refresh ? { access, refresh } : null;
-    } catch {
-      return null;
+      if (access && refresh) {
+        setTokens({ access, refresh });
+      }
+    } catch (e) {
+      console.warn("Failed to read auth from localStorage", e);
+    } finally {
+      setIsLoading(false);
+      setIsMounted(true);
     }
-  });
+  }, []);
 
-  const [isLoading] = React.useState(false);
   const [activeModal, setActiveModal] = React.useState<AuthModalType>(null);
   const [prefilledEmail, setPrefilledEmail] = React.useState<string>("");
 
@@ -408,6 +406,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         tokens,
         isAuthenticated: !!user && !!tokens,
         isLoading,
+        isMounted,
         role: user?.role || "member",
         activeModal,
         prefilledEmail,
