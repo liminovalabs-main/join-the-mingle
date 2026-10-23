@@ -151,9 +151,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("mingler_profile");
   };
 
+  const getOAuthCallbackUri = (provider: SocialProvider): string => {
+    if (typeof window === "undefined") {
+      return `http://localhost:3000/auth/callback/${provider}`;
+    }
+    const hostname = window.location.hostname;
+    // Google OAuth (RFC 8252) strictly forbids raw private IP addresses (192.168.x.x, 10.x.x.x, 172.16-31.x.x).
+    // In local development, if accessed via LAN IP or loopback IP, normalize to localhost so it matches
+    // the registered OAuth redirect URI in Google/Apple/Facebook consoles.
+    const isPrivateIp =
+      hostname === "127.0.0.1" ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.") ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
+
+    if (isPrivateIp) {
+      const port = window.location.port ? `:${window.location.port}` : "";
+      return `${window.location.protocol}//localhost${port}/auth/callback/${provider}`;
+    }
+    return `${window.location.origin}/auth/callback/${provider}`;
+  };
+
   const initiateSocialAuth = async (provider: SocialProvider): Promise<void> => {
     try {
-      const callbackUri = `${window.location.origin}/auth/callback/${provider}`;
+      const callbackUri = getOAuthCallbackUri(provider);
       const res = await apiClient.get<SocialAuthUrlResponse>(
         "/auth/social/url/",
         {
@@ -180,7 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     state?: string
   ): Promise<boolean> => {
     try {
-      const redirectUri = `${window.location.origin}/auth/callback/${provider}`;
+      const redirectUri = getOAuthCallbackUri(provider);
       const res = await apiClient.post<AuthApiResponse>("/auth/social/login/", {
         provider,
         code,
