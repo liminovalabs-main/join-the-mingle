@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Project Mingler — London Digital Atelier Design System */
+    --background: 42 39% 94%;
+    --foreground: 220 12% 10%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 220 12% 10%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 12% 10%;
+    
+    --primary: 217 48% 12%;
+    --primary-foreground: 42 39% 94%;
+    
+    --secondary: 40 14% 83%;
+    --secondary-foreground: 217 48% 12%;
+    
+    --muted: 40 20% 91%;
+    --muted-foreground: 217 14% 40%;
+    
+    --accent: 358 100% 68%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 40 12% 84%;
+    --input: 40 12% 84%;
+    --ring: 358 100% 68%;
+    
+    --radius: 0.75rem;
+
+    /* Explicit Brand Color Variables */
+    --brand-navy: 217 48% 12%;
+    --brand-ivory: 42 39% 94%;
+    --brand-coral: 358 100% 68%;
+    --brand-blue: 216 33% 49%;
+    --brand-stone: 40 14% 83%;
+    --brand-ink: 220 12% 10%;
+  }
+
+  .dark {
+    --background: 217 45% 8%;
+    --foreground: 42 39% 94%;
+    --card: 217 40% 11%;
+    --card-foreground: 42 39% 94%;
+    --popover: 217 40% 11%;
+    --popover-foreground: 42 39% 94%;
+    --primary: 42 39% 94%;
+    --primary-foreground: 217 48% 12%;
+    --secondary: 217 30% 18%;
+    --secondary-foreground: 42 39% 94%;
+    --muted: 217 28% 17%;
+    --muted-foreground: 42 15% 72%;
+    --accent: 358 100% 68%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 217 25% 20%;
+    --input: 217 25% 20%;
+    --ring: 358 100% 68%;
+  }
+}
+
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-brand-navy: hsl(var(--brand-navy));
+  --color-brand-ivory: hsl(var(--brand-ivory));
+  --color-brand-coral: hsl(var(--brand-coral));
+  --color-brand-blue: hsl(var(--brand-blue));
+  --color-brand-stone: hsl(var(--brand-stone));
+  --color-brand-ink: hsl(var(--brand-ink));
+
+  --font-heading: var(--font-archivo), system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
