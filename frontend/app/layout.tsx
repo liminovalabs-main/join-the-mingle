@@ -50,9 +50,13 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
+      suppressHydrationWarning
       className={`${archivo.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-brand-ivory text-brand-ink selection:bg-brand-coral selection:text-white">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-brand-ivory text-brand-ink selection:bg-brand-coral selection:text-white"
+      >
         <Providers>
           <Navbar />
           <main className="flex-1 flex flex-col">{children}</main>

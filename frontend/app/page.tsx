@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Home() {
   return (
-    <div className="w-full">
+    <div className="w-full" suppressHydrationWarning>
       {/* Hero Section — Exact Base44 Headline & Styling */}
       <section className="relative overflow-hidden bg-brand-navy text-brand-ivory">
         {/* Atmospheric Backdrop Gradient */}
