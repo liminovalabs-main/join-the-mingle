@@ -438,6 +438,18 @@ class TestPart2ProfilesAndGDPR:
         assert response.data['success'] is True
         assert 'test_avatar' in response.data['profile']['photo']
 
+    def test_update_profile_bio_with_existing_photo_string(self, auth_client, member_user):
+        """Updating bio when photo string URL is present in payload succeeds without expecting a file upload."""
+        url = '/api/v1/profiles/me/'
+        payload = {
+            'bio': 'Avid traveler and foodie based in Shoreditch.',
+            'photo': 'http://localhost:8000/media/profiles/existing_photo.jpg',
+        }
+        response = auth_client.patch(url, payload, format='json')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['success'] is True
+        assert response.data['profile']['bio'] == 'Avid traveler and foodie based in Shoreditch.'
+
     def test_age_guard_rejects_under_18(self, auth_client, member_user):
         """Profile update rejects date_of_birth for members under 18 years old."""
         url = '/api/v1/profiles/me/'

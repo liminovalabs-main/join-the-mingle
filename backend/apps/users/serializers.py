@@ -70,10 +70,15 @@ class PrivateProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'email', 'role', 'is_email_verified', 'is_age_verified', 'created_at', 'updated_at']
 
     def to_internal_value(self, data: Any) -> Dict[str, Any]:
-        """Normalize multipart form data inputs for profile updates."""
+        """Normalize multipart form data inputs and string photo representations."""
         mutable_data = data.copy() if hasattr(data, 'copy') else dict(data)
-        if 'photo' in mutable_data and mutable_data['photo'] == '':
-            mutable_data['photo'] = None
+        if 'photo' in mutable_data:
+            photo_val = mutable_data['photo']
+            if photo_val in ('', None):
+                mutable_data['photo'] = None
+            elif isinstance(photo_val, str):
+                # String URL or unchanged photo path passed; drop so ImageField doesn't require UploadedFile
+                mutable_data.pop('photo')
         if 'interests' in mutable_data and isinstance(mutable_data['interests'], str):
             try:
                 import json

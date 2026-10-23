@@ -261,9 +261,8 @@ export function ProfileEditor() {
         setPhotoFile(null);
       }
     } else {
-      success = await updateProfile({
+      const payload: Record<string, unknown> = {
         display_name: displayName.trim(),
-        photo: photo.trim(),
         bio: bio.trim(),
         gender: gender as "Male" | "Female" | "Prefer not to say" | "",
         relationship_status: relationshipStatus as
@@ -277,7 +276,14 @@ export function ProfileEditor() {
         linkedin_url: linkedinUrl.trim(),
         sound_enabled: soundEnabled,
         notifications_enabled: notificationsEnabled,
-      });
+      };
+
+      // Only pass photo if explicitly cleared
+      if (photo === "" && profile?.photo) {
+        payload.photo = null;
+      }
+
+      success = await updateProfile(payload as any);
     }
 
     setIsSaving(false);
