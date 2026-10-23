@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Volume2, Bell, Loader2 } from "lucide-react";
+import { ShieldCheck, Volume2, Bell, Loader2, Upload, Camera, Trash2, Image as ImageIcon } from "lucide-react";
 import {
   AppleIcon,
   FacebookIcon,
@@ -45,13 +45,18 @@ const SOCIAL_PROVIDERS: Array<{
   { id: "instagram", name: "Instagram", icon: InstagramIcon },
   { id: "tiktok", name: "TikTok", icon: TikTokIcon },
   { id: "linkedin", name: "LinkedIn", icon: LinkedinIcon },
-];
+  ];
 
 export function ProfileEditor() {
   const { profile, updateProfile, refreshProfile, initiateSocialAuth } = useAuth();
 
   const [displayName, setDisplayName] = React.useState(profile?.display_name || "");
   const [photo, setPhoto] = React.useState(profile?.photo || "");
+  const [photoFile, setPhotoFile] = React.useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = React.useState<string | null>(null);
+  const [showUrlInput, setShowUrlInput] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const [bio, setBio] = React.useState(profile?.bio || "");
   const [gender, setGender] = React.useState(profile?.gender || "");
   const [relationshipStatus, setRelationshipStatus] = React.useState(
@@ -94,6 +99,30 @@ export function ProfileEditor() {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || "");
+      setPhoto(profile.photo || "");
+      setBio(profile.bio || "");
+      setGender(profile.gender || "");
+      setRelationshipStatus(profile.relationship_status || "");
+      setDateOfBirth(profile.date_of_birth || "");
+      setInterests(profile.interests || []);
+      setInstagramHandle(profile.instagram_handle || "");
+      setLinkedinUrl(profile.linkedin_url || "");
+      setSoundEnabled(profile.sound_enabled ?? true);
+      setNotificationsEnabled(profile.notifications_enabled ?? true);
+    }
+  }, [profile]);
+
+  React.useEffect(() => {
+    return () => {
+      if (photoPreview && photoPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(photoPreview);
+      }
+    };
+  }, [photoPreview]);
+
   const handleDisconnect = async (provider: SocialProvider) => {
     try {
       setUnlinkingProvider(provider);
@@ -122,6 +151,44 @@ export function ProfileEditor() {
     setInterests((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file (PNG, JPEG, WEBP, or GIF).");
+      return;
+    }
+
+    const MAX_SIZE_MB = 5;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      toast.error(`Image file must be under ${MAX_SIZE_MB}MB.`);
+      return;
+    }
+
+    if (photoPreview && photoPreview.startsWith("blob:")) {
+      URL.revokeObjectURL(photoPreview);
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setPhotoFile(file);
+    setPhotoPreview(objectUrl);
+    toast.success("Photo selected from device. Click 'Save Changes' to apply.");
+  };
+
+  const handleRemovePhoto = () => {
+    if (photoPreview && photoPreview.startsWith("blob:")) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setPhoto("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    toast.info("Photo cleared. Click 'Save Changes' to update.");
   };
 
   const validate = (): boolean => {
@@ -173,25 +240,50 @@ export function ProfileEditor() {
     if (!validate()) return;
 
     setIsSaving(true);
-    await updateProfile({
-      display_name: displayName.trim(),
-      photo: photo.trim(),
-      bio: bio.trim(),
-      gender: gender as "Male" | "Female" | "Prefer not to say" | "",
-      relationship_status: relationshipStatus as
-        | "Single"
-        | "Married"
-        | "It's complicated"
-        | "",
-      date_of_birth: dateOfBirth || undefined,
-      interests,
-      instagram_handle: instagramHandle.trim().replace(/^@/, ""),
-      linkedin_url: linkedinUrl.trim(),
-      sound_enabled: soundEnabled,
-      notifications_enabled: notificationsEnabled,
-    });
+    let success = false;
+
+    if (photoFile) {
+      const formData = new FormData();
+      formData.append("photo", photoFile);
+      formData.append("display_name", displayName.trim());
+      formData.append("bio", bio.trim());
+      if (gender) formData.append("gender", gender);
+      if (relationshipStatus) formData.append("relationship_status", relationshipStatus);
+      if (dateOfBirth) formData.append("date_of_birth", dateOfBirth);
+      formData.append("interests", JSON.stringify(interests));
+      formData.append("instagram_handle", instagramHandle.trim().replace(/^@/, ""));
+      formData.append("linkedin_url", linkedinUrl.trim());
+      formData.append("sound_enabled", String(soundEnabled));
+      formData.append("notifications_enabled", String(notificationsEnabled));
+
+      success = await updateProfile(formData);
+      if (success) {
+        setPhotoFile(null);
+      }
+    } else {
+      success = await updateProfile({
+        display_name: displayName.trim(),
+        photo: photo.trim(),
+        bio: bio.trim(),
+        gender: gender as "Male" | "Female" | "Prefer not to say" | "",
+        relationship_status: relationshipStatus as
+          | "Single"
+          | "Married"
+          | "It's complicated"
+          | "",
+        date_of_birth: dateOfBirth || undefined,
+        interests,
+        instagram_handle: instagramHandle.trim().replace(/^@/, ""),
+        linkedin_url: linkedinUrl.trim(),
+        sound_enabled: soundEnabled,
+        notifications_enabled: notificationsEnabled,
+      });
+    }
+
     setIsSaving(false);
-    await refreshProfile();
+    if (success) {
+      await refreshProfile();
+    }
   };
 
   const getInitials = (name?: string) => {
@@ -210,13 +302,32 @@ export function ProfileEditor() {
       {/* Profile Header & Avatar Card */}
       <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-2xl bg-white border border-border shadow-xs">
         {/* Defect #1 permanent enforcement: aspect-square shrink-0 object-cover */}
-        <Avatar className="h-24 w-24 border-2 border-brand-coral/40 shadow-sm shrink-0 aspect-square">
-          {photo && <AvatarImage src={photo} alt={displayName} className="object-cover" />}
-          <AvatarFallback className="text-xl font-black bg-brand-coral/15 text-brand-coral">
-            {getInitials(displayName)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 text-center sm:text-left space-y-2">
+        <div className="relative group shrink-0">
+          <Avatar className="h-24 w-24 border-2 border-brand-coral/40 shadow-sm aspect-square">
+            {(photoPreview || photo) && (
+              <AvatarImage
+                src={photoPreview || photo}
+                alt={displayName}
+                className="object-cover"
+              />
+            )}
+            <AvatarFallback className="text-xl font-black bg-brand-coral/15 text-brand-coral">
+              {getInitials(displayName)}
+            </AvatarFallback>
+          </Avatar>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer focus:opacity-100"
+            title="Upload photo from device"
+            aria-label="Upload photo from device"
+          >
+            <Camera className="h-6 w-6 mb-0.5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Change</span>
+          </button>
+        </div>
+
+        <div className="flex-1 text-center sm:text-left space-y-2.5">
           <div className="flex items-center justify-center sm:justify-start gap-2">
             <h2 className="text-xl font-heading font-black tracking-tight text-brand-navy">
               {displayName || "Member"}
@@ -228,15 +339,74 @@ export function ProfileEditor() {
           <p className="text-xs text-muted-foreground">
             {profile?.email}
           </p>
-          <div className="pt-1">
-            <Input
-              type="url"
-              placeholder="Paste photo URL (https://...)"
-              value={photo}
-              onChange={(e) => setPhoto(e.target.value)}
-              className="h-9 text-xs"
+
+          {/* Device Upload and Photo Actions */}
+          <div className="pt-1 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/png, image/jpeg, image/webp, image/gif"
+              className="hidden"
+              data-testid="profile-photo-file-input"
             />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-8 px-3 text-xs font-semibold gap-1.5 border-brand-coral/40 text-brand-navy hover:bg-brand-coral/10 hover:border-brand-coral"
+            >
+              <Upload className="h-3.5 w-3.5 text-brand-coral" />
+              <span>Upload from Device</span>
+            </Button>
+
+            {(photoPreview || photo) && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleRemovePhoto}
+                className="h-8 px-2.5 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-1" />
+                Remove Photo
+              </Button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowUrlInput(!showUrlInput)}
+              className="text-[11px] text-muted-foreground hover:text-brand-navy underline ml-1 cursor-pointer"
+            >
+              {showUrlInput ? "Hide URL option" : "Or use image URL"}
+            </button>
           </div>
+
+          {photoFile && (
+            <p className="text-[11px] text-emerald-600 font-medium">
+              ✓ Ready to upload: {photoFile.name} (Click &apos;Save Changes&apos; below)
+            </p>
+          )}
+
+          {showUrlInput && (
+            <div className="pt-2 max-w-md">
+              <Input
+                type="url"
+                placeholder="Paste photo URL (https://...)"
+                value={photo}
+                onChange={(e) => {
+                  setPhoto(e.target.value);
+                  setPhotoFile(null);
+                  if (photoPreview && photoPreview.startsWith("blob:")) {
+                    URL.revokeObjectURL(photoPreview);
+                    setPhotoPreview(null);
+                  }
+                }}
+                className="h-8 text-xs bg-brand-stone/20"
+              />
+            </div>
+          )}
         </div>
       </div>
 

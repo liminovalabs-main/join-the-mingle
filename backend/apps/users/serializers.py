@@ -69,6 +69,21 @@ class PrivateProfileSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'email', 'role', 'is_email_verified', 'is_age_verified', 'created_at', 'updated_at']
 
+    def to_internal_value(self, data: Any) -> Dict[str, Any]:
+        """Normalize multipart form data inputs for profile updates."""
+        mutable_data = data.copy() if hasattr(data, 'copy') else dict(data)
+        if 'photo' in mutable_data and mutable_data['photo'] == '':
+            mutable_data['photo'] = None
+        if 'interests' in mutable_data and isinstance(mutable_data['interests'], str):
+            try:
+                import json
+                parsed = json.loads(mutable_data['interests'])
+                if isinstance(parsed, list):
+                    mutable_data['interests'] = parsed
+            except (ValueError, TypeError):
+                pass
+        return super().to_internal_value(mutable_data)
+
     def validate_date_of_birth(self, value):
         """Validate that member is at least 18 years old."""
         if value:

@@ -366,16 +366,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     data: Partial<PrivateProfile> | FormData
   ): Promise<boolean> => {
     try {
-      const isFormData = data instanceof FormData;
       const res = await apiClient.patch<{
         success: boolean;
         message: string;
         profile: PrivateProfile;
-      }>("/profiles/me/", data, {
-        headers: isFormData
-          ? { "Content-Type": "multipart/form-data" }
-          : undefined,
-      });
+      }>("/profiles/me/", data);
 
       if (res.data.profile) {
         setProfile(res.data.profile);

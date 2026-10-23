@@ -4,6 +4,25 @@ import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { cn } from "@/lib/utils";
 
+export function resolveMediaUrl(url?: string | Blob | null): string | undefined {
+  if (!url) return undefined;
+  if (typeof url !== "string") {
+    return typeof window !== "undefined" ? URL.createObjectURL(url) : undefined;
+  }
+  if (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("blob:") ||
+    url.startsWith("data:")
+  ) {
+    return url;
+  }
+  const backendBase = process.env.NEXT_PUBLIC_API_URL
+    ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "")
+    : "http://localhost:8000";
+  return `${backendBase}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
 /**
  * Avatar component with permanent fix for Base44 Defect #1 (Avatar distortion/squishing).
  * Strictly enforces `aspect-square`, `shrink-0`, and `object-cover`.
@@ -26,9 +45,10 @@ Avatar.displayName = AvatarPrimitive.Root.displayName;
 export const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
+>(({ className, src, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
+    src={resolveMediaUrl(src)}
     className={cn(
       "aspect-square h-full w-full shrink-0 object-cover",
       className

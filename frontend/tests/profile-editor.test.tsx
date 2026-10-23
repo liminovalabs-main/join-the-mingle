@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 import { AuthProvider } from "@/context/auth-context";
@@ -118,5 +118,31 @@ describe("ProfileEditor (Defect #6 Regex Validation & UK GDPR Verification)", ()
     expect(screen.getByText("Instagram")).toBeInTheDocument();
     expect(screen.getByText("TikTok")).toBeInTheDocument();
     expect(screen.getByText("LinkedIn")).toBeInTheDocument();
+  });
+
+  it("renders 'Upload from Device' button and allows selecting an image file", async () => {
+    // Mock URL.createObjectURL and URL.revokeObjectURL
+    const mockCreateObjectURL = vi.fn().mockReturnValue("blob:http://localhost:3000/mock-uuid");
+    const mockRevokeObjectURL = vi.fn();
+    window.URL.createObjectURL = mockCreateObjectURL;
+    window.URL.revokeObjectURL = mockRevokeObjectURL;
+
+    render(
+      <AuthProvider>
+        <ProfileEditor />
+      </AuthProvider>
+    );
+
+    const uploadButton = screen.getByRole("button", { name: /upload from device/i });
+    expect(uploadButton).toBeInTheDocument();
+
+    const fileInput = screen.getByTestId("profile-photo-file-input") as HTMLInputElement;
+    expect(fileInput).toBeInTheDocument();
+
+    const file = new File(["dummy-content"], "my-new-avatar.png", { type: "image/png" });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    expect(screen.getByText(/ready to upload: my-new-avatar.png/i)).toBeInTheDocument();
+    expect(mockCreateObjectURL).toHaveBeenCalledWith(file);
   });
 });
