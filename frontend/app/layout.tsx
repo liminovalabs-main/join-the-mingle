@@ -54,6 +54,36 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${archivo.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var isExtAttr = function(attr) {
+                    return attr && (attr.indexOf('bis_') === 0 || attr.indexOf('__processed_') === 0);
+                  };
+                  var observer = new MutationObserver(function(mutations) {
+                    for (var i = 0; i < mutations.length; i++) {
+                      var m = mutations[i];
+                      if (m.type === 'attributes') {
+                        var name = m.attributeName;
+                        if (isExtAttr(name) && m.target.hasAttribute && m.target.hasAttribute(name)) {
+                          m.target.removeAttribute(name);
+                        }
+                      }
+                    }
+                  });
+                  observer.observe(document.documentElement, {
+                    attributes: true,
+                    subtree: true
+                  });
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-brand-ivory text-brand-ink selection:bg-brand-coral selection:text-white"
