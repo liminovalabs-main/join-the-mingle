@@ -36,37 +36,40 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
 
   return (
     <div className="w-full space-y-2.5">
-      {/* Primary: Google */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => handleProviderClick("google")}
-        disabled={loadingProvider !== null}
-        className="w-full h-11 bg-white hover:bg-neutral-100 text-neutral-800 border-white/20 font-medium text-xs sm:text-sm flex items-center justify-center gap-3 transition-colors rounded-xl shadow-xs"
-      >
-        {loadingProvider === "google" ? (
-          <Loader2 className="w-4 h-4 animate-spin text-neutral-600" />
-        ) : (
-          <GoogleIcon className="w-4 h-4 shrink-0" />
-        )}
-        <span>{actionText} Google</span>
-      </Button>
+      {/* Primary: Google & Apple in 2-column grid on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        {/* Primary: Google */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => handleProviderClick("google")}
+          disabled={loadingProvider !== null}
+          className="w-full h-10 sm:h-11 bg-white hover:bg-neutral-100 text-neutral-800 border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
+        >
+          {loadingProvider === "google" ? (
+            <Loader2 className="w-4 h-4 animate-spin text-neutral-600" />
+          ) : (
+            <GoogleIcon className="w-4 h-4 shrink-0" />
+          )}
+          <span>{actionText} Google</span>
+        </Button>
 
-      {/* Primary: Apple */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => handleProviderClick("apple")}
-        disabled={loadingProvider !== null}
-        className="w-full h-11 bg-black hover:bg-neutral-900 text-white border-white/20 font-medium text-xs sm:text-sm flex items-center justify-center gap-3 transition-colors rounded-xl shadow-xs"
-      >
-        {loadingProvider === "apple" ? (
-          <Loader2 className="w-4 h-4 animate-spin text-white" />
-        ) : (
-          <AppleIcon className="w-4 h-4 shrink-0 fill-current text-white" />
-        )}
-        <span>{actionText} Apple</span>
-      </Button>
+        {/* Primary: Apple */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => handleProviderClick("apple")}
+          disabled={loadingProvider !== null}
+          className="w-full h-10 sm:h-11 bg-black hover:bg-neutral-900 text-white border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
+        >
+          {loadingProvider === "apple" ? (
+            <Loader2 className="w-4 h-4 animate-spin text-white" />
+          ) : (
+            <AppleIcon className="w-4 h-4 shrink-0 fill-current text-white" />
+          )}
+          <span>{actionText} Apple</span>
+        </Button>
+      </div>
 
       {/* Expandable secondary providers (Facebook, Instagram, TikTok, LinkedIn) */}
       <div className="pt-0.5">
