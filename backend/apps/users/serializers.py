@@ -37,6 +37,14 @@ class PublicProfileSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if instance.photo:
+            raw_photo = str(instance.photo)
+            if raw_photo.startswith('http://') or raw_photo.startswith('https://'):
+                ret['photo'] = raw_photo
+        return ret
+
 
 class PrivateProfileSerializer(serializers.ModelSerializer):
     """Full profile serializer accessible strictly by the profile owner or platform admin."""
@@ -88,6 +96,14 @@ class PrivateProfileSerializer(serializers.ModelSerializer):
             except (ValueError, TypeError):
                 pass
         return super().to_internal_value(mutable_data)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if instance.photo:
+            raw_photo = str(instance.photo)
+            if raw_photo.startswith('http://') or raw_photo.startswith('https://'):
+                ret['photo'] = raw_photo
+        return ret
 
     def validate_date_of_birth(self, value):
         """Validate that member is at least 18 years old."""

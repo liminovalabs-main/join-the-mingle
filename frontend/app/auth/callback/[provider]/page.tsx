@@ -32,37 +32,33 @@ function CallbackContent() {
   const [errorMessage, setErrorMessage] = React.useState<string>(initialError || "");
 
   const executedRef = React.useRef(false);
+  const handleSocialCallbackRef = React.useRef(handleSocialCallback);
+  handleSocialCallbackRef.current = handleSocialCallback;
 
   React.useEffect(() => {
     if (initialError || !code || executedRef.current) return;
     executedRef.current = true;
 
-    let isMounted = true;
-    handleSocialCallback(provider, code, state || undefined)
+    handleSocialCallbackRef
+      .current(provider, code, state || undefined)
       .then((success) => {
-        if (!isMounted) return;
         if (success) {
           setStatus("success");
           setTimeout(() => {
-            router.push("/my-mingler");
-          }, 800);
+            router.replace("/my-mingler");
+          }, 600);
         } else {
           setStatus("error");
           setErrorMessage("Failed to verify social credentials with Mingler server.");
         }
       })
       .catch((err: unknown) => {
-        if (!isMounted) return;
         setStatus("error");
         setErrorMessage(
           err instanceof Error ? err.message : "An unexpected authentication error occurred."
         );
       });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [code, handleSocialCallback, initialError, provider, router, state]);
+  }, [code, initialError, provider, router, state]);
 
   const providerName = provider.charAt(0).toUpperCase() + provider.slice(1);
 

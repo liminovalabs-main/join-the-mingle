@@ -9,6 +9,13 @@ export function resolveMediaUrl(url?: string | Blob | null): string | undefined 
   if (typeof url !== "string") {
     return typeof window !== "undefined" ? URL.createObjectURL(url) : undefined;
   }
+  // Strip any accidental "/media/https:/" or "/media/http:/" prefix
+  if (url.startsWith("/media/https:/") || url.startsWith("/media/https%3A/")) {
+    return url.replace(/^\/media\/https(%3A|:)\/?/, "https://");
+  }
+  if (url.startsWith("/media/http:/") || url.startsWith("/media/http%3A/")) {
+    return url.replace(/^\/media\/http(%3A|:)\/?/, "http://");
+  }
   if (
     url.startsWith("http://") ||
     url.startsWith("https://") ||
