@@ -124,29 +124,87 @@ apiClient.interceptors.response.use(
 );
 
 /**
+ * Sanitize and unpack raw Python ErrorDetail, dictionary, or array strings.
+ */
+function cleanErrorString(raw: string): string {
+  if (!raw) return "";
+
+  // 1. Python ErrorDetail dump: ErrorDetail(string='Invalid email or password.', code='invalid')
+  const detailMatch = raw.match(/ErrorDetail\(string=['"]([^'"]+)['"]/);
+  if (detailMatch && detailMatch[1]) {
+    return detailMatch[1];
+  }
+
+  // 2. Python dictionary with non_field_errors e.g. {'non_field_errors': ['...']}
+  const dictMatch = raw.match(/['"]non_field_errors['"]\s*:\s*\[?['"]([^'"]+)['"]/);
+  if (dictMatch && dictMatch[1]) {
+    return dictMatch[1];
+  }
+
+  // 3. String wrapped in array quotes e.g. ["Invalid email or password."]
+  const bracketMatch = raw.match(/^\[['"]([^'"]+)['"]\]$/);
+  if (bracketMatch && bracketMatch[1]) {
+    return bracketMatch[1];
+  }
+
+  return raw;
+}
+
+/**
  * Format DRF RFC 7807 and ValidationError payloads into a user-friendly string.
  */
 export function extractErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data;
-    if (typeof data === "string") return data;
-    if (data?.error?.message) return String(data.error.message);
-    if (data?.message) return String(data.message);
-    if (data?.detail) return String(data.detail);
+    if (typeof data === "string") return cleanErrorString(data);
 
-    // Field-level DRF errors e.g. { email: ["Invalid email"], password: ["Too short"] }
+    // 1. Check structured error details (RFC 7807)
     if (data?.error?.details && typeof data.error.details === "object") {
-      const firstKey = Object.keys(data.error.details)[0];
-      const val = data.error.details[firstKey];
-      return Array.isArray(val) ? String(val[0]) : String(val);
+      const details = data.error.details as Record<string, unknown>;
+      if (details.non_field_errors) {
+        const val = details.non_field_errors;
+        return cleanErrorString(Array.isArray(val) ? String(val[0]) : String(val));
+      }
+      if (details.detail) {
+        const val = details.detail;
+        return cleanErrorString(Array.isArray(val) ? String(val[0]) : String(val));
+      }
+      const firstKey = Object.keys(details)[0];
+      if (firstKey) {
+        const val = details[firstKey];
+        return cleanErrorString(Array.isArray(val) ? String(val[0]) : String(val));
+      }
     }
+
+    // 2. Check direct non_field_errors in raw DRF responses
+    if (data?.non_field_errors) {
+      const val = data.non_field_errors;
+      return cleanErrorString(Array.isArray(val) ? String(val[0]) : String(val));
+    }
+
+    // 3. Check error.message
+    if (data?.error?.message) {
+      return cleanErrorString(String(data.error.message));
+    }
+
+    if (data?.message) return cleanErrorString(String(data.message));
+    if (data?.detail) return cleanErrorString(String(data.detail));
+
+    // 4. Raw object with field keys e.g. { password: ["This password is too short."] }
     if (typeof data === "object" && data !== null) {
-      const firstKey = Object.keys(data)[0];
-      const val = (data as Record<string, unknown>)[firstKey];
-      if (Array.isArray(val)) return `${firstKey}: ${val[0]}`;
-      if (typeof val === "string") return `${firstKey}: ${val}`;
+      const keys = Object.keys(data).filter((k) => k !== "success" && k !== "error");
+      if (keys.length > 0) {
+        const firstKey = keys[0];
+        const val = (data as Record<string, unknown>)[firstKey];
+        if (firstKey === "non_field_errors") {
+          return cleanErrorString(Array.isArray(val) ? String(val[0]) : String(val));
+        }
+        if (Array.isArray(val)) return `${firstKey}: ${cleanErrorString(String(val[0]))}`;
+        if (typeof val === "string") return `${firstKey}: ${cleanErrorString(val)}`;
+      }
     }
-    if (error.message) return error.message;
+
+    if (error.message) return cleanErrorString(error.message);
   }
   return "An unexpected error occurred. Please try again.";
 }

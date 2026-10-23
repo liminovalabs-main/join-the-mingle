@@ -65,6 +65,44 @@ describe("API Client & Error Handler", () => {
     expect(extractErrorMessage(error)).toBe("password: This password is too short.");
   });
 
+  it("cleans up raw Python ErrorDetail string payloads e.g. {'non_field_errors': [ErrorDetail(...)]}", () => {
+    const error = new AxiosError("Bad Request");
+    error.response = {
+      data: {
+        error: {
+          code: "ValidationError",
+          message:
+            "{'non_field_errors': [ErrorDetail(string='Invalid email or password.', code='invalid')]}",
+        },
+      },
+      status: 400,
+      statusText: "Bad Request",
+      headers: {},
+      config: {} as InternalAxiosRequestConfig,
+    };
+
+    expect(extractErrorMessage(error)).toBe("Invalid email or password.");
+  });
+
+  it("extracts clean message from details.non_field_errors without field prefix", () => {
+    const error = new AxiosError("Bad Request");
+    error.response = {
+      data: {
+        error: {
+          details: {
+            non_field_errors: ["Invalid email or password."],
+          },
+        },
+      },
+      status: 400,
+      statusText: "Bad Request",
+      headers: {},
+      config: {} as InternalAxiosRequestConfig,
+    };
+
+    expect(extractErrorMessage(error)).toBe("Invalid email or password.");
+  });
+
   it("provides fallback for non-Axios generic exceptions", () => {
     expect(extractErrorMessage(new Error("Network disconnect"))).toBe(
       "An unexpected error occurred. Please try again."
