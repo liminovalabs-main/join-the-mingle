@@ -84,6 +84,10 @@ class BookingDetailView(generics.RetrieveAPIView):
         )
 
 
+from django.http import HttpResponse
+from apps.notifications.calendar import CalendarService
+
+
 class BookingCancelView(APIView):
     """Cancel an upcoming reservation and release reserved capacity."""
 
@@ -111,3 +115,34 @@ class BookingCancelView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class BookingCalendarView(APIView):
+    """Download RFC 5545 standard .ics calendar invitation for a booking."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        tags=['Bookings'],
+        summary='Download iCalendar (.ics) file',
+        description='Generate and download RFC 5545 compliant .ics file for a confirmed booking.',
+        responses={
+            200: {'type': 'string', 'format': 'binary'},
+            403: {'type': 'object'},
+            404: {'type': 'object'},
+        },
+    )
+    def get(self, request, id):
+        booking = get_object_or_404(
+            Booking.objects.select_related('mingle__venue', 'profile__user'),
+            id=id,
+        )
+        if booking.profile.user != request.user and request.user.role != 'admin':
+            return Response(
+                {'success': False, 'error': {'message': "You do not have permission to access this booking calendar."}},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        ics_content = CalendarService.generate_ics(booking)
+        response = HttpResponse(ics_content, content_type='text/calendar; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="mingle-booking-{booking.id.hex[:8]}.ics"'
+        return response

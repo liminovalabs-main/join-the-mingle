@@ -14,7 +14,7 @@
 | **Part F1** | **Design System Foundation & Global Navigation** | "Digital Atelier" palette (`brand-navy`, `brand-coral`, `brand-ivory`), Archivo & Inter typography, responsive Navbar, Footer, and Radix UI primitives. | ✅ **Complete** | ✅ 21/21 Passing (100%) |
 | **Part F2** | **Authentication Layer, API Client & UK GDPR Profiles** | Axios client with SimpleJWT auto-refresh, Login, Register, 6-Digit Email OTP verification modal, 3-step Password Reset, Private Profile editor, and zero-PII sanitization. | ✅ **Complete** | ✅ 36/36 Passing (100%) |
 | **Part F3** | **Public Experience Discovery & Venues Directory** | Homepage (Hero, category pills, curated carousel), Browse Experiences with multi-facet filters, Mingle Details with dynamic attendee roster (Defect #5 fix) and past date lockout guard (Defect #3 fix), Venues Directory with 7-day operating schedule. | ✅ **Complete** | ✅ 68/68 Vitest, 113/113 Pytest |
-| **Part F4** | **Booking Engine & Stripe Checkout Flow** | Places selector (1-5), real-time price calculations in GBP (£), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, and member booking dashboard with instant capacity release on cancellation. | ⏳ Queued | ⏳ Awaiting F3 |
+| **Part F4** | **Booking Engine & Stripe Checkout Flow** | Places selector (1-5), real-time price calculations in GBP (£), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, and member booking dashboard with instant capacity release on cancellation. | ✅ **Complete** | ✅ 78/78 Vitest, 115/115 Pytest |
 | **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | ⏳ Queued | ⏳ Awaiting F4 |
 | **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | ⏳ Queued | ⏳ Awaiting F5 |
 
@@ -49,7 +49,7 @@
 - [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and approved by user.
 - [x] **Automated Testing F1 (Sub-phase 2.4):** 21/21 component unit tests passing (Button, Avatar, Badge, Input, MinglerLogo, Navbar).
 - [x] **Infrastructure as Code (Sub-phase 2.5):** Multi-stage production `frontend/Dockerfile` and `docker-compose.yml` service configured.
-- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F2.
+- [x] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Approved by user.
 
 ---
 
@@ -78,7 +78,7 @@
 - [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and approved by user.
 - [x] **Automated Testing F2 (Sub-phase 2.4):** 15 new unit tests (36 total) passing across API client, AuthContext, OTP modal, and ProfileEditor.
 - [x] **Infrastructure as Code (Sub-phase 2.5):** `allowedDevOrigins` configured for local LAN IP access (`192.168.0.105`).
-- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F3.
+- [x] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Approved by user.
 
 ---
 
@@ -110,26 +110,32 @@
 - [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and approved by user with filter font scale and mobile/tablet responsive layout fixes.
 - [x] **Automated Testing F3 (Sub-phase 2.4):** 21 new unit tests (68 total) passing across `mingle-card.test.tsx`, `mingle-filter-bar.test.tsx`, `attendees-section.test.tsx`, and `venues.test.tsx`.
 - [x] **Infrastructure as Code (Sub-phase 2.5):** Multi-stage production `frontend/Dockerfile` and `docker-compose.yml` frontend service verified.
-- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F4 (Booking Engine & Stripe Checkout Flow).
+- [x] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Approved by user to proceed to Part F4.
 
 ---
 
 ### 🎟️ Part F4: Concurrency Booking Engine & Stripe Checkout Flow
-- [ ] Build Ticket Checkout Drawer / Page (`app/checkout/[id]/page.tsx`):
-  - [ ] Places selector (1 to 5 seats) with real-time remaining capacity check.
-  - [ ] Transparent price summary: Ticket unit price × places + booking fee in GBP (£).
-  - [ ] Authentication guard: prompts login/registration modal if unauthenticated.
-  - [ ] Checkout initiation button calling `/api/v1/bookings/{id}/checkout/` and redirecting to Stripe Hosted Checkout.
-- [ ] Build Booking Success & Confirmation Page (`app/booking-success/page.tsx`):
-  - [ ] Payment verified screen with booking reference ID.
-  - [ ] Event details summary (date, start time, venue address, directions).
-  - [ ] Instant RFC 5545 `.ics` iCalendar download button for Google Calendar, Apple Calendar, and Outlook.
-- [ ] Build Member Booking Management (`app/my-mingler/page.tsx` - Mingles Tab):
-  - [ ] Upcoming bookings card list with QR code / ticket pass.
-  - [ ] Past experiences history.
-  - [ ] Booking cancellation dialog with confirmation: calls `/api/v1/bookings/{id}/cancel/` and instantly releases reserved capacity.
-- [ ] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Review Part F4 booking flow before proceeding.
-- [ ] **Automated Testing F4:** Tests for seat bounds validation (1-5), price math calculations, and cancellation handling.
+- [x] Build Ticket Checkout Drawer / Page (`app/checkout/[id]/page.tsx`):
+  - [x] Places selector (1 to 5 seats) with real-time remaining capacity check.
+  - [x] Transparent price summary: Ticket unit price × places in GBP (£).
+  - [x] Authentication guard: prompts login/registration modal if unauthenticated.
+  - [x] Checkout initiation button calling `/api/v1/bookings/{id}/checkout/` and redirecting to Stripe Hosted Checkout.
+  - [x] **Defect #3 Fix:** Past date lockout guard banner preventing reservation for past experiences.
+- [x] Build Booking Success & Confirmation Page (`app/bookings/[id]/success/page.tsx` & `app/booking-success/page.tsx`):
+  - [x] Payment verified screen with booking reference ID.
+  - [x] Event details summary (date, start time, venue address).
+  - [x] Instant RFC 5545 `.ics` iCalendar download button for Google Calendar, Apple Calendar, and Outlook.
+- [x] Build Booking Cancelled Page (`app/bookings/[id]/cancelled/page.tsx`):
+  - [x] Aborted checkout handler with retry CTA.
+- [x] Build Member Booking Management (`app/my-mingler/page.tsx` - Mingles Tab):
+  - [x] Upcoming bookings card list with status badge, venue, and time.
+  - [x] Past experiences history.
+  - [x] Booking cancellation dialog with confirmation: calls `/api/v1/bookings/{id}/cancel/` and instantly releases reserved capacity.
+  - [x] Direct RFC 5545 `.ics` download from member dashboard.
+- [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and verified.
+- [x] **Automated Testing F4 (Sub-phase 2.4):** 10 new unit tests (78 total across 17 test files) passing in Vitest; 2 new calendar tests (115 total) passing in Pytest.
+- [x] **Infrastructure as Code (Sub-phase 2.5):** All 14 Next.js routes compiled and prerendered in Turbopack build.
+- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F5 (Post-Mingle Experience & Double-Blind Mutual Matching).
 
 ---
 

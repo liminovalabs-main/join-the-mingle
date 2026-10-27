@@ -2,14 +2,25 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { ProfileEditor } from "@/components/profile/profile-editor";
+import { MemberBookingsTab } from "@/components/bookings/member-bookings-tab";
 import { Button } from "@/components/ui/button";
 import { User, Calendar, Heart, Lock } from "lucide-react";
 
-export default function MyMinglerPage() {
+function MyMinglerContent() {
   const { isAuthenticated, isLoading, isMounted, openModal } = useAuth();
-  const [activeTab, setActiveTab] = React.useState<"profile" | "mingles" | "connections">("profile");
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get("tab") as "profile" | "mingles" | "connections") || "profile";
+  const [activeTab, setActiveTab] = React.useState<"profile" | "mingles" | "connections">(initialTab);
+
+  React.useEffect(() => {
+    const tabParam = searchParams.get("tab") as "profile" | "mingles" | "connections";
+    if (tabParam && (tabParam === "profile" || tabParam === "mingles" || tabParam === "connections")) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   if (!isMounted || isLoading) {
     return (
@@ -70,7 +81,7 @@ export default function MyMinglerPage() {
               My Mingler
             </h1>
             <p className="text-xs text-brand-ivory/70 mt-1 uppercase tracking-wider font-medium">
-              Manage your profile, bookings & mutual connections
+              Manage your profile, bookings &amp; mutual connections
             </p>
           </div>
 
@@ -121,27 +132,8 @@ export default function MyMinglerPage() {
         {/* Defect #2 Fix: No redundant "Edit Profile" button is rendered on the Profile tab! */}
         {activeTab === "profile" && <ProfileEditor />}
 
-        {activeTab === "mingles" && (
-          <div className="p-10 rounded-3xl bg-white border border-border text-center space-y-4">
-            <Calendar className="w-12 h-12 text-brand-coral/60 mx-auto" />
-            <h3 className="text-xl font-heading font-black text-brand-navy">
-              Your Booked Mingles
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              You do not have any upcoming bookings yet. Browse our curated London dining and cocktail experiences to reserve your seat!
-            </p>
-            <div className="pt-2">
-              <Link href="/browse">
-                <Button
-                  variant="coral"
-                  className="rounded-xl px-6"
-                >
-                  Explore Mingles
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
+        {/* Member Bookings Tab with Upcoming, Past, Calendar download, and Cancellation */}
+        {activeTab === "mingles" && <MemberBookingsTab />}
 
         {activeTab === "connections" && (
           <div className="p-10 rounded-3xl bg-white border border-border text-center space-y-4">
@@ -156,5 +148,24 @@ export default function MyMinglerPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function MyMinglerPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 rounded-full border-2 border-brand-coral border-t-transparent animate-spin" />
+            <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
+              Loading...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <MyMinglerContent />
+    </React.Suspense>
   );
 }

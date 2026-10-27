@@ -605,3 +605,36 @@ class TestPart3BookingEngine:
         )
         assert total_booked == 2
         assert total_booked <= mingle.capacity
+
+    def test_booking_calendar_ics_download_success(self, auth_client, sample_mingle, member_user):
+        """Authenticated booking owner downloads RFC 5545 .ics calendar invite."""
+        booking = Booking.objects.create(
+            mingle=sample_mingle,
+            profile=member_user.profile,
+            places_booked=2,
+            unit_price=sample_mingle.ticket_price,
+            total_amount=sample_mingle.ticket_price * 2,
+            status='confirmed',
+        )
+        url = f'/api/v1/bookings/{booking.id}/calendar/'
+        res = auth_client.get(url)
+        assert res.status_code == status.HTTP_200_OK
+        assert "text/calendar" in res.headers["content-type"]
+        body = res.content.decode("utf-8")
+        assert "BEGIN:VCALENDAR" in body
+        assert "END:VCALENDAR" in body
+        assert f"UID:mingle-{booking.id}@mingler.co.uk" in body
+
+    def test_booking_calendar_ics_unauthenticated_blocked(self, api_client, sample_mingle, member_user):
+        """Unauthenticated visitor cannot download member's calendar invite."""
+        booking = Booking.objects.create(
+            mingle=sample_mingle,
+            profile=member_user.profile,
+            places_booked=1,
+            unit_price=sample_mingle.ticket_price,
+            total_amount=sample_mingle.ticket_price,
+            status='confirmed',
+        )
+        url = f'/api/v1/bookings/{booking.id}/calendar/'
+        res = api_client.get(url)
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
