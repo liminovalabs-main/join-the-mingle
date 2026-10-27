@@ -36,12 +36,16 @@ class MingleListView(generics.ListAPIView):
     ordering = ['event_date', 'start_time']
 
     def get_queryset(self):
-        # Default to upcoming published events
-        return (
-            Mingle.objects.filter(status='published', event_date__gte=timezone.now().date())
+        qs = (
+            Mingle.objects.filter(status='published')
             .select_related('venue')
             .prefetch_related('bookings')
         )
+        include_past = self.request.query_params.get('include_past', '').lower() in ('true', '1')
+        upcoming_only = self.request.query_params.get('upcoming_only', '').lower()
+        if include_past or upcoming_only in ('false', '0'):
+            return qs
+        return qs.filter(event_date__gte=timezone.now().date())
 
 
 class MingleDetailView(generics.RetrieveAPIView):

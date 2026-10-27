@@ -2,8 +2,10 @@
 from typing import Any, Dict
 from django.db.models import Avg
 from django.utils.text import slugify
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from apps.interactions.serializers import VenueReviewSerializer
 from apps.venues.models import Venue, VenueMember, VenueOpeningHour
 
 
@@ -61,6 +63,15 @@ class VenueListSerializer(serializers.ModelSerializer):
             'created_at',
         ]
 
+    def to_representation(self, instance: Venue) -> Dict[str, Any]:
+        ret = super().to_representation(instance)
+        hero = getattr(instance, 'hero_image', None)
+        if hero:
+            str_hero = str(hero)
+            if str_hero.startswith(('http://', 'https://')):
+                ret['hero_image'] = str_hero
+        return ret
+
     def get_average_rating(self, obj: Venue) -> float:
         avg = obj.reviews.aggregate(avg=Avg('rating'))['avg']
         return round(float(avg), 1) if avg else 5.0
@@ -74,6 +85,7 @@ class VenueDetailSerializer(serializers.ModelSerializer):
 
     hero_image = serializers.ImageField(read_only=True)
     opening_hours = VenueOpeningHourSerializer(many=True, read_only=True)
+    reviews = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
     review_count = serializers.SerializerMethodField()
 
@@ -93,9 +105,24 @@ class VenueDetailSerializer(serializers.ModelSerializer):
             'average_rating',
             'review_count',
             'opening_hours',
+            'reviews',
             'created_at',
             'updated_at',
         ]
+
+    def to_representation(self, instance: Venue) -> Dict[str, Any]:
+        ret = super().to_representation(instance)
+        hero = getattr(instance, 'hero_image', None)
+        if hero:
+            str_hero = str(hero)
+            if str_hero.startswith(('http://', 'https://')):
+                ret['hero_image'] = str_hero
+        return ret
+
+    @extend_schema_field(VenueReviewSerializer(many=True))
+    def get_reviews(self, obj: Venue):
+        reviews_qs = obj.reviews.all().order_by('-created_at')[:20]
+        return VenueReviewSerializer(reviews_qs, many=True).data
 
     def get_average_rating(self, obj: Venue) -> float:
         avg = obj.reviews.aggregate(avg=Avg('rating'))['avg']

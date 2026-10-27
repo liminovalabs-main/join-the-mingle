@@ -13,7 +13,7 @@
 |---|---|---|---|---|
 | **Part F1** | **Design System Foundation & Global Navigation** | "Digital Atelier" palette (`brand-navy`, `brand-coral`, `brand-ivory`), Archivo & Inter typography, responsive Navbar, Footer, and Radix UI primitives. | ✅ **Complete** | ✅ 21/21 Passing (100%) |
 | **Part F2** | **Authentication Layer, API Client & UK GDPR Profiles** | Axios client with SimpleJWT auto-refresh, Login, Register, 6-Digit Email OTP verification modal, 3-step Password Reset, Private Profile editor, and zero-PII sanitization. | ✅ **Complete** | ✅ 36/36 Passing (100%) |
-| **Part F3** | **Public Experience Discovery & Venues Directory** | Homepage (Hero, category pills, curated carousel), Browse Experiences with multi-facet filters, Mingle Details with dynamic attendee roster (Defect #5 fix) and past date lockout guard (Defect #3 fix), Venues Directory with 7-day operating schedule. | ⏳ Queued | ⏳ Awaiting F2 |
+| **Part F3** | **Public Experience Discovery & Venues Directory** | Homepage (Hero, category pills, curated carousel), Browse Experiences with multi-facet filters, Mingle Details with dynamic attendee roster (Defect #5 fix) and past date lockout guard (Defect #3 fix), Venues Directory with 7-day operating schedule. | ✅ **Complete** | ✅ 68/68 Vitest, 113/113 Pytest |
 | **Part F4** | **Booking Engine & Stripe Checkout Flow** | Places selector (1-5), real-time price calculations in GBP (£), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, and member booking dashboard with instant capacity release on cancellation. | ⏳ Queued | ⏳ Awaiting F3 |
 | **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | ⏳ Queued | ⏳ Awaiting F4 |
 | **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | ⏳ Queued | ⏳ Awaiting F5 |
@@ -83,31 +83,34 @@
 ---
 
 ### 🍷 Part F3: Public Experience Discovery & Venues Directory
-- [ ] Build Landing Page (`app/page.tsx`):
-  - [ ] Hero section with London lifestyle typography, primary CTA ("Explore Experiences"), and search bar.
-  - [ ] Experience category pills (Dinner Party, Cocktail Evening, Wine Tasting, Cooking, Cultural).
-  - [ ] Curated / Trending Mingles grid with live availability badges.
-  - [ ] "How Mingler Works" 3-step visual guide (Choose, Mingle, Connect).
-  - [ ] Featured London Venues carousel with borough highlights.
-- [ ] Build Browse Experiences Page (`app/browse/page.tsx`):
-  - [ ] Multi-parameter filter sidebar & mobile sheet:
-    - London borough/area filter (Shoreditch, Mayfair, Soho, Covent Garden, etc.)
-    - Date range calendar picker
-    - Experience type filter
-    - Price range slider in GBP (£)
-  - [ ] Grid of `MingleCard.tsx` with live spots remaining, pricing, time, and sold-out states.
-- [ ] Build Experience Detail Page (`app/mingles/[id]/page.tsx`):
-  - [ ] High-resolution hero gallery and venue location badge.
-  - [ ] Experience overview, curated menu/details, age range, and dress code.
-  - [ ] **Defect #3 Fix (Past Date Lockout Guard):** Join button disabled with "Registration Closed" banner for past events.
-  - [ ] **Defect #5 Fix (Dynamic Attendee Roster):** Live "Who's Going" section querying `/api/v1/mingles/{id}/attendees/` with sanitized attendee cards.
-  - [ ] Sticky bottom booking bar on mobile with price and spots remaining.
-- [ ] Build Venues Directory & Detail Pages (`app/venues/page.tsx` & `app/venues/[id]/page.tsx`):
-  - [ ] London borough filter and venue category search.
-  - [ ] Venue detail view with 7-day operating hours schedule.
-  - [ ] **Defect #7 Fix (Live Venue Reviews):** Dynamic review list aggregated from 3NF `VenueReview` records with average star rating.
-- [ ] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Review Part F3 catalog implementation before proceeding.
-- [ ] **Automated Testing F3:** Tests for filtering logic, past date guard disable state, and dynamic attendee list rendering.
+- [x] Build Landing Page (`app/page.tsx`):
+  - [x] Hero section with London lifestyle typography, primary CTA ("Find your mingle"), and backdrop glow.
+  - [x] Curated / Trending Mingles grid with live availability badges and live API integration.
+  - [x] "How Mingler Works" 3-step visual guide (Choose, See Who's Going, Connect Double-Blind).
+  - [x] Venues highlights and direct routing to `/venues`.
+- [x] Build Browse Experiences Page (`app/browse/page.tsx`):
+  - [x] Multi-parameter filter bar (`components/mingles/mingle-filter-bar.tsx`):
+    - Search input across titles, venues, and areas
+    - Experience type filter pills (Dinner Party, Cocktails, Wine Tasting, Brunch, Cooking, etc.)
+    - Date range filter (Upcoming, Next 7 days, Next 30 days, All incl. past)
+    - London borough/area selector (Shoreditch, Soho, Brixton, Mayfair, Covent Garden, etc.)
+    - Age range filter (18-25, 25-35, 35-45, 45-60, 60+)
+  - [x] Grid of `MingleCard.tsx` with live spots remaining, pricing in GBP (£), formatted time, and guest blurred slots.
+- [x] Build Experience Detail Page (`app/mingles/[id]/page.tsx`):
+  - [x] High-resolution hero cover image and venue location badge.
+  - [x] Experience overview, 5-tile fact grid (Venue, Date, Time, Duration, Group Size).
+  - [x] **Defect #3 Fix (Past Date Lockout Guard):** Join button disabled with "Registration Closed — this experience took place in the past" alert banner.
+  - [x] **Defect #5 Fix (Dynamic Attendee Roster):** Live "Who's Going" section querying `/api/v1/mingles/{id}/attendees/` with UK GDPR sanitized attendee cards and guest blur cards.
+  - [x] Sticky bottom booking bar with price, spots remaining indicator, and auth modal trigger.
+- [x] Build Venues Directory & Detail Pages (`app/venues/page.tsx` & `app/venues/[id]/page.tsx`):
+  - [x] London borough filter and venue category search.
+  - [x] Venue detail view with hero banner and 7-day operating hours schedule (**Defect #8 fix**).
+  - [x] Hosted mingles list at the venue.
+  - [x] **Defect #7 Fix (Live Venue Reviews):** Dynamic review list aggregated from 3NF `VenueReview` records with star rating and review submission form.
+- [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and approved by user with filter font scale and mobile/tablet responsive layout fixes.
+- [x] **Automated Testing F3 (Sub-phase 2.4):** 21 new unit tests (68 total) passing across `mingle-card.test.tsx`, `mingle-filter-bar.test.tsx`, `attendees-section.test.tsx`, and `venues.test.tsx`.
+- [x] **Infrastructure as Code (Sub-phase 2.5):** Multi-stage production `frontend/Dockerfile` and `docker-compose.yml` frontend service verified.
+- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F4 (Booking Engine & Stripe Checkout Flow).
 
 ---
 

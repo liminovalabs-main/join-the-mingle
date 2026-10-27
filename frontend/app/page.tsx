@@ -1,11 +1,39 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, MapPin } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ArrowRight, Compass, Heart, Sparkles, Users } from "lucide-react";
+import { MingleCard } from "@/components/mingles/mingle-card";
+import { useAuth } from "@/hooks/use-auth";
+import { getMingles } from "@/lib/api/mingles";
+import { Mingle } from "@/types/mingle";
 
 export default function Home() {
+  const { user } = useAuth();
+  const isVisitor = !user;
+  const [mingles, setMingles] = useState<Mingle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    getMingles({ page_size: 6, upcoming_only: true })
+      .then((res) => {
+        if (isMounted) setMingles(res.results || []);
+      })
+      .catch(() => {
+        if (isMounted) setMingles([]);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
-    <div className="w-full" suppressHydrationWarning>
+    <div className="w-full text-left" suppressHydrationWarning>
       {/* Hero Section — Exact Base44 Headline & Styling */}
       <section className="relative overflow-hidden bg-brand-navy text-brand-ivory">
         {/* Atmospheric Backdrop Gradient */}
@@ -39,16 +67,16 @@ export default function Home() {
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
-              href="/how-it-works"
+              href="/venues"
               className="inline-flex items-center justify-center rounded-full border border-brand-ivory/25 px-8 py-4 font-semibold text-brand-ivory transition-colors hover:bg-brand-ivory/10"
             >
-              How it works
+              Explore Venues
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Find Your Next Mingle Section — Exact Base44 Grid */}
+      {/* Find Your Next Mingle Section */}
       <section className="mx-auto max-w-6xl px-5 py-14 md:py-20">
         <div className="mb-10 flex items-end justify-between gap-6">
           <div>
@@ -67,137 +95,38 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Curated Preview Experiences */}
-        <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Card 1 */}
-          <div className="group rounded-2xl bg-white border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
-            <div className="relative aspect-[4/3] bg-brand-stone/30 overflow-hidden flex items-center justify-center">
-              <span className="text-4xl select-none">🍷</span>
-              <div className="absolute top-3 left-3">
-                <Badge variant="coral">Wine Tasting</Badge>
+        {loading ? (
+          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-4">
+                <div className="aspect-[4/3] animate-pulse rounded-2xl bg-brand-stone/20" />
+                <div className="h-5 w-3/4 animate-pulse rounded-full bg-brand-stone/20" />
+                <div className="h-4 w-1/2 animate-pulse rounded-full bg-brand-stone/20" />
               </div>
-              <div className="absolute bottom-3 right-3 bg-brand-navy/90 text-brand-ivory text-xs px-2.5 py-1 rounded-full font-bold">
-                £45 / ticket
-              </div>
-            </div>
-            <div className="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                  <MapPin className="w-3.5 h-3.5 text-brand-coral" />
-                  <span>Covent Garden, WC2</span>
-                </div>
-                <h3 className="font-heading font-bold text-lg text-brand-navy group-hover:text-brand-coral transition-colors">
-                  Natural Wine &amp; Artisan Tapas Mixer
-                </h3>
-                <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                  Guided sommelier tasting pairing 4 low-intervention natural wines with Mediterranean small plates.
-                </p>
-              </div>
-              <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-1.5">
-                    <Avatar className="w-6 h-6 border border-white">
-                      <AvatarFallback>AL</AvatarFallback>
-                    </Avatar>
-                    <Avatar className="w-6 h-6 border border-white">
-                      <AvatarFallback>TK</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <span className="text-xs text-muted-foreground">4 spots left</span>
-                </div>
-                <span className="text-xs font-semibold text-brand-coral flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  View <ArrowRight className="w-3.5 h-3.5" />
-                </span>
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* Card 2 */}
-          <div className="group rounded-2xl bg-white border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
-            <div className="relative aspect-[4/3] bg-brand-stone/30 overflow-hidden flex items-center justify-center">
-              <span className="text-4xl select-none">🍽️</span>
-              <div className="absolute top-3 left-3">
-                <Badge variant="default">Dinner Party</Badge>
-              </div>
-              <div className="absolute bottom-3 right-3 bg-brand-navy/90 text-brand-ivory text-xs px-2.5 py-1 rounded-full font-bold">
-                £65 / ticket
-              </div>
-            </div>
-            <div className="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                  <MapPin className="w-3.5 h-3.5 text-brand-coral" />
-                  <span>Shoreditch, E1</span>
-                </div>
-                <h3 className="font-heading font-bold text-lg text-brand-navy group-hover:text-brand-coral transition-colors">
-                  Chef&apos;s Table Autumn Feast
-                </h3>
-                <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                  An intimate 8-seat seasonal dinner created by rising star chefs in an open loft kitchen.
-                </p>
-              </div>
-              <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-1.5">
-                    <Avatar className="w-6 h-6 border border-white">
-                      <AvatarFallback>SR</AvatarFallback>
-                    </Avatar>
-                    <Avatar className="w-6 h-6 border border-white">
-                      <AvatarFallback>MD</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <span className="text-xs text-muted-foreground">2 spots left</span>
-                </div>
-                <span className="text-xs font-semibold text-brand-coral flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  View <ArrowRight className="w-3.5 h-3.5" />
-                </span>
-              </div>
-            </div>
+        ) : mingles.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-border bg-brand-ivory/30 p-12 text-center">
+            <p className="font-bold text-brand-navy text-lg">New experiences coming soon</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Check back regularly or explore London partner venues.
+            </p>
+            <Link href="/venues" className="mt-4 inline-block">
+              <button
+                type="button"
+                className="rounded-full bg-brand-coral px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white"
+              >
+                Browse Venues
+              </button>
+            </Link>
           </div>
-
-          {/* Card 3 */}
-          <div className="group rounded-2xl bg-white border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
-            <div className="relative aspect-[4/3] bg-brand-stone/30 overflow-hidden flex items-center justify-center">
-              <span className="text-4xl select-none">🍸</span>
-              <div className="absolute top-3 left-3">
-                <Badge variant="coral">Cocktail Evening</Badge>
-              </div>
-              <div className="absolute bottom-3 right-3 bg-brand-navy/90 text-brand-ivory text-xs px-2.5 py-1 rounded-full font-bold">
-                £38 / ticket
-              </div>
-            </div>
-            <div className="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                  <MapPin className="w-3.5 h-3.5 text-brand-coral" />
-                  <span>Soho, W1</span>
-                </div>
-                <h3 className="font-heading font-bold text-lg text-brand-navy group-hover:text-brand-coral transition-colors">
-                  Speakeasy Social &amp; Craft Mixology
-                </h3>
-                <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                  Secret basement bar table with bespoke cocktails and vinyl jazz records.
-                </p>
-              </div>
-              <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-1.5">
-                    <Avatar className="w-6 h-6 border border-white">
-                      <AvatarFallback>EM</AvatarFallback>
-                    </Avatar>
-                    <Avatar className="w-6 h-6 border border-white">
-                      <AvatarFallback>CL</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <span className="text-xs text-muted-foreground">5 spots left</span>
-                </div>
-                <span className="text-xs font-semibold text-brand-coral flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  View <ArrowRight className="w-3.5 h-3.5" />
-                </span>
-              </div>
-            </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {mingles.map((m) => (
+              <MingleCard key={m.id} mingle={m} isVisitor={isVisitor} />
+            ))}
           </div>
-        </div>
+        )}
 
         <div className="mt-12 text-center sm:hidden">
           <Link
@@ -206,6 +135,61 @@ export default function Home() {
           >
             View all Mingles <ArrowRight className="h-4 w-4" />
           </Link>
+        </div>
+      </section>
+
+      {/* How Mingler Works — 3-Step Guide */}
+      <section className="bg-brand-ivory/40 border-y border-border/50 py-16 md:py-24">
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-coral">
+              How It Works
+            </span>
+            <h2 className="mt-2 font-heading text-3xl font-extrabold text-brand-navy md:text-4xl">
+              Meet people doing what you love
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground md:text-base">
+              Say goodbye to awkward small talk and endless swiping. Connect organically around shared experiences.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="rounded-3xl bg-white p-8 border border-border/60 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-brand-coral/10 text-brand-coral flex items-center justify-center font-bold text-lg mb-6">
+                <Compass className="w-6 h-6" />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-brand-navy mb-2">
+                1. Choose an Experience
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Browse hand-picked dinners, cocktail mixers, wine flights, and masterclasses at top London venues.
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-white p-8 border border-border/60 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center font-bold text-lg mb-6">
+                <Users className="w-6 h-6" />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-brand-navy mb-2">
+                2. See Who&apos;s Going
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Check attendee rosters and reserve your place. Come solo or bring a friend &mdash; everyone is here to mingle.
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-white p-8 border border-border/60 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg mb-6">
+                <Heart className="w-6 h-6" />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-brand-navy mb-2">
+                3. Connect Double-Blind
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Select who you enjoyed meeting after the mingle. When the feeling is mutual, your social handles are unlocked!
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </div>

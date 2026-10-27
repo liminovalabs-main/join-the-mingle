@@ -66,9 +66,40 @@ class MingleFeedbackCreateView(APIView):
 
 
 class VenueReviewCreateView(APIView):
-    """Submit review for a London Venue (Fixes Base44 Defect #7 by maintaining 3NF)."""
+    """List or submit reviews for a London Venue (Fixes Base44 Defect #7 by maintaining 3NF)."""
 
-    permission_classes = [permissions.IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    @extend_schema(
+        tags=['Interactions'],
+        summary='List Venue Reviews',
+        description='Returns all reviews for a venue in London.',
+        responses={200: VenueReviewSerializer(many=True)},
+    )
+    def get(self, request, slug):
+        try:
+            venue = Venue.objects.get(slug=slug)
+        except Venue.DoesNotExist:
+            try:
+                venue = Venue.objects.get(id=slug)
+            except (Venue.DoesNotExist, ValueError):
+                return Response({'error': {'message': "Venue not found."}}, status=status.HTTP_404_NOT_FOUND)
+
+        reviews = VenueReview.objects.filter(venue=venue).order_by('-created_at')
+        serializer = VenueReviewSerializer(reviews, many=True)
+        return Response(
+            {
+                'success': True,
+                'venue_id': str(venue.id),
+                'venue_name': venue.name,
+                'count': reviews.count(),
+                'results': serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     @extend_schema(
         tags=['Interactions'],

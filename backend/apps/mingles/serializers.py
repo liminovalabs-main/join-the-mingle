@@ -48,6 +48,15 @@ class MingleListSerializer(serializers.ModelSerializer):
             'created_at',
         ]
 
+    def to_representation(self, instance: Mingle) -> Dict[str, Any]:
+        ret = super().to_representation(instance)
+        hero = getattr(instance, 'hero_image', None)
+        if hero:
+            str_hero = str(hero)
+            if str_hero.startswith(('http://', 'https://')):
+                ret['hero_image'] = str_hero
+        return ret
+
     def get_spots_remaining(self, obj: Mingle) -> int:
         reserved = obj.bookings.filter(status__in=['pending', 'confirmed']).aggregate(total=Sum('places_booked'))['total'] or 0
         return max(0, obj.capacity - reserved)
