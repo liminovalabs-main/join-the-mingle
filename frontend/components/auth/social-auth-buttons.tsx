@@ -44,12 +44,12 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
           variant="outline"
           onClick={() => handleProviderClick("google")}
           disabled={loadingProvider !== null}
-          className="w-full h-10 sm:h-11 bg-white hover:bg-neutral-100 text-neutral-800 border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
+          className="w-full h-11 sm:h-12 bg-white hover:bg-neutral-100 text-neutral-800 border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
         >
           {loadingProvider === "google" ? (
-            <Loader2 className="w-4 h-4 animate-spin text-neutral-600" />
+            <Loader2 className="w-5 h-5 animate-spin text-neutral-600" />
           ) : (
-            <GoogleIcon className="w-4 h-4 shrink-0" />
+            <GoogleIcon className="w-5 h-5 shrink-0" />
           )}
           <span>{actionText} Google</span>
         </Button>
@@ -60,12 +60,12 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
           variant="outline"
           onClick={() => handleProviderClick("apple")}
           disabled={loadingProvider !== null}
-          className="w-full h-10 sm:h-11 bg-black hover:bg-neutral-900 text-white border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
+          className="w-full h-11 sm:h-12 bg-black hover:bg-neutral-900 text-white border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
         >
           {loadingProvider === "apple" ? (
-            <Loader2 className="w-4 h-4 animate-spin text-white" />
+            <Loader2 className="w-5 h-5 animate-spin text-white" />
           ) : (
-            <AppleIcon className="w-4 h-4 shrink-0 fill-current text-white" />
+            <AppleIcon className="w-5 h-5 shrink-0 fill-current text-white" />
           )}
           <span>{actionText} Apple</span>
         </Button>
@@ -80,14 +80,14 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
         >
           <span>More social accounts</span>
           {showMore ? (
-            <ChevronUp className="w-3 h-3" />
+            <ChevronUp className="w-3.5 h-3.5" />
           ) : (
-            <ChevronDown className="w-3 h-3" />
+            <ChevronDown className="w-3.5 h-3.5" />
           )}
         </button>
 
         {showMore && (
-          <div className="grid grid-cols-4 gap-2 pt-2 animate-in fade-in-50 duration-200">
+          <div className="grid grid-cols-4 gap-2.5 pt-2 animate-in fade-in-50 duration-200">
             {/* Facebook */}
             <button
               type="button"
@@ -95,12 +95,12 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
               aria-label={`${actionText} Facebook`}
               onClick={() => handleProviderClick("facebook")}
               disabled={loadingProvider !== null}
-              className="h-10 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 flex items-center justify-center text-brand-ivory hover:text-[#1877F2] transition-colors cursor-pointer disabled:opacity-50"
+              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#1877F2]/50 hover:bg-[#1877F2]/10 flex items-center justify-center text-brand-ivory hover:text-[#1877F2] transition-all cursor-pointer disabled:opacity-50"
             >
               {loadingProvider === "facebook" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <FacebookIcon className="w-4 h-4" />
+                <FacebookIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </button>
 
@@ -111,12 +111,12 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
               aria-label={`${actionText} Instagram`}
               onClick={() => handleProviderClick("instagram")}
               disabled={loadingProvider !== null}
-              className="h-10 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 flex items-center justify-center text-brand-ivory hover:text-[#E4405F] transition-colors cursor-pointer disabled:opacity-50"
+              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#E4405F]/50 hover:bg-[#E4405F]/10 flex items-center justify-center text-brand-ivory hover:text-[#E4405F] transition-all cursor-pointer disabled:opacity-50"
             >
               {loadingProvider === "instagram" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <InstagramIcon className="w-4 h-4" />
+                <InstagramIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </button>
 
@@ -127,12 +127,12 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
               aria-label={`${actionText} TikTok`}
               onClick={() => handleProviderClick("tiktok")}
               disabled={loadingProvider !== null}
-              className="h-10 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 flex items-center justify-center text-brand-ivory hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#FE2C55]/50 hover:bg-[#FE2C55]/10 flex items-center justify-center text-brand-ivory hover:text-[#FE2C55] transition-all cursor-pointer disabled:opacity-50"
             >
               {loadingProvider === "tiktok" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <TikTokIcon className="w-4 h-4" />
+                <TikTokIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </button>
 
@@ -143,12 +143,12 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
               aria-label={`${actionText} LinkedIn`}
               onClick={() => handleProviderClick("linkedin")}
               disabled={loadingProvider !== null}
-              className="h-10 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 flex items-center justify-center text-brand-ivory hover:text-[#0A66C2] transition-colors cursor-pointer disabled:opacity-50"
+              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#0A66C2]/50 hover:bg-[#0A66C2]/10 flex items-center justify-center text-brand-ivory hover:text-[#0A66C2] transition-all cursor-pointer disabled:opacity-50"
             >
               {loadingProvider === "linkedin" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <LinkedinIcon className="w-4 h-4" />
+                <LinkedinIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </button>
           </div>

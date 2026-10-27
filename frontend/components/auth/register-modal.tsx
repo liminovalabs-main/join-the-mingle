@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
 import { MinglerLogo } from "@/components/brand/mingler-logo";
 import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
+import { Check, Circle } from "lucide-react";
 
 function RegisterForm({ initialEmail }: { initialEmail: string }) {
   const { openModal, register } = useAuth();
@@ -20,8 +21,19 @@ function RegisterForm({ initialEmail }: { initialEmail: string }) {
   const [displayName, setDisplayName] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [passwordConfirm, setPasswordConfirm] = React.useState("");
+  const [isPasswordFocused, setIsPasswordFocused] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
+
+  const hasMinLength = password.length >= 8;
+  const hasNumber = /\d/.test(password);
+  const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+  const passwordsMatch = Boolean(
+    password.length > 0 &&
+    passwordConfirm.length > 0 &&
+    password === passwordConfirm
+  );
+  const showChecklist = isPasswordFocused || password.length > 0 || passwordConfirm.length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +41,16 @@ function RegisterForm({ initialEmail }: { initialEmail: string }) {
       setError("Please fill in all required fields.");
       return;
     }
-    if (password.length < 8) {
+    if (!hasMinLength) {
       setError("Password must be at least 8 characters long.");
+      return;
+    }
+    if (!hasNumber) {
+      setError("Password must contain at least one number.");
+      return;
+    }
+    if (!hasSpecialChar) {
+      setError("Password must contain at least one special character.");
       return;
     }
     if (password !== passwordConfirm) {
@@ -114,13 +134,15 @@ function RegisterForm({ initialEmail }: { initialEmail: string }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1">
             <label className="text-xs font-semibold uppercase tracking-wider text-brand-ivory/80">
-              Password (min. 8 chars)
+              Password
             </label>
             <Input
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setIsPasswordFocused(true)}
+              onBlur={() => setIsPasswordFocused(false)}
               className="bg-brand-navy/60 border-brand-ivory/20 text-brand-ivory placeholder:text-brand-ivory/40 focus-visible:ring-brand-coral h-10"
               required
             />
@@ -135,11 +157,83 @@ function RegisterForm({ initialEmail }: { initialEmail: string }) {
               placeholder="••••••••"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
+              onFocus={() => setIsPasswordFocused(true)}
+              onBlur={() => setIsPasswordFocused(false)}
               className="bg-brand-navy/60 border-brand-ivory/20 text-brand-ivory placeholder:text-brand-ivory/40 focus-visible:ring-brand-coral h-10"
               required
             />
           </div>
         </div>
+
+        {/* Real-time Password Requirements Checklist */}
+        {showChecklist && (
+          <div className="rounded-xl bg-brand-navy/90 border border-brand-ivory/15 p-2.5 sm:p-3 space-y-1.5 animate-in fade-in-50 duration-200">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-brand-ivory/70">
+              Password Requirements
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+              <div
+                className={`flex items-center gap-2 transition-colors duration-200 ${
+                  hasMinLength
+                    ? "text-emerald-400 font-medium"
+                    : "text-brand-ivory/50"
+                }`}
+              >
+                {hasMinLength ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                ) : (
+                  <Circle className="w-3.5 h-3.5 text-brand-ivory/30 shrink-0" />
+                )}
+                <span>8+ characters</span>
+              </div>
+
+              <div
+                className={`flex items-center gap-2 transition-colors duration-200 ${
+                  hasNumber
+                    ? "text-emerald-400 font-medium"
+                    : "text-brand-ivory/50"
+                }`}
+              >
+                {hasNumber ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                ) : (
+                  <Circle className="w-3.5 h-3.5 text-brand-ivory/30 shrink-0" />
+                )}
+                <span>At least 1 number</span>
+              </div>
+
+              <div
+                className={`flex items-center gap-2 transition-colors duration-200 ${
+                  hasSpecialChar
+                    ? "text-emerald-400 font-medium"
+                    : "text-brand-ivory/50"
+                }`}
+              >
+                {hasSpecialChar ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                ) : (
+                  <Circle className="w-3.5 h-3.5 text-brand-ivory/30 shrink-0" />
+                )}
+                <span>Special symbol (!@#$...)</span>
+              </div>
+
+              <div
+                className={`flex items-center gap-2 transition-colors duration-200 ${
+                  passwordsMatch
+                    ? "text-emerald-400 font-medium"
+                    : "text-brand-ivory/50"
+                }`}
+              >
+                {passwordsMatch ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                ) : (
+                  <Circle className="w-3.5 h-3.5 text-brand-ivory/30 shrink-0" />
+                )}
+                <span>Passwords match</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         <p className="text-[11px] text-brand-ivory/60 leading-relaxed text-center sm:text-left">
           By joining, you agree to our Terms of Experience and confirm you are 18+ years of age.
