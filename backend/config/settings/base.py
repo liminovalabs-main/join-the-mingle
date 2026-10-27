@@ -271,6 +271,7 @@ SOCIAL_AUTH_CONFIG = {
     'instagram': {
         'client_id': os.environ.get('INSTAGRAM_CLIENT_ID', ''),
         'client_secret': os.environ.get('INSTAGRAM_CLIENT_SECRET', ''),
+        'scope': os.environ.get('INSTAGRAM_SCOPE', 'instagram_business_basic'),
     },
     'tiktok': {
         'client_key': os.environ.get('TIKTOK_CLIENT_KEY', ''),

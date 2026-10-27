@@ -360,10 +360,11 @@ class InstagramAuthProvider(BaseSocialAuthProvider):
         if not client_id:
             raise exceptions.ValidationError({'provider': "Instagram client ID is not configured on the server."})
 
+        scope = self.config.get('scope') or 'instagram_business_basic'
         params = {
             'client_id': client_id,
             'redirect_uri': redirect_uri,
-            'scope': 'user_profile,user_media',
+            'scope': scope,
             'response_type': 'code',
         }
         if state:
