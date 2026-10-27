@@ -22,6 +22,8 @@ class PublicProfileSerializer(serializers.ModelSerializer):
         It only exposes curated public attributes needed for attendee cards.
     """
 
+    age_group = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = [
@@ -30,12 +32,31 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'photo',
             'gender',
             'relationship_status',
+            'age_group',
             'bio',
             'interests',
             'instagram_handle',
             'linkedin_url',
         ]
         read_only_fields = fields
+
+    def get_age_group(self, obj) -> str:
+        """Calculate Base44 demographic age group without exposing raw DOB."""
+        if not getattr(obj, 'date_of_birth', None):
+            return ""
+        from datetime import date
+        today = date.today()
+        dob = obj.date_of_birth
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        if age < 30:
+            return "20s"
+        if age < 40:
+            return "30s"
+        if age < 50:
+            return "40s"
+        if age < 60:
+            return "50s"
+        return "60+"
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)

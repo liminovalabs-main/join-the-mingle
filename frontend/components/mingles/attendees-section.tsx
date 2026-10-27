@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Lock, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -102,28 +103,29 @@ export function AttendeesSection({
                 </div>
               ))
             : attendees.map((profile) => (
-                <div
+                <Link
                   key={profile.id}
-                  className="flex items-center gap-3 rounded-2xl border border-border/60 bg-white p-3 shadow-xs hover:border-brand-coral/40 transition-colors"
+                  href={`/people/${profile.id}`}
+                  className="flex items-center gap-3 rounded-2xl border border-border/60 bg-white p-3 shadow-xs hover:border-brand-coral/40 hover:shadow-xs transition-all cursor-pointer group"
                 >
-                  <Avatar className="w-11 h-11 border border-border">
-                    <AvatarImage src={profile.photo} alt={profile.display_name} />
+                  <Avatar className="w-11 h-11 border border-border aspect-square shrink-0">
+                    <AvatarImage src={profile.photo} alt={profile.display_name} className="object-cover" />
                     <AvatarFallback className="bg-brand-coral/10 text-brand-coral font-bold text-sm">
                       {profile.display_name?.slice(0, 2).toUpperCase() || "M"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-brand-navy">
+                    <div className="truncate text-sm font-semibold text-brand-navy group-hover:text-brand-coral transition-colors">
                       {profile.display_name}
                     </div>
                     <div className="truncate text-xs text-muted-foreground">
-                      {profile.gender || "Mingler"}
+                      {profile.age_group || profile.gender || "Mingler"}
                       {profile.interests && profile.interests.length > 0 && (
                         <span> · {profile.interests[0]}</span>
                       )}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
         </div>
       )}

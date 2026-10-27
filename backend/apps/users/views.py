@@ -5,6 +5,7 @@ and UK GDPR-compliant public attendee profile inspection.
 """
 from typing import List
 import uuid
+from django.shortcuts import get_object_or_404
 
 from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
 from rest_framework import generics, permissions, serializers, status
@@ -318,6 +319,58 @@ class PublicProfileListView(APIView):
         profiles = Profile.objects.filter(id__in=valid_uuids)
         serializer = PublicProfileSerializer(profiles, many=True)
         return Response({'success': True, 'profiles': serializer.data})
+
+
+class PublicProfileDetailView(APIView):
+    """Retrieve a single sanitized public attendee profile by UUID.
+
+    Also returns the upcoming published mingles this member is attending,
+    matching Base44 PersonProfile.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        responses={200: PublicProfileSerializer},
+        description="Fetch a sanitized public profile for a confirmed member.",
+    )
+    def get(self, request, id):
+        profile = get_object_or_404(Profile, id=id)
+        profile_data = PublicProfileSerializer(profile).data
+
+        from datetime import date
+        from apps.bookings.models import Booking
+        now_date = date.today()
+
+        confirmed_bookings = (
+            Booking.objects.filter(
+                profile=profile,
+                status='confirmed',
+                mingle__status='published',
+                mingle__event_date__gte=now_date,
+            )
+            .select_related('mingle', 'mingle__venue')
+            .order_by('mingle__event_date', 'mingle__start_time')
+        )
+
+        attending = []
+        for b in confirmed_bookings:
+            m = b.mingle
+            attending.append({
+                'id': str(m.id),
+                'title': m.title,
+                'event_date': str(m.event_date),
+                'start_time': str(m.start_time),
+                'hero_image': m.hero_image,
+                'venue_name': m.venue.name if m.venue else '',
+                'venue_area': m.venue.area if m.venue else '',
+            })
+
+        return Response({
+            'success': True,
+            'profile': profile_data,
+            'attending_mingles': attending,
+        }, status=status.HTTP_200_OK)
 
 
 class SocialAuthUrlView(APIView):

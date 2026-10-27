@@ -28,6 +28,7 @@ export interface PublicProfile {
   photo?: string;
   gender?: "Male" | "Female" | "Prefer not to say" | "";
   relationship_status?: "Single" | "Married" | "It's complicated" | "";
+  age_group?: string;
   bio?: string;
   interests?: string[];
   instagram_handle?: string;

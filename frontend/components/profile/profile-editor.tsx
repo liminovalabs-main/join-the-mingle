@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/social-icons";
 import { apiClient, extractErrorMessage } from "@/lib/api/client";
 import { SocialAccount, SocialAccountListResponse, SocialProvider } from "@/types/auth";
+import { calcAgeGroupFromDob } from "@/lib/utils/age";
+import { VerifiedBadge } from "@/components/profile/verified-badge";
 
 const SUGGESTED_INTERESTS = [
   "Wine Tasting",
@@ -450,10 +452,15 @@ export function ProfileEditor() {
               onChange={(e) => setDateOfBirth(e.target.value)}
               error={errors.dateOfBirth}
             />
-            <p className="text-[11px] text-muted-foreground flex items-center gap-1 pt-0.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>UK GDPR Private — Never shared on public attendee lists.</span>
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-1 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>UK GDPR Private &mdash; never exposed publicly.</span>
+              </span>
+              <span>
+                Public age group: <strong className="text-brand-navy font-bold">{calcAgeGroupFromDob(dateOfBirth) || "—"}</strong>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -701,7 +708,7 @@ export function ProfileEditor() {
           type="submit"
           variant="coral"
           isLoading={isSaving}
-          className="px-8 h-12 text-sm font-bold uppercase tracking-wider rounded-xl shadow-md"
+          className="px-8 h-12 text-sm font-bold uppercase tracking-wider rounded-full shadow-md"
         >
           Save Changes
         </Button>
