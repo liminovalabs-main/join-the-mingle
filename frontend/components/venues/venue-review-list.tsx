@@ -43,24 +43,24 @@ export function VenueReviewList({
           className="rounded-2xl border border-border/60 bg-white p-4 shadow-xs"
         >
           <div className="flex items-start gap-3">
-            <Avatar className="w-9 h-9 border border-border">
-              <AvatarFallback className="bg-brand-coral/10 text-brand-coral font-bold text-xs">
+            <Avatar className="w-9 h-9 sm:w-10 sm:h-10 border border-border">
+              <AvatarFallback className="bg-brand-coral/10 text-brand-coral font-bold text-xs sm:text-sm">
                 {review.author_name?.slice(0, 2).toUpperCase() || "M"}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-semibold text-sm text-brand-navy">
+                <span className="font-semibold text-sm sm:text-base text-brand-navy">
                   {review.author_name || "A Mingler"}
                 </span>
                 <StarRating value={review.rating} size={3.5} />
               </div>
               {review.comment && (
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-2 text-sm sm:text-[15px] leading-relaxed text-muted-foreground">
                   {review.comment}
                 </p>
               )}
-              <div className="mt-2 text-xs text-muted-foreground">
+              <div className="mt-2 text-xs sm:text-[13px] text-muted-foreground">
                 {formatReviewDate(review.created_at)}
               </div>
             </div>

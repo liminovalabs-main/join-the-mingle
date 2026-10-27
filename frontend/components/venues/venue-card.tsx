@@ -32,17 +32,17 @@ export function VenueCard({ venue }: VenueCardProps) {
           unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-        <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-ivory backdrop-blur">
+        <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-[0.15em] text-brand-ivory backdrop-blur">
           {venue.category || "London Venue"}
         </span>
       </div>
 
       <div className="p-5">
-        <h3 className="font-heading text-lg font-bold text-brand-navy group-hover:text-brand-coral transition-colors line-clamp-1">
+        <h3 className="font-heading text-lg sm:text-xl font-bold text-brand-navy group-hover:text-brand-coral transition-colors line-clamp-1">
           {venue.name}
         </h3>
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-[13px] text-muted-foreground">
           {venue.area && (
             <span className="flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5 text-brand-blue shrink-0" /> {venue.area}
@@ -56,7 +56,7 @@ export function VenueCard({ venue }: VenueCardProps) {
         </div>
 
         {venue.address && (
-          <p className="mt-2 text-xs text-muted-foreground truncate">
+          <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground truncate">
             {venue.address}, {venue.postcode}
           </p>
         )}

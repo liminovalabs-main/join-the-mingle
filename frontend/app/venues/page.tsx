@@ -81,33 +81,38 @@ export default function VenuesDirectoryPage() {
       </div>
 
       {/* Search and Area Filters */}
-      <div className="mb-8 space-y-4 rounded-3xl border border-border/60 bg-white p-5 shadow-xs">
+      <div className="mb-8 space-y-4 rounded-2xl sm:rounded-3xl border border-border/70 bg-white p-4 sm:p-6 shadow-xs text-left">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search venues by name, area, or category..."
-            className="w-full rounded-full border border-border/70 bg-brand-ivory/30 py-3 pl-11 pr-4 text-sm font-medium text-brand-navy focus:border-brand-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-coral/20 transition-all placeholder:text-muted-foreground"
+            placeholder="Search venues by name, area, or category…"
+            className="w-full rounded-full border border-border/70 bg-brand-ivory/30 py-3 sm:py-3.5 pl-12 pr-4 text-sm sm:text-base font-medium text-brand-navy placeholder:text-muted-foreground focus:border-brand-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-coral/20 transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {VENUE_AREAS.map((area) => (
-            <button
-              key={area}
-              type="button"
-              onClick={() => setSelectedArea(area)}
-              className={`rounded-full px-4 py-1.5 text-xs font-semibold shrink-0 transition-all ${
-                selectedArea === area
-                  ? "bg-brand-navy text-white shadow-xs"
-                  : "bg-brand-stone/40 text-brand-navy hover:bg-brand-stone/70"
-              }`}
-            >
-              {area}
-            </button>
-          ))}
+        <div className="pt-1">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            <span className="mr-1 flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-muted-foreground shrink-0 py-1">
+              <Store className="h-4 w-4 text-brand-coral" /> Area:
+            </span>
+            {VENUE_AREAS.map((area) => (
+              <button
+                key={area}
+                type="button"
+                onClick={() => setSelectedArea(area)}
+                className={`rounded-full px-4 sm:px-4.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  selectedArea === area
+                    ? "bg-brand-navy text-white shadow-xs"
+                    : "bg-brand-stone/40 text-brand-navy hover:bg-brand-stone/70"
+                }`}
+              >
+                {area}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

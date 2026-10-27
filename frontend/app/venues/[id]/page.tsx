@@ -125,7 +125,7 @@ function VenueDetailContent() {
         <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/60 to-transparent" />
 
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-5 pb-8">
-          <span className="rounded-full bg-brand-ivory/20 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-ivory backdrop-blur">
+          <span className="rounded-full bg-brand-ivory/20 px-3.5 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] text-brand-ivory backdrop-blur">
             {venue.category || "London Venue"}
           </span>
 
@@ -133,7 +133,7 @@ function VenueDetailContent() {
             {venue.name}
           </h1>
 
-          <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-brand-ivory/80 font-medium">
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-xs sm:text-sm text-brand-ivory/90 font-medium">
             {venue.area && (
               <span className="flex items-center gap-1.5">
                 <MapPin className="h-4 w-4 text-brand-coral" /> {venue.address ? `${venue.address}, ` : ""}{venue.area}
@@ -163,7 +163,7 @@ function VenueDetailContent() {
           <h2 className="font-heading text-2xl font-bold text-brand-navy mb-3">
             About the Space
           </h2>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+          <p className="whitespace-pre-line text-sm sm:text-base leading-relaxed text-muted-foreground">
             {venue.description || "A curated venue partner hosting social experiences in London."}
           </p>
 
@@ -171,10 +171,10 @@ function VenueDetailContent() {
             <div className="mt-6 pt-5 border-t border-border/50 flex items-start gap-3">
               <MapPin className="w-5 h-5 text-brand-coral shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-muted-foreground">
                   Location &amp; Postcode
                 </p>
-                <p className="text-sm font-semibold text-brand-navy mt-0.5">
+                <p className="text-sm sm:text-base font-semibold text-brand-navy mt-0.5">
                   {venue.address}, {venue.area}, {venue.postcode}
                 </p>
               </div>
@@ -184,14 +184,14 @@ function VenueDetailContent() {
           {/* Validated 7-Day Operating Hours (Defect #8 Fix) */}
           {hours.length > 0 && (
             <div className="mt-6 pt-5 border-t border-border/50">
-              <h3 className="flex items-center gap-2 font-heading text-sm font-bold text-brand-navy mb-3">
+              <h3 className="flex items-center gap-2 font-heading text-sm sm:text-base font-bold text-brand-navy mb-3">
                 <Clock className="h-4 w-4 text-brand-coral" /> Operating Hours
               </h3>
               <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {hours.map((row) => (
                   <li
                     key={row.id || row.day_of_week}
-                    className="text-xs text-muted-foreground flex items-center justify-between p-2.5 rounded-xl bg-brand-ivory/50"
+                    className="text-xs sm:text-sm text-muted-foreground flex items-center justify-between p-2.5 rounded-xl bg-brand-ivory/50"
                   >
                     <span className="font-semibold text-brand-navy">{row.day_name}</span>
                     <span>

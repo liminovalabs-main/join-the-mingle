@@ -50,15 +50,15 @@ export function VenueReviewForm({
       onSubmit={handleSubmit}
       className="rounded-2xl border border-brand-coral/30 bg-brand-coral/5 p-5 text-left"
     >
-      <h3 className="font-heading text-lg font-bold text-brand-navy">
+      <h3 className="font-heading text-lg sm:text-xl font-bold text-brand-navy">
         You mingled here &mdash; how was the venue?
       </h3>
-      <p className="mt-1 text-xs text-muted-foreground">
+      <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
         Rate this venue and leave a note for fellow Minglers.
       </p>
 
-      <div className="mt-3 flex items-center gap-3">
-        <span className="text-xs font-semibold text-brand-navy">Your rating:</span>
+      <div className="mt-3.5 flex items-center gap-3">
+        <span className="text-xs sm:text-sm font-semibold text-brand-navy">Your rating:</span>
         <StarRating value={rating} onChange={setRating} size={5} />
       </div>
 
@@ -68,7 +68,7 @@ export function VenueReviewForm({
           onChange={(e) => setComment(e.target.value)}
           rows={3}
           placeholder="What made this venue special? Atmosphere, staff, drinks..."
-          className="w-full rounded-xl border border-border/70 bg-white p-3 text-sm text-brand-navy focus:border-brand-coral focus:outline-none focus:ring-2 focus:ring-brand-coral/20 resize-none placeholder:text-muted-foreground"
+          className="w-full rounded-xl border border-border/70 bg-white p-3.5 text-sm sm:text-base text-brand-navy focus:border-brand-coral focus:outline-none focus:ring-2 focus:ring-brand-coral/20 resize-none placeholder:text-muted-foreground"
         />
       </div>
 
@@ -77,7 +77,7 @@ export function VenueReviewForm({
           type="submit"
           variant="coral"
           disabled={isSubmitting}
-          className="rounded-full px-6 text-xs font-bold uppercase tracking-wider"
+          className="rounded-full px-6 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider"
         >
           {isSubmitting ? (
             <>

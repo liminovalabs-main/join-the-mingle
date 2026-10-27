@@ -56,15 +56,15 @@ export function MingleVenueSection({
     <div className="mb-10 rounded-3xl border border-border/60 bg-white p-6 md:p-8 shadow-xs text-left">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <span className="mb-2 inline-block rounded-full bg-brand-coral/10 px-3 py-1 text-xs font-semibold text-brand-coral">
+          <span className="mb-2 inline-block rounded-full bg-brand-coral/10 px-3.5 py-1 text-xs sm:text-[13px] font-semibold text-brand-coral">
             The Venue
           </span>
-          <h2 className="font-heading text-2xl font-bold text-brand-navy">
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-brand-navy">
             {activeVenueName}
           </h2>
           {activeArea && (
-            <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5 text-brand-blue shrink-0" />
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm sm:text-base text-muted-foreground">
+              <MapPin className="h-4 w-4 text-brand-blue shrink-0" />
               <span>
                 {activeAddress ? `${activeAddress}, ` : ""}
                 {activeArea}
@@ -76,31 +76,31 @@ export function MingleVenueSection({
         {activeSlug && (
           <Link
             href={`/venues/${activeSlug}`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-navy hover:border-brand-coral hover:text-brand-coral transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/80 px-4 sm:px-4.5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold uppercase tracking-[0.14em] text-brand-navy hover:border-brand-coral hover:text-brand-coral transition-colors"
           >
-            View venue profile <ArrowRight className="h-3.5 w-3.5" />
+            View venue profile <ArrowRight className="h-4 w-4" />
           </Link>
         )}
       </div>
 
       {venue?.description && (
-        <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-4 whitespace-pre-line text-sm sm:text-base leading-relaxed text-muted-foreground">
           {venue.description}
         </p>
       )}
 
       {validHours.length > 0 && (
         <div className="mt-6 pt-5 border-t border-border/50">
-          <h3 className="flex items-center gap-2 font-heading text-sm font-bold text-brand-navy mb-3">
+          <h3 className="flex items-center gap-2 font-heading text-sm sm:text-base font-bold text-brand-navy mb-3">
             <Clock className="h-4 w-4 text-brand-coral" /> Opening Hours
           </h3>
           <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
             {validHours.map((h) => (
               <li
                 key={h.id || h.day_of_week}
-                className="text-xs text-muted-foreground flex items-center justify-between p-2 rounded-xl bg-brand-ivory/50"
+                className="text-xs sm:text-sm text-muted-foreground flex items-center justify-between p-2.5 rounded-xl bg-brand-ivory/50"
               >
-                <span className="font-medium text-brand-navy">{h.day_name}</span>
+                <span className="font-semibold text-brand-navy">{h.day_name}</span>
                 <span>
                   {h.open_time?.slice(0, 5)} &ndash; {h.close_time?.slice(0, 5)}
                 </span>
