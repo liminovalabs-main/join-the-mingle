@@ -31,6 +31,8 @@ class StripeService:
         """
         api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
         if not api_key or api_key.startswith('sk_test_your_'):
+            if not getattr(settings, 'DEBUG', True):
+                raise ValueError("STRIPE_SECRET_KEY is not configured for production environment.")
             logger.warning("STRIPE_SECRET_KEY is not configured or placeholder; using fallback mock checkout session.")
             session_id = f"cs_mock_{booking.id.hex[:16]}"
             return {
