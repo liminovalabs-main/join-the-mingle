@@ -73,3 +73,14 @@ class SocialAccountAdmin(admin.ModelAdmin):
     search_fields = ('user__email', 'uid')
     readonly_fields = ('created_at', 'updated_at')
 
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    """Admin view for managing and verifying member profiles."""
+
+    list_display = ('display_name', 'user', 'gender', 'relationship_status', 'date_of_birth', 'is_age_verified', 'created_at')
+    list_filter = ('is_age_verified', 'gender', 'relationship_status')
+    search_fields = ('display_name', 'user__email')
+    list_editable = ('is_age_verified',)
+
+

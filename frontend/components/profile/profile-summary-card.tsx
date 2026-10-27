@@ -27,7 +27,17 @@ export function ProfileSummaryCard({
       ? calcAgeGroupFromDob(profile.date_of_birth)
       : "");
 
-  const firstName = profile.display_name?.trim().split(" ")[0] || "Member";
+  const formatName = (name?: string) => {
+    if (!name) return "Member";
+    const parts = name.trim().split(/\s+/);
+    const prefixes = ["md.", "md", "dr.", "dr", "mr.", "mr", "ms.", "ms", "mrs.", "mrs", "prof.", "prof"];
+    if (parts.length > 1 && prefixes.includes(parts[0].toLowerCase())) {
+      return `${parts[0]} ${parts[1]}`;
+    }
+    return parts[0];
+  };
+
+  const firstName = formatName(profile.display_name);
   const isVerified = "is_age_verified" in profile ? profile.is_age_verified : false;
 
   const initials = firstName.slice(0, 2).toUpperCase();

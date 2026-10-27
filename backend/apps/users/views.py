@@ -273,13 +273,29 @@ class MyProfileView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(instance)
         return Response({'success': True, 'profile': serializer.data})
 
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if instance.date_of_birth and not instance.is_age_verified:
+            from datetime import date
+            today = date.today()
+            dob = instance.date_of_birth
+            age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            if age >= 18:
+                instance.is_age_verified = True
+                instance.save(update_fields=['is_age_verified'])
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', True)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response({'success': True, 'message': 'Profile updated successfully.', 'profile': serializer.data})
+        instance.refresh_from_db()
+        return Response({
+            'success': True,
+            'message': 'Profile updated successfully.',
+            'profile': self.get_serializer(instance).data,
+        })
 
 
 class PublicProfileListView(APIView):
