@@ -9,6 +9,8 @@ import { getPublicProfile, AttendingMingleSummary } from "@/lib/api/profiles";
 import { PublicProfile } from "@/types/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { VerifiedBadge } from "@/components/profile/verified-badge";
+import { getMingleImageUrl, formatAvatarUrl } from "@/lib/constants/images";
 
 function PersonProfileContent() {
   const params = useParams();
@@ -158,7 +160,7 @@ function PersonProfileContent() {
           <Avatar className="mx-auto mb-4 h-28 w-28 border-2 border-brand-coral/40 shadow-sm aspect-square">
             {profile.photo && (
               <AvatarImage
-                src={profile.photo}
+                src={formatAvatarUrl(profile.photo)}
                 alt={profile.display_name}
                 className="object-cover w-full h-full"
               />
@@ -168,9 +170,12 @@ function PersonProfileContent() {
             </AvatarFallback>
           </Avatar>
 
-          <h1 className="font-heading text-3xl font-black text-brand-navy leading-none">
-            {firstName}
-          </h1>
+          <div className="flex items-center justify-center gap-2">
+            <h1 className="font-heading text-3xl font-black text-brand-navy leading-none">
+              {firstName}
+            </h1>
+            <VerifiedBadge verified={true} />
+          </div>
 
           <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-muted-foreground font-medium">
             {profile.age_group && <span>{profile.age_group}</span>}
@@ -214,17 +219,11 @@ function PersonProfileContent() {
                   className="flex items-center gap-4 rounded-2xl border border-border/70 bg-white p-4 shadow-xs transition-all hover:border-brand-coral/40 hover:shadow-sm"
                 >
                   <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-muted relative">
-                    {m.hero_image ? (
-                      <img
-                        src={m.hero_image}
-                        alt={m.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-brand-stone/30 flex items-center justify-center text-xs text-muted-foreground font-bold">
-                        Mingle
-                      </div>
-                    )}
+                    <img
+                      src={getMingleImageUrl(m.hero_image, m.experience_type)}
+                      alt={m.title}
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                   <div className="min-w-0">
                     <div className="text-base font-heading font-bold text-brand-navy truncate">

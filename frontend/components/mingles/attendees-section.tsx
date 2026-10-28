@@ -5,6 +5,7 @@ import { Lock, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { formatAvatarUrl } from "@/lib/constants/images";
 import { PublicProfile } from "@/types/auth";
 
 interface AttendeesSectionProps {
@@ -109,7 +110,7 @@ export function AttendeesSection({
                   className="flex items-center gap-3 rounded-2xl border border-border/60 bg-white p-3 shadow-xs hover:border-brand-coral/40 hover:shadow-xs transition-all cursor-pointer group"
                 >
                   <Avatar className="w-11 h-11 border border-border aspect-square shrink-0">
-                    <AvatarImage src={profile.photo} alt={profile.display_name} className="object-cover" />
+                    <AvatarImage src={formatAvatarUrl(profile.photo)} alt={profile.display_name} className="object-cover" />
                     <AvatarFallback className="bg-brand-coral/10 text-brand-coral font-bold text-sm">
                       {profile.display_name?.slice(0, 2).toUpperCase() || "M"}
                     </AvatarFallback>

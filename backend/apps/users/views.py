@@ -372,12 +372,21 @@ class PublicProfileDetailView(APIView):
         attending = []
         for b in confirmed_bookings:
             m = b.mingle
+            hero_url = None
+            if m.hero_image:
+                str_hero = str(m.hero_image)
+                if str_hero.startswith(('http://', 'https://')):
+                    hero_url = str_hero
+                elif hasattr(m.hero_image, 'url'):
+                    hero_url = request.build_absolute_uri(m.hero_image.url)
+
             attending.append({
                 'id': str(m.id),
                 'title': m.title,
+                'experience_type': m.experience_type,
                 'event_date': str(m.event_date),
                 'start_time': str(m.start_time),
-                'hero_image': m.hero_image,
+                'hero_image': hero_url,
                 'venue_name': m.venue.name if m.venue else '',
                 'venue_area': m.venue.area if m.venue else '',
             })

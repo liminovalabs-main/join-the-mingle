@@ -4,6 +4,7 @@ import { PublicProfile } from "@/types/auth";
 export interface AttendingMingleSummary {
   id: string;
   title: string;
+  experience_type?: string;
   event_date: string;
   start_time: string;
   hero_image?: string;
