@@ -86,6 +86,24 @@ class StripeCheckoutView(APIView):
                 success_url=success_url,
                 cancel_url=cancel_url,
             )
+
+            # In sandbox / mock dev mode (no live Stripe credentials configured), auto-confirm booking
+            # so development and user testing immediately updates capacity and attendee rosters.
+            if session_data.get('session_id', '').startswith('cs_mock_'):
+                booking.status = 'confirmed'
+                booking.save(update_fields=['status', 'updated_at'])
+                Payment.objects.get_or_create(
+                    booking=booking,
+                    defaults={
+                        'stripe_checkout_session_id': session_data['session_id'],
+                        'stripe_payment_intent_id': f"pi_mock_{booking.id.hex[:16]}",
+                        'amount_paid': booking.total_amount,
+                        'currency': 'GBP',
+                        'payment_status': 'succeeded',
+                    },
+                )
+                logger.info("Sandbox checkout: Booking %s auto-confirmed with mock payment.", booking.id)
+
             return Response(
                 {
                     'success': True,

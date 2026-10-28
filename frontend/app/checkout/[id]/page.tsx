@@ -22,6 +22,7 @@ import { useAuth } from "@/context/auth-context";
 import { getMingle } from "@/lib/api/mingles";
 import { createBooking, createCheckoutSession } from "@/lib/api/bookings";
 import { extractErrorMessage } from "@/lib/api/client";
+import { getMingleImageUrl } from "@/lib/constants/images";
 import { Mingle } from "@/types/mingle";
 
 function formatDate(dateStr?: string): string {
@@ -303,19 +304,13 @@ function CheckoutContent() {
             {/* Experience Snapshot */}
             <div className="flex gap-3 pb-5 border-b border-border/50">
               <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-brand-stone/20 shrink-0">
-                {mingle.hero_image ? (
-                  <Image
-                    src={mingle.hero_image}
-                    alt={mingle.title}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-brand-navy/10 text-brand-navy font-bold text-xs">
-                    M
-                  </div>
-                )}
+                <Image
+                  src={getMingleImageUrl(mingle.hero_image, mingle.experience_type)}
+                  alt={mingle.title}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
               </div>
 
               <div className="min-w-0 flex-1">

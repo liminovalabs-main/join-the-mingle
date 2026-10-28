@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { getMyBookings, cancelBooking, downloadCalendarInvite } from "@/lib/api/bookings";
 import { extractErrorMessage } from "@/lib/api/client";
+import { getMingleImageUrl } from "@/lib/constants/images";
 import { Booking } from "@/types/booking";
 
 function formatDate(dateStr?: string): string {
@@ -180,19 +181,13 @@ export function MemberBookingsTab() {
 
                   <div className="flex gap-3.5 items-start">
                     <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-brand-stone/20 shrink-0">
-                      {b.mingle.hero_image ? (
-                        <Image
-                          src={b.mingle.hero_image}
-                          alt={b.mingle.title}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-brand-navy/10 text-brand-navy font-bold text-xs">
-                          M
-                        </div>
-                      )}
+                      <Image
+                        src={getMingleImageUrl(b.mingle.hero_image, b.mingle.experience_type)}
+                        alt={b.mingle.title}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
                     </div>
 
                     <div className="min-w-0 flex-1">

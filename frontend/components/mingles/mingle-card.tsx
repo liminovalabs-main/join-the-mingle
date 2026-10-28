@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, User, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getMingleImageUrl, formatAvatarUrl } from "@/lib/constants/images";
 import { Mingle } from "@/types/mingle";
 import { PublicProfile } from "@/types/auth";
 
@@ -35,29 +36,16 @@ function ageLabel(mingle: Mingle): string {
   return "";
 }
 
-const FALLBACK_CATEGORY_IMAGES: Record<string, string> = {
-  dinner: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
-  cocktails: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80",
-  wine_tasting: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80",
-  brunch: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=800&q=80",
-  cooking: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80",
-  games: "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80",
-  cultural: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=800&q=80",
-  wellness: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80",
-  other: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
-};
-
 export function MingleCard({ mingle, attendees = [], isVisitor = false }: MingleCardProps) {
-  const confirmedCount = mingle.confirmed_attendees_count || attendees.length;
+  const effectiveAttendees = attendees.length > 0 ? attendees : (mingle.preview_attendees || []);
+  const confirmedCount = mingle.confirmed_attendees_count ?? effectiveAttendees.length;
   const remaining = mingle.spots_remaining !== undefined ? mingle.spots_remaining : Math.max(0, mingle.capacity - confirmedCount);
   const ageText = ageLabel(mingle);
-  const avatarSlots = isVisitor ? Math.min(confirmedCount, 5) : attendees.length;
+  const attendeeCount = Math.max(confirmedCount, effectiveAttendees.length);
+  const avatarSlots = isVisitor ? Math.min(attendeeCount, 4) : Math.min(effectiveAttendees.length, 4);
   const priceDisplay = parseFloat(mingle.ticket_price).toFixed(0);
 
-  const imageUrl =
-    mingle.hero_image ||
-    FALLBACK_CATEGORY_IMAGES[mingle.experience_type] ||
-    FALLBACK_CATEGORY_IMAGES.other;
+  const imageUrl = getMingleImageUrl(mingle.hero_image, mingle.experience_type);
 
   // Check if date is in the past
   const isPast = new Date(mingle.event_date) < new Date(new Date().setHours(0, 0, 0, 0));
@@ -120,7 +108,7 @@ export function MingleCard({ mingle, attendees = [], isVisitor = false }: Mingle
         <div className="mt-4 flex items-center justify-between gap-2">
           <div className="flex -space-x-1.5 sm:-space-x-2 items-center shrink-0">
             {isVisitor
-              ? Array.from({ length: Math.min(confirmedCount, 4) }).map((_, i) => (
+              ? Array.from({ length: Math.min(attendeeCount, 4) }).map((_, i) => (
                   <span
                     key={`blurred-${i}`}
                     className="flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-stone to-brand-navy/30 ring-2 ring-white w-8 h-8 sm:w-9 sm:h-9"
@@ -129,22 +117,29 @@ export function MingleCard({ mingle, attendees = [], isVisitor = false }: Mingle
                     <User className="h-4 w-4 text-brand-ivory/80 blur-[2px]" />
                   </span>
                 ))
-              : attendees.slice(0, 4).map((p) => (
-                  <Avatar key={p.id} className="w-8 h-8 sm:w-9 sm:h-9 border-2 border-white shrink-0">
-                    <AvatarImage src={p.photo} alt={p.display_name} />
-                    <AvatarFallback className="text-[10px] sm:text-xs bg-brand-coral/10 text-brand-coral font-bold">
-                      {p.display_name?.slice(0, 2).toUpperCase() || "M"}
-                    </AvatarFallback>
-                  </Avatar>
-                ))}
-            {Array.from({ length: Math.max(0, Math.min(remaining, 4 - (isVisitor ? Math.min(confirmedCount, 4) : Math.min(attendees.length, 4)))) }).map((_, i) => (
+              : effectiveAttendees.slice(0, 4).map((p) => {
+                  const avatarSrc = formatAvatarUrl(p.photo);
+                  return (
+                    <Avatar
+                      key={p.id}
+                      className="w-8 h-8 sm:w-9 sm:h-9 border-2 border-white ring-2 ring-white shrink-0 shadow-xs"
+                      title={p.display_name}
+                    >
+                      {avatarSrc && <AvatarImage src={avatarSrc} alt={p.display_name} className="object-cover" />}
+                      <AvatarFallback className="text-[10px] sm:text-xs bg-brand-coral/10 text-brand-coral font-bold">
+                        {p.display_name?.slice(0, 2).toUpperCase() || "M"}
+                      </AvatarFallback>
+                    </Avatar>
+                  );
+                })}
+            {Array.from({ length: Math.max(0, Math.min(remaining, 4 - avatarSlots)) }).map((_, i) => (
               <span
                 key={`empty-${i}`}
                 className="shrink-0 rounded-full border border-dashed border-brand-stone bg-transparent ring-2 ring-white w-8 h-8 sm:w-9 sm:h-9"
                 aria-hidden="true"
               />
             ))}
-            {(isVisitor ? Math.min(confirmedCount, 4) : attendees.length) === 0 && remaining > 0 && (
+            {attendeeCount === 0 && remaining > 0 && (
               <span className="ml-1 self-center text-xs text-muted-foreground truncate">Be the first to join</span>
             )}
           </div>

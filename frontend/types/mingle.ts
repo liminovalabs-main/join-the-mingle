@@ -38,6 +38,7 @@ export interface Mingle {
   spots_remaining: number;
   is_sold_out: boolean;
   confirmed_attendees_count: number;
+  preview_attendees?: PublicProfile[];
   age_min?: number;
   age_max?: number;
   curator_notes?: string;

@@ -42,8 +42,7 @@ function formatDuration(minutes: number): string {
   return `${hours} ${hours === 1 ? "hour" : "hours"}`;
 }
 
-const FALLBACK_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80";
+import { getMingleImageUrl } from "@/lib/constants/images";
 
 function MingleDetailContent() {
   const params = useParams();
@@ -138,7 +137,7 @@ function MingleDetailContent() {
   const isPast = new Date(mingle.event_date) < new Date(new Date().setHours(0, 0, 0, 0));
   const remaining = mingle.spots_remaining !== undefined ? mingle.spots_remaining : Math.max(0, mingle.capacity - attendees.length);
   const isSoldOut = mingle.is_sold_out || remaining <= 0;
-  const heroImage = mingle.hero_image || FALLBACK_HERO_IMAGE;
+  const heroImage = getMingleImageUrl(mingle.hero_image, mingle.experience_type);
   const priceDisplay = parseFloat(mingle.ticket_price).toFixed(0);
 
   const facts = [

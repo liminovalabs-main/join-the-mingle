@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { getBooking, downloadCalendarInvite } from "@/lib/api/bookings";
+import { getMingleImageUrl } from "@/lib/constants/images";
 import { Booking } from "@/types/booking";
 
 function formatDate(dateStr?: string): string {
@@ -115,19 +116,13 @@ function BookingSuccessContent() {
 
           <div className="mt-5 flex gap-4 items-start">
             <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-brand-stone/20 shrink-0">
-              {booking.mingle.hero_image ? (
-                <Image
-                  src={booking.mingle.hero_image}
-                  alt={booking.mingle.title}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-brand-navy/10 text-brand-navy font-bold">
-                  M
-                </div>
-              )}
+              <Image
+                src={getMingleImageUrl(booking.mingle.hero_image, booking.mingle.experience_type)}
+                alt={booking.mingle.title}
+                fill
+                className="object-cover"
+                unoptimized
+              />
             </div>
 
             <div className="min-w-0 flex-1">

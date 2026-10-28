@@ -25,6 +25,7 @@ class MingleListSerializer(serializers.ModelSerializer):
     spots_remaining = serializers.SerializerMethodField()
     is_sold_out = serializers.SerializerMethodField()
     confirmed_attendees_count = serializers.SerializerMethodField()
+    preview_attendees = serializers.SerializerMethodField()
 
     class Meta:
         model = Mingle
@@ -45,6 +46,7 @@ class MingleListSerializer(serializers.ModelSerializer):
             'spots_remaining',
             'is_sold_out',
             'confirmed_attendees_count',
+            'preview_attendees',
             'created_at',
         ]
 
@@ -66,6 +68,31 @@ class MingleListSerializer(serializers.ModelSerializer):
 
     def get_confirmed_attendees_count(self, obj: Mingle) -> int:
         return obj.bookings.filter(status='confirmed').aggregate(total=Sum('places_booked'))['total'] or 0
+
+    def get_preview_attendees(self, obj: Mingle) -> list:
+        from apps.users.models import Profile
+        profile_ids = (
+            obj.bookings.filter(status='confirmed')
+            .order_by('created_at')
+            .values_list('profile_id', flat=True)
+        )
+        seen = set()
+        unique_ids = []
+        for pid in profile_ids:
+            if pid not in seen:
+                seen.add(pid)
+                unique_ids.append(pid)
+                if len(unique_ids) >= 5:
+                    break
+
+        if not unique_ids:
+            return []
+
+        profiles_dict = {
+            p.id: p for p in Profile.objects.filter(id__in=unique_ids)
+        }
+        ordered_profiles = [profiles_dict[pid] for pid in unique_ids if pid in profiles_dict]
+        return PublicProfileSerializer(ordered_profiles, many=True, context=self.context).data
 
 
 class MingleDetailSerializer(MingleListSerializer):
