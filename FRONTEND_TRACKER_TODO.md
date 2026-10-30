@@ -2,7 +2,7 @@
 
 **Project:** Mingler (`mingler.co.uk`) — Full-Stack Rebuild (Frontend Application)  
 **Framework Stack:** Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, TanStack React Query v5, Radix UI, Framer Motion, Web Audio API  
-**Status:** Phase 1: Inception — Sub-phase 1.2 Module Breakdown (Awaiting User Approval Gate)  
+**Status:** Part F4 Complete (87/87 Vitest, 115/115 Pytest) — Ready for Part F5 (Phase 1: Inception)  
 **Last Updated:** October 2026  
 
 ---
@@ -14,8 +14,8 @@
 | **Part F1** | **Design System Foundation & Global Navigation** | "Digital Atelier" palette (`brand-navy`, `brand-coral`, `brand-ivory`), Archivo & Inter typography, responsive Navbar, Footer, and Radix UI primitives. | ✅ **Complete** | ✅ 21/21 Passing (100%) |
 | **Part F2** | **Authentication Layer, API Client & UK GDPR Profiles** | Axios client with SimpleJWT auto-refresh, Login, Register, 6-Digit Email OTP verification modal, 3-step Password Reset, Private Profile editor, and zero-PII sanitization. | ✅ **Complete** | ✅ 36/36 Passing (100%) |
 | **Part F3** | **Public Experience Discovery & Venues Directory** | Homepage (Hero, category pills, curated carousel), Browse Experiences with multi-facet filters, Mingle Details with dynamic attendee roster (Defect #5 fix) and past date lockout guard (Defect #3 fix), Venues Directory with 7-day operating schedule. | ✅ **Complete** | ✅ 68/68 Vitest, 113/113 Pytest |
-| **Part F4** | **Booking Engine & Stripe Checkout Flow** | Places selector (1-5), real-time price calculations in GBP (£), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, and member booking dashboard with instant capacity release on cancellation. | ✅ **Complete** | ✅ 78/78 Vitest, 115/115 Pytest |
-| **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | ⏳ Queued | ⏳ Awaiting F4 |
+| **Part F4** | **Booking Engine, Stripe Checkout & Base44 Member Dashboard** | Places selector (1-5), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, member booking dashboard with instant capacity release, Base44 ProfileSummaryCard, VerifiedBadge, PersonProfile (`/people/[id]`), and dynamic card attendee previews. | ✅ **Complete** | ✅ 87/87 Vitest, 115/115 Pytest |
+| **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | 🔄 **Ready to Start (Phase 1)** | ⏳ Queued next |
 | **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | ⏳ Queued | ⏳ Awaiting F5 |
 
 ---
@@ -133,9 +133,17 @@
   - [x] Booking cancellation dialog with confirmation: calls `/api/v1/bookings/{id}/cancel/` and instantly releases reserved capacity.
   - [x] Direct RFC 5545 `.ics` download from member dashboard.
 - [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and verified.
-- [x] **Automated Testing F4 (Sub-phase 2.4):** 10 new unit tests (78 total across 17 test files) passing in Vitest; 2 new calendar tests (115 total) passing in Pytest.
-- [x] **Infrastructure as Code (Sub-phase 2.5):** All 14 Next.js routes compiled and prerendered in Turbopack build.
-- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F5 (Post-Mingle Experience & Double-Blind Mutual Matching).
+- [x] **Automated Testing F4 (Sub-phase 2.4):** 10 new unit tests (87 total across 18 test files) passing in Vitest; 2 new calendar tests (115 total) passing in Pytest.
+- [x] **Infrastructure as Code (Sub-phase 2.5):** All 15 Next.js routes compiled and prerendered in Turbopack build.
+- [x] **Base44 Full-Fidelity Alignment & Polish:**
+  - [x] Restored light ivory canvas on `/my-mingler` with top `<ProfileSummaryCard />` and horizontal pill tabs (`Profile`, `Mingles`, `Connections`).
+  - [x] Demographic age bracket calculation utilities (`calcAgeGroupFromDob`, `calcAgeGroup`) in `lib/utils/age.ts` for UK GDPR compliance.
+  - [x] Verified badge component (`VerifiedBadge`) with checkmark shield.
+  - [x] Public fellow attendee screen (`/people/[id]`) with visitor gate and "Also attending" mingles list.
+  - [x] Dynamic category hero image resolution across Catalog Cards, Detail Hero, Checkout Order Summary, Booking Confirmation, and My Mingler.
+  - [x] Live attendee preview avatars (up to 4 members) on browse cards with slot counters and automatic "Be the first to join" clearing.
+  - [x] Resolved `ImageFieldFile` serialization crash in `PublicProfileDetailView`.
+- [x] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Completed and verified (87/87 Vitest, 115/115 Pytest). Approved to proceed to Part F5.
 
 ---
 
