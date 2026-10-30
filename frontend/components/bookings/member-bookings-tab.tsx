@@ -14,6 +14,7 @@ import {
   Ticket,
   XCircle,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -288,7 +289,15 @@ export function MemberBookingsTab() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {b.status === "confirmed" && (
+                    <Link href={`/after-mingle/${b.mingle.id}`}>
+                      <Button className="rounded-full bg-brand-coral hover:bg-brand-coral/90 text-white px-3.5 h-8 text-[11px] font-bold uppercase tracking-wider">
+                        <Sparkles className="w-3.5 h-3.5 mr-1" />
+                        Review &amp; Match
+                      </Button>
+                    </Link>
+                  )}
                   <Link href={`/mingles/${b.mingle.id}`}>
                     <Button
                       variant="outline"

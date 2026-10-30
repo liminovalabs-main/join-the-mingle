@@ -2,7 +2,7 @@
 
 **Project:** Mingler (`mingler.co.uk`) — Full-Stack Rebuild (Frontend Application)  
 **Framework Stack:** Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, TanStack React Query v5, Radix UI, Framer Motion, Web Audio API  
-**Status:** Part F4 Complete (87/87 Vitest, 115/115 Pytest) — Ready for Part F5 (Phase 1: Inception)  
+**Status:** Part F5 Complete (100/100 Vitest, 115/115 Pytest) — Ready for Part F6 (Phase 1: Inception)  
 **Last Updated:** October 2026  
 
 ---
@@ -15,8 +15,8 @@
 | **Part F2** | **Authentication Layer, API Client & UK GDPR Profiles** | Axios client with SimpleJWT auto-refresh, Login, Register, 6-Digit Email OTP verification modal, 3-step Password Reset, Private Profile editor, and zero-PII sanitization. | ✅ **Complete** | ✅ 36/36 Passing (100%) |
 | **Part F3** | **Public Experience Discovery & Venues Directory** | Homepage (Hero, category pills, curated carousel), Browse Experiences with multi-facet filters, Mingle Details with dynamic attendee roster (Defect #5 fix) and past date lockout guard (Defect #3 fix), Venues Directory with 7-day operating schedule. | ✅ **Complete** | ✅ 68/68 Vitest, 113/113 Pytest |
 | **Part F4** | **Booking Engine, Stripe Checkout & Base44 Member Dashboard** | Places selector (1-5), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, member booking dashboard with instant capacity release, Base44 ProfileSummaryCard, VerifiedBadge, PersonProfile (`/people/[id]`), and dynamic card attendee previews. | ✅ **Complete** | ✅ 87/87 Vitest, 115/115 Pytest |
-| **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | 🔄 **Ready to Start (Phase 1)** | ⏳ Queued next |
-| **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | ⏳ Queued | ⏳ Awaiting F5 |
+| **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | ✅ **Complete** | ✅ 100/100 Vitest, 115/115 Pytest |
+| **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | 🔄 **Ready to Start (Phase 1)** | ⏳ Queued next |
 
 ---
 
@@ -148,23 +148,25 @@
 ---
 
 ### 🎉 Part F5: Post-Mingle Experience & Double-Blind Mutual Matching
-- [ ] Build After-Mingle Experience Review (`app/after-mingle/[id]/page.tsx`):
-  - [ ] **Defect #4 Fix (Attendance-Gated Feedback):** Restricts review access to confirmed attendees; displays friendly message for non-attendees.
-  - [ ] 5-star experience rating selector with optional feedback comments.
-  - [ ] Venue rating and review submission (automatically updates venue 3NF score).
-- [ ] Build Double-Blind Mutual Matching Engine:
-  - [ ] Clean attendee card grid displaying attendee photos and names (with zero PII).
-  - [ ] Interactive toggle: "Would you like to stay in touch with [Name]?"
-  - [ ] Submission action: calls `/api/v1/interactions/after-mingle/{id}/submit/` to record selections.
-- [ ] Build Celebration Experience (`components/mingles/ConnectionCelebration.tsx`):
-  - [ ] **Web Audio API Chime:** Custom synthesized melodic chime via `AudioContext` (safe for iOS Safari without external audio asset downloads).
-  - [ ] **Confetti Burst:** Multi-stage celebratory confetti explosion (`canvas-confetti`).
-  - [ ] Instant match reveal screen when mutual picks are detected ($A \leftrightarrow B$).
-- [ ] Build Member Connections Dashboard (`app/my-mingler/page.tsx` - Connections Tab):
-  - [ ] Grid of confirmed mutual connections with Instagram handles, LinkedIn links, and match dates.
-  - [ ] "Mark celebrated" status trigger.
-- [ ] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Review Part F5 matching flow before proceeding.
-- [ ] **Automated Testing F5:** Tests for attendance gating, mutual match state handling, and Web Audio API fallback.
+- [x] Build After-Mingle Experience Review (`app/after-mingle/[id]/page.tsx`):
+  - [x] **Defect #4 Fix (Attendance-Gated Feedback):** Restricts review access to confirmed attendees; displays friendly message for non-attendees.
+  - [x] 5-star experience rating selector with optional feedback comments.
+  - [x] Venue rating and review submission (automatically updates venue 3NF score, **Defect #7 fix**).
+- [x] Build Double-Blind Mutual Matching Engine:
+  - [x] Clean attendee card grid displaying attendee photos and names (with zero PII).
+  - [x] Interactive toggle: "Would you like to stay in touch with [Name]?"
+  - [x] Submission action: calls `/api/v1/mingles/{id}/select/` to record selections.
+- [x] Build Celebration Experience (`components/interactions/connection-celebration.tsx`):
+  - [x] **Web Audio API Chime:** Custom synthesized melodic chime via `AudioContext` (safe for iOS Safari without external audio asset downloads).
+  - [x] **Confetti Burst:** Multi-stage celebratory confetti explosion (`canvas-confetti`).
+  - [x] Instant match reveal screen when mutual picks are detected ($A \leftrightarrow B$).
+- [x] Build Member Connections Dashboard (`components/interactions/member-connections-tab.tsx` mounted in `app/my-mingler/page.tsx`):
+  - [x] Grid of confirmed mutual connections with Instagram handles, LinkedIn links, and match dates.
+  - [x] Direct link from completed past bookings in `MemberBookingsTab` via "Review & Match" button.
+- [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and approved by user.
+- [x] **Automated Testing F5 (Sub-phase 2.4):** 13 new unit tests (100 total across 20 test files) passing in Vitest (`tests/interactions.test.tsx` and `tests/celebration.test.tsx`); 115/115 Pytest tests passing.
+- [x] **Infrastructure as Code (Sub-phase 2.5):** All 16 Next.js routes compiled cleanly in Turbopack build with zero errors.
+- [ ] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Awaiting user approval to proceed to Part F6 (Venue Partner Portal & Founder Admin Dashboard).
 
 ---
 

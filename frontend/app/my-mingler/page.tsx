@@ -7,6 +7,7 @@ import { useAuth } from "@/context/auth-context";
 import { ProfileSummaryCard } from "@/components/profile/profile-summary-card";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 import { MemberBookingsTab } from "@/components/bookings/member-bookings-tab";
+import { MemberConnectionsTab } from "@/components/interactions/member-connections-tab";
 import { Button } from "@/components/ui/button";
 import { User, Calendar, Heart, Lock } from "lucide-react";
 
@@ -136,19 +137,7 @@ function MyMinglerContent() {
 
           {activeTab === "mingles" && <MemberBookingsTab />}
 
-          {activeTab === "connections" && (
-            <div className="p-10 rounded-3xl bg-white border border-border/70 text-center space-y-4 shadow-xs">
-              <div className="w-16 h-16 mx-auto rounded-full bg-brand-coral/15 flex items-center justify-center text-brand-coral">
-                <Heart className="w-8 h-8 fill-brand-coral/20" />
-              </div>
-              <h3 className="text-xl font-heading font-black text-brand-navy">
-                Mutual Connections
-              </h3>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                After you attend a Mingle experience, you will select attendees you enjoyed speaking with. When they pick you back, they will appear here with Instagram and LinkedIn links!
-              </p>
-            </div>
-          )}
+          {activeTab === "connections" && <MemberConnectionsTab />}
         </main>
       </div>
     </div>
