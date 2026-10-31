@@ -57,7 +57,6 @@ class StripeService:
         event_date_str = booking.mingle.event_date.strftime('%A, %d %B %Y')
 
         session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
             mode='payment',
             client_reference_id=str(booking.id),
             customer_email=booking.profile.user.email,
