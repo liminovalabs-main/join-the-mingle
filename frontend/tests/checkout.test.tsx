@@ -19,6 +19,8 @@ vi.mock("@/lib/api/mingles", () => ({
 vi.mock("@/lib/api/bookings", () => ({
   createBooking: vi.fn(),
   createCheckoutSession: vi.fn(),
+  getMyBookings: vi.fn().mockResolvedValue({ count: 0, results: [] }),
+  cancelBooking: vi.fn(),
 }));
 
 vi.mock("@/context/auth-context", () => ({

@@ -20,10 +20,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { getMingle } from "@/lib/api/mingles";
-import { createBooking, createCheckoutSession } from "@/lib/api/bookings";
+import { createBooking, createCheckoutSession, getMyBookings, cancelBooking } from "@/lib/api/bookings";
 import { extractErrorMessage } from "@/lib/api/client";
 import { getMingleImageUrl } from "@/lib/constants/images";
 import { Mingle } from "@/types/mingle";
+import { Booking } from "@/types/booking";
 
 function formatDate(dateStr?: string): string {
   if (!dateStr) return "";
@@ -52,6 +53,7 @@ function CheckoutContent() {
   const [places, setPlaces] = useState(1);
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [existingPending, setExistingPending] = useState<Booking | null>(null);
 
   useEffect(() => {
     if (!mingleId) return;
@@ -74,6 +76,32 @@ function CheckoutContent() {
     };
   }, [mingleId]);
 
+  // Check if member already has an active pending reservation for this mingle
+  useEffect(() => {
+    if (!isAuthenticated || !mingleId) return;
+    getMyBookings({ status: "pending" })
+      .then((data) => {
+        const found = data.results?.find((b) => b.mingle.id === mingleId);
+        if (found) {
+          setExistingPending(found);
+          setPlaces(found.places_booked);
+        }
+      })
+      .catch(() => {});
+  }, [isAuthenticated, mingleId]);
+
+  const handleCancelPending = async () => {
+    if (!existingPending) return;
+    try {
+      await cancelBooking(existingPending.id, "User requested seat change at checkout");
+      toast.success("Pending reservation cancelled. You can now select new seats.");
+      setExistingPending(null);
+      setError(null);
+    } catch (err) {
+      toast.error(extractErrorMessage(err) || "Could not cancel pending reservation.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl px-5 py-24 text-center">
@@ -83,7 +111,7 @@ function CheckoutContent() {
     );
   }
 
-  if (error || !mingle) {
+  if (error && !mingle) {
     return (
       <div className="mx-auto max-w-4xl px-5 py-24 text-center">
         <h1 className="font-heading text-3xl font-bold text-brand-navy">Experience Not Found</h1>
@@ -133,7 +161,7 @@ function CheckoutContent() {
       return;
     }
 
-    if (remaining <= 0) {
+    if (remaining <= 0 && !existingPending) {
       toast.error("This mingle is sold out.");
       return;
     }
@@ -142,13 +170,37 @@ function CheckoutContent() {
     setError(null);
 
     try {
-      // 1. Create concurrency-safe reservation
-      const bookingRes = await createBooking({
-        mingle_id: mingle.id,
-        places_booked: places,
-      });
+      let bookingId = existingPending?.id;
 
-      const bookingId = bookingRes.booking.id;
+      // 1. If no existing pending booking, create a new one
+      if (!bookingId) {
+        try {
+          const bookingRes = await createBooking({
+            mingle_id: mingle.id,
+            places_booked: places,
+          });
+          bookingId = bookingRes.booking.id;
+        } catch (bookingErr: any) {
+          const msg = extractErrorMessage(bookingErr);
+          if (msg.toLowerCase().includes("pending reservation")) {
+            // Find existing pending booking and reuse it
+            const myBookings = await getMyBookings({ status: "pending" });
+            const found = myBookings.results?.find((b) => b.mingle.id === mingle.id);
+            if (found) {
+              bookingId = found.id;
+              setExistingPending(found);
+            } else {
+              throw bookingErr;
+            }
+          } else {
+            throw bookingErr;
+          }
+        }
+      }
+
+      if (!bookingId) {
+        throw new Error("Unable to obtain reservation for checkout.");
+      }
 
       // 2. Initiate Stripe Checkout Session
       const currentOrigin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
@@ -231,14 +283,33 @@ function CheckoutContent() {
               </Link>
             </div>
           ) : (
-            /* Places Selector Card */
-            <div className="rounded-3xl border border-border/70 bg-white p-6 sm:p-7 shadow-xs">
-              <h2 className="font-heading text-xl font-bold text-brand-navy mb-2">
-                How many places?
-              </h2>
-              <p className="text-sm text-muted-foreground mb-6">
-                Come alone or bring friends &mdash; you can reserve up to {maxPlaces} {maxPlaces === 1 ? "place" : "places"}.
-              </p>
+            <>
+              {existingPending && (
+                <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>
+                      You have an active pending reservation for <strong>{existingPending.places_booked} {existingPending.places_booked === 1 ? "seat" : "seats"}</strong> (£{parseFloat(existingPending.total_amount).toFixed(2)}). Clicking Pay will resume checkout.
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCancelPending}
+                    className="text-xs font-bold uppercase tracking-wider text-amber-900 underline hover:text-amber-700 cursor-pointer text-left sm:text-right shrink-0"
+                  >
+                    Cancel &amp; Change Seats
+                  </button>
+                </div>
+              )}
+
+              {/* Places Selector Card */}
+              <div className="rounded-3xl border border-border/70 bg-white p-6 sm:p-7 shadow-xs">
+                <h2 className="font-heading text-xl font-bold text-brand-navy mb-2">
+                  How many places?
+                </h2>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Come alone or bring friends &mdash; you can reserve up to {maxPlaces} {maxPlaces === 1 ? "place" : "places"}.
+                </p>
 
               <div className="flex items-center gap-5">
                 <button
@@ -273,6 +344,7 @@ function CheckoutContent() {
                 </span>
               </div>
             </div>
+            </>
           )}
 
           {/* Secure Payment Card */}
