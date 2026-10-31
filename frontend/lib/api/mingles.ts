@@ -74,3 +74,14 @@ export async function getMingleAttendees(
   );
   return response.data;
 }
+
+/**
+ * Submit an experience proposal for a managed venue.
+ */
+export async function submitMingleProposal(
+  data: FormData | Record<string, unknown>
+): Promise<Mingle> {
+  const response = await apiClient.post<Mingle>("/mingles/submit/", data);
+  return response.data;
+}
+

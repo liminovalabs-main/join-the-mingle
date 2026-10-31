@@ -1,6 +1,7 @@
 import { apiClient } from "./client";
-import { PaginatedResponse } from "@/types/mingle";
-import { Venue, VenueFilterParams, VenueReview } from "@/types/venue";
+import { PaginatedResponse, Mingle } from "@/types/mingle";
+import { Venue, VenueFilterParams, VenueOpeningHour, VenueReview } from "@/types/venue";
+import { VenueOpeningHourInput } from "@/types/admin";
 
 /**
  * Fetch approved London venues with filtering and search.
@@ -70,5 +71,62 @@ export async function submitVenueReview(
     message: string;
     review: VenueReview;
   }>(`/venues/${slugOrId}/reviews/`, data);
+  return response.data;
+}
+
+/**
+ * Register a new venue application awaiting founder approval.
+ * Automatically elevates applicant to 'venue_manager'.
+ */
+export async function registerVenue(
+  data: FormData | Record<string, unknown>
+): Promise<Venue> {
+  const response = await apiClient.post<Venue>("/venues/register/", data);
+  return response.data;
+}
+
+/**
+ * Fetch all venues managed by the authenticated user.
+ */
+export async function getMyVenues(): Promise<PaginatedResponse<Venue>> {
+  const response = await apiClient.get<PaginatedResponse<Venue>>("/venues/mine/");
+  return response.data;
+}
+
+/**
+ * Update profile and details of a managed venue.
+ */
+export async function updateVenue(
+  idOrSlug: string,
+  data: FormData | Record<string, unknown>
+): Promise<Venue> {
+  const response = await apiClient.patch<Venue>(`/venues/${idOrSlug}/`, data);
+  return response.data;
+}
+
+/**
+ * Configure or bulk replace the 7-day operating schedule for a venue.
+ */
+export async function updateVenueOpeningHours(
+  venueId: string,
+  hours: VenueOpeningHourInput[]
+): Promise<VenueOpeningHour[]> {
+  const response = await apiClient.put<VenueOpeningHour[]>(
+    `/venues/${venueId}/hours/`,
+    hours
+  );
+  return response.data;
+}
+
+/**
+ * Fetch all hosted and proposed Mingles for a specific managed venue.
+ */
+export async function getVenueMingles(
+  venueId: string,
+  page: number = 1
+): Promise<PaginatedResponse<Mingle>> {
+  const response = await apiClient.get<PaginatedResponse<Mingle>>(
+    `/venues/${venueId}/mingles/?page=${page}`
+  );
   return response.data;
 }

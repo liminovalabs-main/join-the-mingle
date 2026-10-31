@@ -32,6 +32,17 @@ export function getMingleImageUrl(heroImage?: string | null, experienceType?: st
 }
 
 /**
+ * Convenient alias for getMingleImageUrl with (experienceType, heroImage) parameter order.
+ */
+export function resolveCategoryHeroImage(
+  experienceType?: string,
+  heroImage?: string | null
+): string {
+  return getMingleImageUrl(heroImage, experienceType);
+}
+
+
+/**
  * Normalizes an avatar URL so relative media paths (/media/...) are prefixed
  * with the backend host if required.
  */

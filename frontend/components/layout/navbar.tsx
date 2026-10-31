@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, User as UserIcon, LogOut } from "lucide-react";
+import { Menu, X, User as UserIcon, LogOut, Shield, Building2 } from "lucide-react";
 import { MinglerLogo } from "@/components/brand/mingler-logo";
 import { useAuth } from "@/context/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -66,7 +66,27 @@ export function Navbar() {
               <div className="h-8 w-24 rounded-full bg-brand-ivory/10 animate-pulse" />
             </div>
           ) : isAuthenticated ? (
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-4">
+              {user?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.16em] text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-950/40 border border-emerald-500/30 px-3 py-1.5 rounded-full"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Admin</span>
+                </Link>
+              )}
+
+              {(user?.role === "venue_manager" || user?.role === "admin") && (
+                <Link
+                  href="/venue/dashboard"
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.16em] text-brand-ivory/80 hover:text-brand-coral transition-colors"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>Venue Hub</span>
+                </Link>
+              )}
+
               <Link
                 href="/my-mingler"
                 className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.16em] text-brand-ivory hover:text-brand-coral transition-colors"
@@ -97,6 +117,12 @@ export function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-6">
+              <Link
+                href="/venue/register"
+                className="hidden lg:inline-flex text-xs font-bold uppercase tracking-[0.16em] text-brand-ivory/60 hover:text-brand-ivory transition-colors"
+              >
+                Partner With Us
+              </Link>
               <button
                 type="button"
                 onClick={() => openModal("login")}
@@ -141,6 +167,28 @@ export function Navbar() {
           <div className="pt-4 border-t border-brand-ivory/10 space-y-3">
             {isAuthenticated ? (
               <>
+                {user?.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-bold uppercase tracking-[0.16em] text-emerald-400"
+                  >
+                    <Shield className="w-4 h-4" />
+                    Founder Admin Portal
+                  </Link>
+                )}
+
+                {(user?.role === "venue_manager" || user?.role === "admin") && (
+                  <Link
+                    href="/venue/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-bold uppercase tracking-[0.16em] text-brand-ivory"
+                  >
+                    <Building2 className="w-4 h-4 text-brand-coral" />
+                    Venue Partner Hub
+                  </Link>
+                )}
+
                 <Link
                   href="/my-mingler"
                   onClick={() => setMobileMenuOpen(false)}
@@ -149,6 +197,7 @@ export function Navbar() {
                   <UserIcon className="w-4 h-4 text-brand-coral" />
                   My Mingler Profile
                 </Link>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -162,6 +211,13 @@ export function Navbar() {
               </>
             ) : (
               <>
+                <Link
+                  href="/venue/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 text-sm font-bold uppercase tracking-[0.16em] text-brand-ivory/80 hover:text-brand-ivory"
+                >
+                  Partner With Us
+                </Link>
                 <button
                   type="button"
                   onClick={() => {

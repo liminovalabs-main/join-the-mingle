@@ -6,3 +6,4 @@ export * from "./auth";
 export * from "./mingle";
 export * from "./venue";
 export * from "./booking";
+export * from "./admin";

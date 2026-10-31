@@ -16,7 +16,7 @@
 | **Part F3** | **Public Experience Discovery & Venues Directory** | Homepage (Hero, category pills, curated carousel), Browse Experiences with multi-facet filters, Mingle Details with dynamic attendee roster (Defect #5 fix) and past date lockout guard (Defect #3 fix), Venues Directory with 7-day operating schedule. | ✅ **Complete** | ✅ 68/68 Vitest, 113/113 Pytest |
 | **Part F4** | **Booking Engine, Stripe Checkout & Base44 Member Dashboard** | Places selector (1-5), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, member booking dashboard with instant capacity release, Base44 ProfileSummaryCard, VerifiedBadge, PersonProfile (`/people/[id]`), and dynamic card attendee previews. | ✅ **Complete** | ✅ 87/87 Vitest, 115/115 Pytest |
 | **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | ✅ **Complete** | ✅ 100/100 Vitest, 115/115 Pytest |
-| **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | 🔄 **Ready to Start (Phase 1)** | ⏳ Queued next |
+| **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | ✅ **Complete** | ✅ 119/119 Vitest, 115/115 Pytest |
 
 ---
 
@@ -171,24 +171,28 @@
 ---
 
 ### 🏢 Part F6: Venue Partner Portal & Founder Admin Dashboard
-- [ ] Build Venue Partner Portal (`app/venue/`):
-  - [ ] `/venue/register`: Self-service venue application with email verification guard.
-  - [ ] `/venue/dashboard`: Venue profile manager (bio, area, category, direct hero image upload).
-  - [ ] **Defect #8 Fix (Operating Hours Editor):** 7-day schedule editor using HTML5 `<input type="time">` pickers and accessible "Closed" toggles.
-  - [ ] `/venue/submissions`: Experience proposal submission form (title, type, date, time, price, capacity, age range).
-- [ ] Build Founder Admin Dashboard (`app/admin/`):
-  - [ ] `/admin/approvals`: Curation queues:
-    - Pending venues queue: approve / reject with feedback notes.
-    - Submitted mingles queue: approve & publish live, reject, or request changes with curator feedback notes.
-  - [ ] `/admin/dashboard`: Platform overview metrics (total revenue, active mingles, verified members).
-  - [ ] Platform commission fee controller (update percentage with historical audit log).
-- [ ] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Review Part F6 portals before proceeding.
-- [ ] **Automated Testing F6:** Tests for operating hours validation, proposal submission guards, and admin approval actions.
+- [x] Build Venue Partner Portal (`app/venue/`):
+  - [x] `/venue/register`: Self-service venue application with email verification guard.
+  - [x] `/venue/dashboard`: Venue profile manager (bio, area, category, direct hero image upload).
+  - [x] **Defect #8 Fix (Operating Hours Editor):** 7-day schedule editor using HTML5 `<input type="time">` pickers and accessible "Closed" toggles.
+  - [x] `/venue/submissions`: Experience proposal submission form (title, type, date, time, price, capacity, age range).
+- [x] Build Founder Admin Dashboard (`app/admin/`):
+  - [x] **Defect #9 Fix (Admin Role Guard):** `AdminGuard` enforcing `user.role === 'admin'` with 403 Forbidden screen.
+  - [x] `/admin/approvals`: Curation queues:
+    - [x] Pending venues queue: approve / reject with instant state update.
+    - [x] Submitted mingles queue: approve & publish live, reject, or request changes with modal curator feedback notes.
+  - [x] Platform overview metrics (pending venues, active mingles, verified commission rate).
+  - [x] Platform commission fee controller (update percentage with versioned historical audit log).
+- [x] 🛑 **AI-DLC Sub-phase 2.3 Gating Point**: Reviewed and approved by user.
+- [x] **Automated Testing F6 (Sub-phase 2.4):** 19 new unit & integration tests (119 total across 22 test files) passing in Vitest (`tests/venue-portal.test.tsx` and `tests/admin-approvals.test.tsx`); 115/115 Pytest tests passing.
+- [x] **Infrastructure as Code (Sub-phase 2.5):** All 19 Next.js routes compiled cleanly in Turbopack build with zero errors.
+- [x] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Completed and verified (119/119 Vitest, 115/115 Pytest, 19/19 routes compiled).
 
 ---
 
 ## 📌 Session Handover & Execution Instructions
 
 1. **AI-DLC Protocol Enforcement:** Every sub-phase must begin with `## Current Lifecycle State: Phase X — Sub-phase Y` and halt at gating points.
-2. **Defect Zero Guarantee:** Validate each of the 8 resolved Base44 defects in their respective sub-phases.
+2. **Defect Zero Guarantee:** Validate each of the 9 resolved Base44 defects in their respective sub-phases.
 3. **Continuous Testing:** Run TypeScript typechecks (`npm run build` or `npx tsc --noEmit`) and linting after every sub-phase before presenting the gating point.
+
