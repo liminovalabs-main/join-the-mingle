@@ -14,18 +14,21 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 text-xs text-brand-ivory/60">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 text-xs text-brand-ivory/60">
           <Link href="/browse" className="hover:text-brand-ivory transition-colors">
             Browse Mingles
           </Link>
           <Link href="/how-it-works" className="hover:text-brand-ivory transition-colors">
             How It Works
           </Link>
+          <Link href="/about" className="hover:text-brand-ivory transition-colors">
+            About Us
+          </Link>
           <Link href="/venue" className="hover:text-brand-ivory transition-colors">
             Venue Partners
           </Link>
-          <p className="text-xs text-brand-ivory/50 sm:border-l sm:border-brand-ivory/20 sm:pl-8">
-            Great things to do. New people to do them with. — London
+          <p className="text-xs text-brand-ivory/50 sm:border-l sm:border-brand-ivory/20 sm:pl-6">
+            Great things to do. New people to do them with. &mdash; London
           </p>
         </div>
       </div>

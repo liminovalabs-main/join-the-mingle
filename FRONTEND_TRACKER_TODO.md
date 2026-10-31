@@ -17,6 +17,7 @@
 | **Part F4** | **Booking Engine, Stripe Checkout & Base44 Member Dashboard** | Places selector (1-5), Stripe Checkout session initiation, Booking confirmation with dynamic `.ics` calendar invitation download, member booking dashboard with instant capacity release, Base44 ProfileSummaryCard, VerifiedBadge, PersonProfile (`/people/[id]`), and dynamic card attendee previews. | ✅ **Complete** | ✅ 87/87 Vitest, 115/115 Pytest |
 | **Part F5** | **Post-Mingle Experience & Double-Blind Mutual Matching** | Attendance-gated experience feedback (Defect #4 fix), 3NF venue reviews (Defect #7 fix), double-blind attendee selection grid ($A \leftrightarrow B$), Web Audio API `AudioContext` celebration chime, two-stage confetti burst, and connections dashboard. | ✅ **Complete** | ✅ 100/100 Vitest, 115/115 Pytest |
 | **Part F6** | **Venue Partner Portal & Founder Admin Dashboard** | Self-service venue registration with email verification check, 7-day operating hours time-pickers (Defect #8 fix), mingle proposal submissions, founder curation & approval queues (approve, reject, changes requested with curator notes), and platform fee manager with audit trail. | ✅ **Complete** | ✅ 119/119 Vitest, 115/115 Pytest |
+| **Part F7** | **Base44 Experience Pages & Brand Surfaces** | Dedicated `/about` page (lifestyle hero band, research metrics, founders story & photos), `/how-it-works` page (Base44 infographic banner, 4 vector illustration cards, UK GDPR guarantees, FAQ accordion), and enriched Homepage (Base44 hero backdrop photography, category pills, dictionary entry, venue partner CTA). | ✅ **Complete** | ✅ 133/133 Vitest, 115/115 Pytest |
 
 ---
 
@@ -187,6 +188,38 @@
 - [x] **Automated Testing F6 (Sub-phase 2.4):** 19 new unit & integration tests (119 total across 22 test files) passing in Vitest (`tests/venue-portal.test.tsx` and `tests/admin-approvals.test.tsx`); 115/115 Pytest tests passing.
 - [x] **Infrastructure as Code (Sub-phase 2.5):** All 19 Next.js routes compiled cleanly in Turbopack build with zero errors.
 - [x] 🛑 **AI-DLC Sub-phase 2.5 Gating Point**: Completed and verified (119/119 Vitest, 115/115 Pytest, 19/19 routes compiled).
+
+---
+
+### 🌟 Part F7: Base44 Experience Pages & Public Brand Surfaces
+- [x] Build Dedicated About Us Page (`app/about/`):
+  - [x] `AboutLifestyleImage`: Full-bleed London lifestyle studio photo with navy gradient overlay and headline.
+  - [x] `WhyItMatters`: Global Flourishing Study research citation on relationship quality.
+  - [x] `ConnectionMetrics`: 4 metric cards (Happier, Healthier, More Fulfilled, More Resilient) and "Our Belief" sage banner.
+  - [x] `WhoWeAre`: Meriam & KJ's story and signatures.
+  - [x] `FounderPhoto`: Polarized photo card with subtle drop shadow.
+  - [x] "Find your mingle" primary coral CTA leading to `/browse`.
+- [x] Build Dedicated How It Works Page (`app/how-it-works/`):
+  - [x] Hero header with Base44 colors and typography.
+  - [x] Master Base44 infographic banner (`9b2a7909c_how-it-works-blue.png`).
+  - [x] 4-Step Interactive Process with Base44 SVG Vector Illustrations:
+    - [x] Step 1: Join in seconds (`JoinIllustration`) with UK GDPR age verification.
+    - [x] Step 2: Find your mingle (`FindIllustration`) across dine, play, create, learn.
+    - [x] Step 3: Show up & mingle (`MingleIllustration`) with curated intimate tables of 6–10.
+    - [x] Step 4: Mingle again (`MingleAgainIllustration`) with double-blind mutual contact unlock.
+  - [x] Mingler Quality & Safety Guarantee section.
+  - [x] Accessible `FaqAccordion` component for attendees.
+  - [x] Bottom CTA card with links to `/browse` and `/about`.
+- [x] Enrich Homepage (`app/page.tsx`):
+  - [x] `HeroBackdrop`: Base44 lifestyle photography with navy gradient blend.
+  - [x] Hero button linking to `/how-it-works`.
+  - [x] `CategoryPills`: Interactive category filter bar directly on homepage.
+  - [x] `DictionaryEntry`: Base44 signature editorial definition device (`mingler` noun).
+  - [x] 4-Step "How Mingler Works" interactive showcase.
+  - [x] `VenuePartnerCta`: Dedicated London venue partnership invitation card.
+- [x] Update Global Footer (`components/layout/footer.tsx`): Added "About Us" link.
+- [x] **Automated Testing F7 (Sub-phase 2.4):** 14 new tests in `tests/public-pages.test.tsx` (133/133 passing in Vitest, 115/115 in Pytest).
+- [x] **Infrastructure as Code (Sub-phase 2.5):** All 22 Next.js routes compiled cleanly in Turbopack build with zero errors.
 
 ---
 
