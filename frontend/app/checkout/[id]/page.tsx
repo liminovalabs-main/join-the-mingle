@@ -111,7 +111,7 @@ function CheckoutContent() {
     );
   }
 
-  if (error && !mingle) {
+  if (!mingle) {
     return (
       <div className="mx-auto max-w-4xl px-5 py-24 text-center">
         <h1 className="font-heading text-3xl font-bold text-brand-navy">Experience Not Found</h1>

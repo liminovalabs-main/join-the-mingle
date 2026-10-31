@@ -31,10 +31,18 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
-# Serve media files locally in development mode
+# Serve media files in development or staging fallback when Cloudflare R2 is not enabled
+import os
 from django.conf import settings
 from django.conf.urls.static import static
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+elif not os.environ.get('CLOUDFLARE_R2_ACCESS_KEY_ID'):
+    from django.urls import re_path
+    from django.views.static import serve
+
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]
 
