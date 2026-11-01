@@ -33,6 +33,10 @@ services:
         value: "http://localhost:3000"
       - key: CELERY_TASK_ALWAYS_EAGER
         value: "True"
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
 
 databases:
   # ──────────────────────────────────────────────

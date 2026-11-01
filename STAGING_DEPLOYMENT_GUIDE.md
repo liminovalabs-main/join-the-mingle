@@ -95,15 +95,31 @@ Under the **Environment** tab of your Web Service, configure:
 5. Once deployment completes, your backend URL will be:
    `https://mringle-backend.onrender.com`
 
-#### Step 4: Create a Superuser (Admin Account)
-To access the Django Admin (`/admin`) and curator moderation screens:
-1. In the Render Dashboard, click on your `mringle-backend` service.
-2. Go to the **Shell** tab on the left.
-3. Run:
+#### Step 4: Create a Superuser (Admin Account) — Render Free Tier Friendly
+
+Since Render disables the interactive Web Shell on free tier accounts, we have provided two easy ways to create your admin account:
+
+##### Method 1: Automatic via Render Environment Variables (Recommended)
+1. Go to your `mringle-backend` service in the Render Dashboard &rarr; **Environment** tab.
+2. Add two new environment variables:
+   - `DJANGO_SUPERUSER_EMAIL`: e.g. `admin@mringle.co.uk`
+   - `DJANGO_SUPERUSER_PASSWORD`: e.g. `YourSecureAdminPass123!`
+3. Click **Save Changes**.
+4. Render will automatically redeploy and execute `python manage.py initadmin` during `./build.sh`.
+5. Your superuser will be created immediately with verified email and staff/admin permissions!
+6. Log in at `https://mringle-backend.onrender.com/admin/`.
+
+##### Method 2: Direct from Your Local Computer Terminal
+Render provides an **External Database URL** that allows external management:
+1. In Render Dashboard, click your database (`mringle-db`).
+2. Under **Connections**, copy the **External Database URL** (e.g. `postgresql://mingler_user:...@dpg-....frankfurt-postgres.render.com/mingler_db`).
+3. In your local VS Code / computer terminal, run:
    ```bash
-   python manage.py createsuperuser
+   cd backend
+   source venv/bin/activate
+   DATABASE_URL="<paste-external-database-url>" python manage.py createsuperuser --settings=config.settings.production
    ```
-4. Enter your email and password. You can now log into `https://mringle-backend.onrender.com/admin/`.
+4. Enter your email and password interactively. It connects directly to Render's live database!
 
 ---
 
