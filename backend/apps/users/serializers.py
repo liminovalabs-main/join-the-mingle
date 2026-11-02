@@ -140,6 +140,7 @@ class PrivateProfileSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Serializer for new member registration."""
 
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -163,6 +164,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError({'password_confirm': "Passwords do not match."})
+
+        email = attrs.get('email', '').strip().lower()
+        existing_user = User.objects.filter(email=email).first()
+        if existing_user and existing_user.is_email_verified:
+            raise serializers.ValidationError({'email': "An account with this email address already exists. Please sign in."})
+
+        attrs['email'] = email
         return attrs
 
     def create(self, validated_data: Dict[str, Any]) -> User:
@@ -171,12 +179,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         validated_data.pop('password_confirm')
         display_name = validated_data.pop('display_name', None)
+        email = validated_data['email']
 
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            role=validated_data.get('role', 'member'),
-        )
+        existing_user = User.objects.filter(email=email).first()
+        if existing_user and not existing_user.is_email_verified:
+            user = existing_user
+            user.set_password(validated_data['password'])
+            if 'role' in validated_data:
+                user.role = validated_data['role']
+            user.save()
+        else:
+            user = User.objects.create_user(
+                email=email,
+                password=validated_data['password'],
+                role=validated_data.get('role', 'member'),
+            )
 
         if display_name and hasattr(user, 'profile'):
             user.profile.display_name = display_name

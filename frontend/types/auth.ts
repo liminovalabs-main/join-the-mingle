@@ -58,6 +58,7 @@ export interface AuthApiResponse {
   tokens?: AuthTokens;
   user?: User;
   profile?: PrivateProfile;
+  dev_code?: string;
   error?: {
     code?: string;
     message?: string;

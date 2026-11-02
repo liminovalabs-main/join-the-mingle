@@ -56,6 +56,17 @@ def send_verification_email(user, code: str) -> bool:
     </html>
     """
 
+    # Always log verification code to server logs for staging & observability
+    logger.warning(
+        "\n======================================================\n"
+        "  [MINGLER VERIFICATION OTP]\n"
+        "  Recipient: %s\n"
+        "  Code: %s\n"
+        "======================================================\n",
+        user.email,
+        code,
+    )
+
     try:
         send_mail(
             subject=subject,
@@ -68,7 +79,7 @@ def send_verification_email(user, code: str) -> bool:
         logger.info('Dispatched verification email to %s', user.email)
         return True
     except Exception as exc:
-        logger.error('Failed to send verification email to %s: %s', user.email, exc)
+        logger.error('Failed to send verification email to %s (credentials or SMTP port issue): %s', user.email, exc)
         return False
 
 
@@ -119,6 +130,17 @@ def send_password_reset_email(user, code: str) -> bool:
     </html>
     """
 
+    # Always log reset code to server logs for staging & observability
+    logger.warning(
+        "\n======================================================\n"
+        "  [MINGLER PASSWORD RESET OTP]\n"
+        "  Recipient: %s\n"
+        "  Code: %s\n"
+        "======================================================\n",
+        user.email,
+        code,
+    )
+
     try:
         send_mail(
             subject=subject,
@@ -131,5 +153,5 @@ def send_password_reset_email(user, code: str) -> bool:
         logger.info('Dispatched password reset email to %s', user.email)
         return True
     except Exception as exc:
-        logger.error('Failed to send password reset email to %s: %s', user.email, exc)
+        logger.error('Failed to send password reset email to %s (credentials or SMTP port issue): %s', user.email, exc)
         return False

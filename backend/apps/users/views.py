@@ -47,22 +47,26 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
 
         profile_data = PrivateProfileSerializer(user.profile).data
+        latest_code = EmailVerificationCode.objects.filter(user=user).order_by('-created_at').first()
+        code_str = latest_code.code if latest_code else None
 
-        return Response(
-            {
-                'success': True,
-                'message': 'Account created successfully. A 6-digit verification code has been sent to your email. Please verify your email to activate your account.',
-                'user': {
-                    'id': str(user.id),
-                    'email': user.email,
-                    'role': user.role,
-                    'is_active': user.is_active,
-                    'is_email_verified': user.is_email_verified,
-                },
-                'profile': profile_data,
+        response_data = {
+            'success': True,
+            'message': 'Account created successfully. A 6-digit verification code has been sent to your email. Please verify your email to activate your account.',
+            'user': {
+                'id': str(user.id),
+                'email': user.email,
+                'role': user.role,
+                'is_active': user.is_active,
+                'is_email_verified': user.is_email_verified,
             },
-            status=status.HTTP_201_CREATED,
-        )
+            'profile': profile_data,
+        }
+
+        if not getattr(settings, 'EMAIL_HOST_USER', None) or os.environ.get('STAGING_OTP_DISPLAY', 'True').lower() in ('true', '1'):
+            response_data['dev_code'] = code_str
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class VerifyEmailView(APIView):
@@ -127,13 +131,14 @@ class ResendVerificationCodeView(APIView):
         code = EmailVerificationCode.generate_code_for_user(user)
         send_verification_email(user, code)
 
-        return Response(
-            {
-                'success': True,
-                'message': 'A new 6-digit verification code has been sent to your email.',
-            },
-            status=status.HTTP_200_OK,
-        )
+        response_data = {
+            'success': True,
+            'message': 'A new 6-digit verification code has been sent to your email.',
+        }
+        if not getattr(settings, 'EMAIL_HOST_USER', None) or os.environ.get('STAGING_OTP_DISPLAY', 'True').lower() in ('true', '1'):
+            response_data['dev_code'] = code
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class PasswordResetRequestView(APIView):
@@ -151,13 +156,14 @@ class PasswordResetRequestView(APIView):
         code = PasswordResetCode.generate_code_for_user(user)
         send_password_reset_email(user, code)
 
-        return Response(
-            {
-                'success': True,
-                'message': 'A 6-digit password reset code has been sent to your email.',
-            },
-            status=status.HTTP_200_OK,
-        )
+        response_data = {
+            'success': True,
+            'message': 'A 6-digit password reset code has been sent to your email.',
+        }
+        if not getattr(settings, 'EMAIL_HOST_USER', None) or os.environ.get('STAGING_OTP_DISPLAY', 'True').lower() in ('true', '1'):
+            response_data['dev_code'] = code
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class PasswordResetVerifyCodeView(APIView):
