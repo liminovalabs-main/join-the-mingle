@@ -242,9 +242,12 @@ else:
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = True
-EMAIL_TIMEOUT = 5  # Strict 5-second socket timeout to prevent worker starvation and frontend timeouts
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Mingler <hello@mingler.co.uk>')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1') if EMAIL_PORT == 587 else False
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() in ('true', '1') if EMAIL_PORT == 465 else False
+EMAIL_TIMEOUT = 10  # 10-second timeout for reliable SMTP handshakes
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL') or (
+    f"Mingler <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'Mingler <hello@mingler.co.uk>'
+)
 
 # ──────────────────────────────────────────────
 # Cloudflare R2 (S3-compatible Media Storage)
