@@ -7,20 +7,13 @@ import { useAuth } from "@/context/auth-context";
 import { MailCheck, RefreshCw } from "lucide-react";
 
 function VerifyEmailContent({ email }: { email: string }) {
-  const { verifyEmail, resendVerification, devOtpCode } = useAuth();
+  const { verifyEmail, resendVerification } = useAuth();
   const [digits, setDigits] = React.useState<string[]>(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [countdown, setCountdown] = React.useState(60);
   const [canResend, setCanResend] = React.useState(false);
   const [isResending, setIsResending] = React.useState(false);
   const inputsRef = React.useRef<(HTMLInputElement | null)[]>([]);
-
-  // Auto-fill digits when demo OTP code is provided
-  React.useEffect(() => {
-    if (devOtpCode && devOtpCode.length === 6) {
-      setDigits(devOtpCode.split(""));
-    }
-  }, [devOtpCode]);
 
   // Focus first input on mount
   React.useEffect(() => {
@@ -130,20 +123,6 @@ function VerifyEmailContent({ email }: { email: string }) {
       </DialogHeader>
 
       <div className="space-y-6 my-4">
-        {devOtpCode && (
-          <div className="rounded-xl bg-brand-coral/15 border border-brand-coral/30 p-3 text-center text-xs">
-            <span className="font-semibold text-brand-coral uppercase tracking-wider text-[11px] block mb-1">
-              Staging Demo Code
-            </span>
-            <span className="font-mono font-bold text-lg tracking-widest text-brand-ivory">
-              {devOtpCode}
-            </span>
-            <span className="text-brand-ivory/60 block text-[11px] mt-1">
-              Pre-filled automatically for demonstration testing.
-            </span>
-          </div>
-        )}
-
         {/* 6 Digit Inputs */}
         <div className="flex justify-center gap-2 sm:gap-3" onPaste={handlePaste}>
           {digits.map((digit, index) => (

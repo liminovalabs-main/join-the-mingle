@@ -24,8 +24,7 @@ interface AuthContextType {
   role: UserRole;
   activeModal: AuthModalType;
   prefilledEmail: string;
-  devOtpCode: string;
-  openModal: (modal: AuthModalType, email?: string, code?: string) => void;
+  openModal: (modal: AuthModalType, email?: string) => void;
   closeModal: () => void;
   saveSession: (
     newTokens: AuthTokens,
@@ -94,15 +93,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [activeModal, setActiveModal] = React.useState<AuthModalType>(null);
   const [prefilledEmail, setPrefilledEmail] = React.useState<string>("");
-  const [devOtpCode, setDevOtpCode] = React.useState<string>("");
 
   const openModal = React.useCallback(
-    (modal: AuthModalType, email?: string, code?: string) => {
+    (modal: AuthModalType, email?: string) => {
       if (email !== undefined) {
         setPrefilledEmail(email);
-      }
-      if (code !== undefined) {
-        setDevOtpCode(code);
       }
       setActiveModal(modal);
     },
@@ -111,7 +106,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const closeModal = React.useCallback(() => {
     setActiveModal(null);
-    setDevOtpCode("");
   }, []);
 
   // Listen to session expiry event dispatched by Axios interceptor
@@ -269,13 +263,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         res.data.message ||
           "Account created! Please check your email for the 6-digit code."
       );
-      // Automatically transition to OTP verification modal with email and dev_code passed through
-      if (res.data.dev_code) {
-        setDevOtpCode(res.data.dev_code);
-        openModal("verify-email", email, res.data.dev_code);
-      } else {
-        openModal("verify-email", email);
-      }
+      openModal("verify-email", email);
       return true;
     } catch (error) {
       toast.error(extractErrorMessage(error));
@@ -309,9 +297,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         "/auth/resend-verification/",
         { email }
       );
-      if (res.data.dev_code) {
-        setDevOtpCode(res.data.dev_code);
-      }
       toast.success(
         res.data.message || "A new 6-digit verification code has been sent."
       );
@@ -445,7 +430,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role: user?.role || "member",
         activeModal,
         prefilledEmail,
-        devOtpCode,
         openModal,
         closeModal,
         saveSession,

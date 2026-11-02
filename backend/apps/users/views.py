@@ -50,8 +50,6 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
 
         profile_data = PrivateProfileSerializer(user.profile).data
-        latest_code = EmailVerificationCode.objects.filter(user=user).order_by('-created_at').first()
-        code_str = latest_code.code if latest_code else None
 
         response_data = {
             'success': True,
@@ -65,9 +63,6 @@ class RegisterView(generics.CreateAPIView):
             },
             'profile': profile_data,
         }
-
-        if not getattr(settings, 'EMAIL_HOST_USER', None) or os.environ.get('STAGING_OTP_DISPLAY', 'True').lower() in ('true', '1'):
-            response_data['dev_code'] = code_str
 
         return Response(response_data, status=status.HTTP_201_CREATED)
 
@@ -138,8 +133,6 @@ class ResendVerificationCodeView(APIView):
             'success': True,
             'message': 'A new 6-digit verification code has been sent to your email.',
         }
-        if not getattr(settings, 'EMAIL_HOST_USER', None) or os.environ.get('STAGING_OTP_DISPLAY', 'True').lower() in ('true', '1'):
-            response_data['dev_code'] = code
 
         return Response(response_data, status=status.HTTP_200_OK)
 
@@ -163,8 +156,6 @@ class PasswordResetRequestView(APIView):
             'success': True,
             'message': 'A 6-digit password reset code has been sent to your email.',
         }
-        if not getattr(settings, 'EMAIL_HOST_USER', None) or os.environ.get('STAGING_OTP_DISPLAY', 'True').lower() in ('true', '1'):
-            response_data['dev_code'] = code
 
         return Response(response_data, status=status.HTTP_200_OK)
 
