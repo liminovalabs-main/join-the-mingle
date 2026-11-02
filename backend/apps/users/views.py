@@ -3,8 +3,11 @@
 Provides endpoints for registration, login, token refresh, private profile management,
 and UK GDPR-compliant public attendee profile inspection.
 """
+import os
 from typing import List
 import uuid
+
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
