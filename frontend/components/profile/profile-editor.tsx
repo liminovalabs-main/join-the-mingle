@@ -455,7 +455,7 @@ export function ProfileEditor() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-1 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>UK GDPR Private &mdash; never exposed publicly.</span>
+                <span>Private &amp; secure &mdash; never exposed publicly.</span>
               </span>
               <span>
                 Public age group: <strong className="text-brand-navy font-bold">{calcAgeGroupFromDob(dateOfBirth) || "—"}</strong>
@@ -515,7 +515,7 @@ export function ProfileEditor() {
       {/* Defect #6 Fix: Social Media Handles with Strict Validation */}
       <div className="p-6 rounded-2xl bg-white border border-border shadow-xs space-y-4">
         <h3 className="text-base font-heading font-black tracking-tight text-brand-navy border-b border-border pb-3">
-          Social Links (Shared with mutual matches only)
+          Social Links (Shared with connected minglers only)
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -613,7 +613,7 @@ export function ProfileEditor() {
               <div>
                 <p className="text-xs font-bold text-brand-navy">Email Notifications</p>
                 <p className="text-[11px] text-muted-foreground">
-                  Receive booking confirmations and post-mingle matching invitations.
+                  Receive booking confirmations and post-mingle connection invitations.
                 </p>
               </div>
             </div>

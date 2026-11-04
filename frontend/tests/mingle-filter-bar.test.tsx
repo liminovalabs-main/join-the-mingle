@@ -17,9 +17,9 @@ describe("MingleFilterBar Component", () => {
 
     expect(screen.getByPlaceholderText(/Search experiences, venues, areas/i)).toBeDefined();
     expect(screen.getByText("All Types")).toBeDefined();
-    expect(screen.getByText("Cocktails")).toBeDefined();
-    expect(screen.getByText("Dinner Party")).toBeDefined();
-    expect(screen.getByText("Wine Tasting")).toBeDefined();
+    expect(screen.getByText("Cocktail Evenings")).toBeDefined();
+    expect(screen.getByText("Dinner Parties")).toBeDefined();
+    expect(screen.getByText("Wine Tastings")).toBeDefined();
     expect(screen.getByLabelText(/Date:/i)).toBeDefined();
     expect(screen.getByLabelText(/Area:/i)).toBeDefined();
     expect(screen.getByLabelText(/Age:/i)).toBeDefined();
@@ -29,7 +29,7 @@ describe("MingleFilterBar Component", () => {
     const handleChange = vi.fn();
     render(<MingleFilterBar filters={initialFilters} onChange={handleChange} />);
 
-    const cocktailsButton = screen.getByText("Cocktails");
+    const cocktailsButton = screen.getByText("Cocktail Evenings");
     fireEvent.click(cocktailsButton);
 
     expect(handleChange).toHaveBeenCalledWith({

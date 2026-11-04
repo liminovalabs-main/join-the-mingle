@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
 import {
   AppleIcon,
   FacebookIcon,
@@ -12,16 +11,67 @@ import {
 } from "@/components/ui/social-icons";
 import { useAuth } from "@/context/auth-context";
 import { SocialProvider } from "@/types/auth";
-import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface SocialAuthButtonsProps {
   mode?: "login" | "register";
 }
 
+interface ProviderConfig {
+  id: SocialProvider;
+  name: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  btnClass: string;
+  iconClass?: string;
+}
+
+const PROVIDERS: ProviderConfig[] = [
+  {
+    id: "google",
+    name: "Google",
+    Icon: GoogleIcon,
+    btnClass: "bg-white hover:bg-neutral-100 text-neutral-800 border-white/20 shadow-xs",
+  },
+  {
+    id: "apple",
+    name: "Apple",
+    Icon: AppleIcon,
+    btnClass: "bg-black hover:bg-neutral-900 text-white border-white/20 shadow-xs",
+    iconClass: "fill-current text-white",
+  },
+  {
+    id: "facebook",
+    name: "Facebook",
+    Icon: FacebookIcon,
+    btnClass: "bg-brand-navy/60 hover:bg-[#1877F2]/20 text-brand-ivory border-brand-ivory/15 hover:border-[#1877F2]/60",
+    iconClass: "text-[#1877F2]",
+  },
+  {
+    id: "instagram",
+    name: "Instagram",
+    Icon: InstagramIcon,
+    btnClass: "bg-brand-navy/60 hover:bg-[#E4405F]/20 text-brand-ivory border-brand-ivory/15 hover:border-[#E4405F]/60",
+    iconClass: "text-[#E4405F]",
+  },
+  {
+    id: "tiktok",
+    name: "TikTok",
+    Icon: TikTokIcon,
+    btnClass: "bg-brand-navy/60 hover:bg-white/10 text-brand-ivory border-brand-ivory/15 hover:border-[#FE2C55]/60",
+    iconClass: "text-[#FE2C55]",
+  },
+  {
+    id: "linkedin",
+    name: "LinkedIn",
+    Icon: LinkedinIcon,
+    btnClass: "bg-brand-navy/60 hover:bg-[#0A66C2]/20 text-brand-ivory border-brand-ivory/15 hover:border-[#0A66C2]/60",
+    iconClass: "text-[#0A66C2]",
+  },
+];
+
 export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
   const { initiateSocialAuth } = useAuth();
   const [loadingProvider, setLoadingProvider] = React.useState<SocialProvider | null>(null);
-  const [showMore, setShowMore] = React.useState(false);
 
   const handleProviderClick = async (provider: SocialProvider) => {
     try {
@@ -35,124 +85,31 @@ export function SocialAuthButtons({ mode = "login" }: SocialAuthButtonsProps) {
   const actionText = mode === "login" ? "Continue with" : "Sign up with";
 
   return (
-    <div className="w-full space-y-2.5">
-      {/* Primary: Google & Apple in 2-column grid on desktop */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-        {/* Primary: Google */}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => handleProviderClick("google")}
-          disabled={loadingProvider !== null}
-          className="w-full h-11 sm:h-12 bg-white hover:bg-neutral-100 text-neutral-800 border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
-        >
-          {loadingProvider === "google" ? (
-            <Loader2 className="w-5 h-5 animate-spin text-neutral-600" />
-          ) : (
-            <GoogleIcon className="w-5 h-5 shrink-0" />
-          )}
-          <span>{actionText} Google</span>
-        </Button>
+    <div className="w-full">
+      <div className="grid grid-cols-2 gap-2.5">
+        {PROVIDERS.map((provider) => {
+          const IconComponent = provider.Icon;
+          const isLoading = loadingProvider === provider.id;
 
-        {/* Primary: Apple */}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => handleProviderClick("apple")}
-          disabled={loadingProvider !== null}
-          className="w-full h-11 sm:h-12 bg-black hover:bg-neutral-900 text-white border-white/20 font-medium text-xs sm:text-xs md:text-sm flex items-center justify-center gap-2.5 transition-colors rounded-xl shadow-xs"
-        >
-          {loadingProvider === "apple" ? (
-            <Loader2 className="w-5 h-5 animate-spin text-white" />
-          ) : (
-            <AppleIcon className="w-5 h-5 shrink-0 fill-current text-white" />
-          )}
-          <span>{actionText} Apple</span>
-        </Button>
-      </div>
-
-      {/* Expandable secondary providers (Facebook, Instagram, TikTok, LinkedIn) */}
-      <div className="pt-0.5">
-        <button
-          type="button"
-          onClick={() => setShowMore((prev) => !prev)}
-          className="w-full flex items-center justify-center gap-1.5 py-1 text-[11px] font-medium text-brand-ivory/60 hover:text-brand-ivory transition-colors cursor-pointer"
-        >
-          <span>More social accounts</span>
-          {showMore ? (
-            <ChevronUp className="w-3.5 h-3.5" />
-          ) : (
-            <ChevronDown className="w-3.5 h-3.5" />
-          )}
-        </button>
-
-        {showMore && (
-          <div className="grid grid-cols-4 gap-2.5 pt-2 animate-in fade-in-50 duration-200">
-            {/* Facebook */}
+          return (
             <button
+              key={provider.id}
               type="button"
-              title={`${actionText} Facebook`}
-              aria-label={`${actionText} Facebook`}
-              onClick={() => handleProviderClick("facebook")}
+              title={`${actionText} ${provider.name}`}
+              aria-label={`${actionText} ${provider.name}`}
+              onClick={() => handleProviderClick(provider.id)}
               disabled={loadingProvider !== null}
-              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#1877F2]/50 hover:bg-[#1877F2]/10 flex items-center justify-center text-brand-ivory hover:text-[#1877F2] transition-all cursor-pointer disabled:opacity-50"
+              className={`h-11 sm:h-12 w-full rounded-xl border flex items-center justify-center gap-2 px-3 text-xs sm:text-sm font-semibold transition-all cursor-pointer disabled:opacity-50 ${provider.btnClass}`}
             >
-              {loadingProvider === "facebook" ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin shrink-0" />
               ) : (
-                <FacebookIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${provider.iconClass || ""}`} />
               )}
+              <span className="truncate">{provider.name}</span>
             </button>
-
-            {/* Instagram */}
-            <button
-              type="button"
-              title={`${actionText} Instagram`}
-              aria-label={`${actionText} Instagram`}
-              onClick={() => handleProviderClick("instagram")}
-              disabled={loadingProvider !== null}
-              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#E4405F]/50 hover:bg-[#E4405F]/10 flex items-center justify-center text-brand-ivory hover:text-[#E4405F] transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loadingProvider === "instagram" ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <InstagramIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-              )}
-            </button>
-
-            {/* TikTok */}
-            <button
-              type="button"
-              title={`${actionText} TikTok`}
-              aria-label={`${actionText} TikTok`}
-              onClick={() => handleProviderClick("tiktok")}
-              disabled={loadingProvider !== null}
-              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#FE2C55]/50 hover:bg-[#FE2C55]/10 flex items-center justify-center text-brand-ivory hover:text-[#FE2C55] transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loadingProvider === "tiktok" ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <TikTokIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-              )}
-            </button>
-
-            {/* LinkedIn */}
-            <button
-              type="button"
-              title={`${actionText} LinkedIn`}
-              aria-label={`${actionText} LinkedIn`}
-              onClick={() => handleProviderClick("linkedin")}
-              disabled={loadingProvider !== null}
-              className="h-11 sm:h-12 rounded-xl bg-brand-navy/60 hover:bg-brand-navy border border-brand-ivory/15 hover:border-[#0A66C2]/50 hover:bg-[#0A66C2]/10 flex items-center justify-center text-brand-ivory hover:text-[#0A66C2] transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loadingProvider === "linkedin" ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <LinkedinIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-              )}
-            </button>
-          </div>
-        )}
+          );
+        })}
       </div>
     </div>
   );

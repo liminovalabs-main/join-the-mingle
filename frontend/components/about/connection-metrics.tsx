@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Smile, Heart, Sprout, Users } from "lucide-react";
+import { Smile, Activity, Sprout, Users } from "lucide-react";
 
 const METRICS = [
   {
@@ -8,7 +8,7 @@ const METRICS = [
     text: "Close relationships are one of the strongest predictors of happiness.",
   },
   {
-    Icon: Heart,
+    Icon: Activity,
     label: "Healthier",
     text: "Social connection supports better mental and physical health.",
   },

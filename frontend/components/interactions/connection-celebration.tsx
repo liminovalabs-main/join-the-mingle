@@ -3,7 +3,8 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
-import { Heart, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { OverlappingCirclesMark } from "@/components/brand/mingler-logo";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PublicProfile } from "@/types";
@@ -78,15 +79,20 @@ export function ConnectionCelebration({
         className="w-full max-w-sm rounded-3xl bg-white p-7 text-center shadow-2xl border border-border/80"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-brand-coral/15">
-          <Sparkles className="h-8 w-8 text-brand-coral animate-pulse" />
+        <div className="mx-auto mb-5 flex h-16 w-20 items-center justify-center rounded-full bg-brand-coral/15">
+          <OverlappingCirclesMark className="h-8 w-auto" />
         </div>
 
-        <h3 className="mb-2 font-heading text-xl sm:text-2xl font-black text-brand-navy leading-tight">
-          {headline}
+        <h3 className="mb-2 font-heading text-2xl font-black text-brand-navy leading-tight lowercase">
+          minglers connected <span className="text-brand-coral">!</span>
         </h3>
+        <p className="mb-2 text-sm font-bold text-brand-coral">
+          {matchedProfiles.length > 1
+            ? `You and ${matchedProfiles.length} minglers would like to mingle again!`
+            : `You and ${firstName} would like to mingle again!`}
+        </p>
         <p className="mb-6 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          Your choices were mutual. You can now see when they join another Mingle, and reach out to stay in touch!
+          Your choices were mutual. You can now see when they join another mingle, and reach out to stay in touch!
         </p>
 
         <div className="mb-6 flex justify-center items-center gap-3">
@@ -120,8 +126,9 @@ export function ConnectionCelebration({
 
         <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-center">
           <Link href="/my-mingler?tab=connections" onClick={onDismiss} className="w-full sm:w-auto">
-            <Button className="w-full rounded-full bg-brand-coral text-white font-bold hover:bg-brand-coral/90 text-xs sm:text-sm px-6 h-11">
-              <Heart className="mr-1.5 h-4 w-4 fill-white" /> View connection
+            <Button className="w-full rounded-full bg-brand-coral text-white font-bold hover:bg-brand-coral/90 text-xs sm:text-sm px-6 h-11 inline-flex items-center gap-2">
+              <OverlappingCirclesMark className="h-4 w-auto" />
+              <span>View connections</span>
             </Button>
           </Link>
           <Button

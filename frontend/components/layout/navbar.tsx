@@ -39,9 +39,20 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-brand-navy/95 backdrop-blur-md border-b border-brand-ivory/10">
+      {/* Universal Bring-A-Friend CTA on all pages */}
+      <div className="bg-brand-coral py-2 px-4 text-center text-white text-xs sm:text-[13px] font-bold tracking-wide shadow-2xs">
+        <Link
+          href="/browse"
+          className="inline-flex items-center justify-center gap-1.5 hover:underline"
+        >
+          <span>Invite a friend and mingle for less!</span>
+          <span aria-hidden="true">&rarr;</span>
+        </Link>
+      </div>
+
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-20">
         {/* Brand Wordmark Logo */}
-        <Link href="/" aria-label="Mingler — Home" className="leading-none">
+        <Link href="/" aria-label="mingler — Home" className="leading-none">
           <MinglerLogo size="text-2xl md:text-3xl" />
         </Link>
 

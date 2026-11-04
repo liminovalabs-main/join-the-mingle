@@ -1,7 +1,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, HeartHandshake, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ShieldCheck, Shield, Sparkles, CheckCircle2 } from "lucide-react";
 import { JoinIllustration } from "@/components/howitworks/illustrations/join-illustration";
 import { FindIllustration } from "@/components/howitworks/illustrations/find-illustration";
 import { MingleIllustration } from "@/components/howitworks/illustrations/mingle-illustration";
@@ -70,7 +70,7 @@ export default function HowItWorksPage() {
                 <span className="text-brand-coral">.</span>
               </h2>
               <p className="mt-4 text-base leading-relaxed text-[#1A2624]/70">
-                Create your verified profile in moments. We protect your privacy under strict UK GDPR standards &mdash; your email and private birthdate are never shared publicly.
+                Create your verified profile in moments. We protect your privacy &mdash; your email and private birthdate are never shared publicly.
               </p>
               <ul className="mt-6 space-y-3">
                 <li className="flex items-center gap-3 text-sm font-medium text-[#1A2624]">
@@ -205,13 +205,13 @@ export default function HowItWorksPage() {
             </div>
             <div className="rounded-2xl bg-white/70 backdrop-blur-xs p-6 border border-[#5C6B5A]/20">
               <ShieldCheck className="h-6 w-6 text-emerald-700 mb-3" />
-              <h4 className="font-bold text-[#1A2624] text-base mb-1">UK GDPR Protection</h4>
+              <h4 className="font-bold text-[#1A2624] text-base mb-1">Privacy &amp; Data Protection</h4>
               <p className="text-sm leading-relaxed text-[#1A2624]/75">
                 Zero public PII exposure. Date of birth and contact information are strictly encrypted and guarded.
               </p>
             </div>
             <div className="rounded-2xl bg-white/70 backdrop-blur-xs p-6 border border-[#5C6B5A]/20">
-              <HeartHandshake className="h-6 w-6 text-brand-blue mb-3" />
+              <Shield className="h-6 w-6 text-brand-blue mb-3" />
               <h4 className="font-bold text-[#1A2624] text-base mb-1">100% Refund Safeguard</h4>
               <p className="text-sm leading-relaxed text-[#1A2624]/75">
                 Self-service cancellations up to 48 hours prior to start, and immediate full refunds if any event is rescheduled.

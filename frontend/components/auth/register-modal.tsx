@@ -71,7 +71,7 @@ function RegisterForm({ initialEmail }: { initialEmail: string }) {
           <MinglerLogo size="text-2xl" />
         </div>
         <DialogTitle className="text-xl font-heading font-black tracking-tight text-brand-ivory">
-          Join The Mingler
+          Join mingler
         </DialogTitle>
         <DialogDescription className="text-xs text-brand-ivory/70 max-w-sm mx-auto">
           Curated London social experiences with remarkable people.

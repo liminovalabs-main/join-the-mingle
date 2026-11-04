@@ -9,7 +9,8 @@ import { ProfileEditor } from "@/components/profile/profile-editor";
 import { MemberBookingsTab } from "@/components/bookings/member-bookings-tab";
 import { MemberConnectionsTab } from "@/components/interactions/member-connections-tab";
 import { Button } from "@/components/ui/button";
-import { User, Calendar, Heart, Lock } from "lucide-react";
+import { User, Calendar, Lock } from "lucide-react";
+import { OverlappingCirclesMark } from "@/components/brand/mingler-logo";
 
 function MyMinglerContent() {
   const { profile, isAuthenticated, isLoading, isMounted, openModal } = useAuth();
@@ -78,8 +79,8 @@ function MyMinglerContent() {
       <div className="max-w-5xl mx-auto px-5 py-8 md:py-12">
         {/* Top Header & Base44 Profile Summary Card */}
         <div className="mb-8 space-y-5">
-          <h1 className="font-heading text-3xl md:text-4xl font-black text-brand-navy tracking-tight">
-            My Mingler
+          <h1 className="font-heading text-3xl md:text-4xl font-black text-brand-navy tracking-tight lowercase">
+            my mingler<span className="text-brand-coral inline-block font-black rounded-full">.</span>
           </h1>
 
           {/* Defect #2 Fix: onEdit is only passed if user is NOT on the profile tab */}
@@ -89,15 +90,15 @@ function MyMinglerContent() {
           />
         </div>
 
-        {/* Base44 Horizontal Pill Tabs */}
-        <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-1 scrollbar-none">
+        {/* Coral and Blue Distinct Horizontal Pill Tabs */}
+        <div className="flex items-center gap-3 mb-8 overflow-x-auto pb-1 scrollbar-none">
           <button
             type="button"
             onClick={() => setActiveTab("profile")}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+            className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
               activeTab === "profile"
-                ? "bg-brand-navy text-white shadow-sm"
-                : "bg-white border border-border/70 text-brand-navy/70 hover:bg-white hover:text-brand-navy"
+                ? "bg-brand-coral text-white border-2 border-brand-coral shadow-md shadow-brand-coral/25"
+                : "bg-white border-2 border-brand-navy/30 text-brand-navy hover:border-brand-navy hover:bg-brand-navy/5"
             }`}
           >
             <User className="w-4 h-4" />
@@ -107,10 +108,10 @@ function MyMinglerContent() {
           <button
             type="button"
             onClick={() => setActiveTab("mingles")}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+            className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
               activeTab === "mingles"
-                ? "bg-brand-navy text-white shadow-sm"
-                : "bg-white border border-border/70 text-brand-navy/70 hover:bg-white hover:text-brand-navy"
+                ? "bg-brand-coral text-white border-2 border-brand-coral shadow-md shadow-brand-coral/25"
+                : "bg-white border-2 border-brand-navy/30 text-brand-navy hover:border-brand-navy hover:bg-brand-navy/5"
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -120,14 +121,14 @@ function MyMinglerContent() {
           <button
             type="button"
             onClick={() => setActiveTab("connections")}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+            className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
               activeTab === "connections"
-                ? "bg-brand-navy text-white shadow-sm"
-                : "bg-white border border-border/70 text-brand-navy/70 hover:bg-white hover:text-brand-navy"
+                ? "bg-brand-coral text-white border-2 border-brand-coral shadow-md shadow-brand-coral/25"
+                : "bg-white border-2 border-brand-navy/30 text-brand-navy hover:border-brand-navy hover:bg-brand-navy/5"
             }`}
           >
-            <Heart className="w-4 h-4" />
-            <span>Connections</span>
+            <OverlappingCirclesMark className="w-5 h-3.5 shrink-0" />
+            <span>Connected Minglers</span>
           </button>
         </div>
 

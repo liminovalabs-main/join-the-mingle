@@ -52,7 +52,7 @@ describe("MingleCard Component", () => {
     render(<MingleCard mingle={mockMingle} attendees={mockAttendees} isVisitor={false} />);
 
     expect(screen.getByText(/The Vault Lounge, Soho/i)).toBeDefined();
-    expect(screen.getByText(/Ages 21–35/i)).toBeDefined();
+    expect(screen.getByText(/Age 21–35/i)).toBeDefined();
   });
 
   it("renders remaining spots badge when places are available", () => {

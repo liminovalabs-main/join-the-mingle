@@ -210,6 +210,20 @@ class Command(BaseCommand):
                 'description': 'Social deduction, trivia, and strategy board games hosted by our lively game master. Ideal for newcomers and friendly competition.',
                 'status': 'published',
             },
+            {
+                'venue': created_venues['Hackney Canvas Art Studio'],
+                'title': 'Weekend Social Bouldering & Specialty Coffee',
+                'experience_type': 'physical_activities',
+                'event_date': today + timedelta(days=16),
+                'start_time': time(10, 30),
+                'duration_minutes': 90,
+                'ticket_price': Decimal('22.00'),
+                'capacity': 16,
+                'age_min': 20,
+                'age_max': 40,
+                'description': 'Friendly social climb suitable for all experience levels followed by artisan pastries and specialty coffee. Meet active, fun people in a welcoming setting.',
+                'status': 'published',
+            },
         ]
 
         for m_data in mingles_data:

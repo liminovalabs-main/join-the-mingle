@@ -203,7 +203,7 @@ describe("MemberConnectionsTab Component", () => {
       expect(screen.getByText("Sarah Jenkins")).toBeDefined();
     });
 
-    expect(screen.getByText("Mutual Match")).toBeDefined();
+    expect(screen.getByText("minglers connected !")).toBeDefined();
     expect(screen.getByText("Secret Cellar Wine Tasting")).toBeDefined();
     expect(screen.getByText("@sarah_j")).toBeDefined();
     expect(screen.getByText("LinkedIn")).toBeDefined();

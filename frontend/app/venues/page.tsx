@@ -66,10 +66,10 @@ export default function VenuesDirectoryPage() {
             <Store className="w-4 h-4" /> London Directory
           </div>
           <h1 className="font-heading text-4xl font-extrabold tracking-tight text-brand-navy md:text-5xl">
-            Venues
+            venues<span className="text-brand-coral">.</span>
           </h1>
           <p className="mt-2 text-base text-muted-foreground max-w-xl">
-            The rooms, cocktail bars, wine cellars, and chef&apos;s tables where Mingler experiences happen.
+            The rooms, cocktail bars, wine cellars, and chef&apos;s tables where mingler experiences happen.
           </p>
         </div>
 

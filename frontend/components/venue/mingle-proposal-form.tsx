@@ -10,14 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const EXPERIENCE_TYPES: { value: ExperienceType; label: string }[] = [
-  { value: "dinner", label: "Dinner Party" },
-  { value: "cocktails", label: "Cocktail Evening" },
-  { value: "wine_tasting", label: "Wine Tasting" },
-  { value: "brunch", label: "Weekend Brunch" },
+  { value: "cultural", label: "Arts & Culture" },
+  { value: "games", label: "Games & Trivia" },
   { value: "cooking", label: "Cooking Class" },
-  { value: "games", label: "Games Night" },
-  { value: "cultural", label: "Cultural Experience" },
-  { value: "wellness", label: "Wellness & Mindfulness" },
+  { value: "wine_tasting", label: "Wine Tasting" },
+  { value: "wellness", label: "Wellness" },
+  { value: "physical_activities", label: "Physical Activities" },
+  { value: "cocktails", label: "Cocktail Evening" },
+  { value: "dinner", label: "Dinner Party" },
+  { value: "brunch", label: "Weekend Brunch" },
   { value: "other", label: "Other Gathering" },
 ];
 

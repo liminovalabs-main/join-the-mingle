@@ -17,14 +17,15 @@ interface MingleFilterBarProps {
 
 const EXPERIENCE_TYPES = [
   { value: "all", label: "All Types" },
-  { value: "cocktails", label: "Cocktails" },
-  { value: "dinner", label: "Dinner Party" },
-  { value: "wine_tasting", label: "Wine Tasting" },
-  { value: "brunch", label: "Brunch" },
-  { value: "cooking", label: "Cooking" },
-  { value: "games", label: "Games Night" },
-  { value: "cultural", label: "Cultural" },
+  { value: "cultural", label: "Arts & Culture" },
+  { value: "games", label: "Games & Trivia" },
+  { value: "cooking", label: "Cooking Classes" },
+  { value: "wine_tasting", label: "Wine Tastings" },
   { value: "wellness", label: "Wellness" },
+  { value: "physical_activities", label: "Physical Activities" },
+  { value: "cocktails", label: "Cocktail Evenings" },
+  { value: "dinner", label: "Dinner Parties" },
+  { value: "brunch", label: "Brunches" },
 ];
 
 const LONDON_AREAS = [

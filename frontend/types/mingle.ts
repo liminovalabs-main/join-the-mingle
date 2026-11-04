@@ -1,14 +1,15 @@
 import { PublicProfile } from "./auth";
 
 export type ExperienceType =
-  | "dinner"
-  | "cocktails"
-  | "wine_tasting"
-  | "brunch"
-  | "cooking"
-  | "games"
   | "cultural"
+  | "games"
+  | "cooking"
+  | "wine_tasting"
   | "wellness"
+  | "physical_activities"
+  | "cocktails"
+  | "dinner"
+  | "brunch"
   | "other";
 
 export interface MingleVenueSummary {

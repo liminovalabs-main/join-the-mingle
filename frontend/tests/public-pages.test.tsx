@@ -55,10 +55,8 @@ describe("Public Pages & Brand Surfaces (Base44 Fidelity)", () => {
     it("renders Who We Are with the founders' story and signatures for Meriam and KJ", () => {
       render(<AboutPage />);
       expect(screen.getByText(/Built by people who like people/i)).toBeInTheDocument();
-      expect(screen.getByText(/We’ve been friends since we were 15/i)).toBeInTheDocument();
-      expect(screen.getByText("Meriam Makiya")).toBeInTheDocument();
-      expect(screen.getByText("Founder")).toBeInTheDocument();
-      expect(screen.getByText("Co-Founder")).toBeInTheDocument();
+      expect(screen.getByText(/We’ve been good friends since we were 15/i)).toBeInTheDocument();
+      expect(screen.getByText(/Meriam & KJ/i)).toBeInTheDocument();
     });
 
     it("renders the founder photograph with appropriate alt text", () => {
@@ -99,11 +97,11 @@ describe("Public Pages & Brand Surfaces (Base44 Fidelity)", () => {
       expect(screen.getByText("Mingle again")).toBeInTheDocument();
     });
 
-    it("renders the Mingler guarantee section covering safety and UK GDPR", () => {
+    it("renders the Mingler guarantee section covering safety and privacy", () => {
       render(<HowItWorksPage />);
       expect(screen.getByText(/The Mingler Guarantee/i)).toBeInTheDocument();
       expect(screen.getByText(/Curated London Venues/i)).toBeInTheDocument();
-      expect(screen.getByText(/UK GDPR Protection/i)).toBeInTheDocument();
+      expect(screen.getByText(/Privacy & Data Protection/i)).toBeInTheDocument();
       expect(screen.getByText(/100% Refund Safeguard/i)).toBeInTheDocument();
     });
 
@@ -111,7 +109,7 @@ describe("Public Pages & Brand Surfaces (Base44 Fidelity)", () => {
       render(<HowItWorksPage />);
       expect(screen.getByText("Frequently Asked Questions")).toBeInTheDocument();
       expect(screen.getByText(/Can I come on my own\?/i)).toBeInTheDocument();
-      expect(screen.getByText(/How does double-blind matching work\?/i)).toBeInTheDocument();
+      expect(screen.getByText(/How does connecting after a mingle work\?/i)).toBeInTheDocument();
     });
   });
 
@@ -125,7 +123,7 @@ describe("Public Pages & Brand Surfaces (Base44 Fidelity)", () => {
 
       // Click on second question
       const matchingBtn = screen.getByRole("button", {
-        name: /How does double-blind matching work\?/i,
+        name: /How does connecting after a mingle work\?/i,
       });
       fireEvent.click(matchingBtn);
 

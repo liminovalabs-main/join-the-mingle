@@ -43,7 +43,7 @@ function LoginForm({ initialEmail }: { initialEmail: string }) {
           Welcome back
         </DialogTitle>
         <DialogDescription className="text-xs text-brand-ivory/70 max-w-sm mx-auto">
-          Sign in to book London mingles and connect with your matches.
+          Sign in to book London mingles and connect with fellow minglers.
         </DialogDescription>
       </DialogHeader>
 

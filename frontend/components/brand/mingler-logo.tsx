@@ -1,8 +1,37 @@
 import * as React from "react";
 
 /**
- * The signature "i" glyph: a coral dot (the Mingler's head) above a stem (the body).
- * This is the core Mingler brand mark — the dot of the "i" is a person.
+ * The official Mingler overlapping circles mark:
+ * Two overlapping circular disks (Navy on the left, Coral on the right, blended rose intersection).
+ */
+export function OverlappingCirclesMark({
+  className = "h-6 w-auto aspect-[3/2] shrink-0",
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 96 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      {/* Left Navy Circle */}
+      <circle cx="34" cy="32" r="28" fill="#142232" />
+      {/* Right Coral Circle */}
+      <circle cx="62" cy="32" r="28" fill="#E05A47" />
+      {/* Intersection Lens */}
+      <path
+        d="M 48 7.75 A 28 28 0 0 1 48 56.25 A 28 28 0 0 1 48 7.75 Z"
+        fill="#DE8287"
+      />
+    </svg>
+  );
+}
+
+/**
+ * The signature "i" glyph: a circular coral dot above a stem.
  * Sized in em units so it scales dynamically with the inherited font size.
  */
 export function IGlyph({
@@ -69,27 +98,33 @@ export function MinglerWord({
 }
 
 /**
- * The clean "mingler" wordmark for the header and footer.
- * Heavy, lowercase, confident — with the signature coral person glyph for the "i".
+ * The clean "mingler" wordmark paired with the official overlapping circles logo mark.
+ * Always lowercase "mingler", with a circular coral dot.
  */
 export function MinglerLogo({
   className = "",
   size = "text-2xl md:text-3xl",
+  showMark = true,
   dotClass = "bg-brand-coral",
   stemClass = "bg-brand-ivory",
 }: {
   className?: string;
   size?: string;
+  showMark?: boolean;
   dotClass?: string;
   stemClass?: string;
 }) {
   return (
-    <MinglerWord
-      className={`font-heading font-black lowercase tracking-tight text-brand-ivory leading-none ${size} ${className}`}
-      dotClass={dotClass}
-      stemClass={stemClass}
+    <div
+      className={`font-heading font-black text-brand-ivory inline-flex items-center gap-2.5 leading-none select-none ${className}`}
     >
-      mingler
-    </MinglerWord>
+      {showMark && <OverlappingCirclesMark className="h-6 sm:h-7 w-auto shrink-0" />}
+      <span className={`lowercase tracking-tight ${size}`}>
+        <MinglerWord dotClass={dotClass} stemClass={stemClass}>
+          mingler
+        </MinglerWord>
+        <span className="text-brand-coral inline-block font-black rounded-full">.</span>
+      </span>
+    </div>
   );
 }

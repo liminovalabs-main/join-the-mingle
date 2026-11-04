@@ -50,7 +50,7 @@ describe("SocialAuthButtons Component", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders login mode labels (Continue with Google / Apple)", () => {
+  it("renders login mode labels for all 6 providers immediately visible", () => {
     render(
       <AuthProvider>
         <SocialAuthButtons mode="login" />
@@ -59,7 +59,10 @@ describe("SocialAuthButtons Component", () => {
 
     expect(screen.getByRole("button", { name: /continue with google/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /continue with apple/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /more social accounts/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /continue with facebook/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /continue with instagram/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /continue with tiktok/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /continue with linkedin/i })).toBeInTheDocument();
   });
 
   it("renders register mode labels (Sign up with Google / Apple)", () => {
@@ -71,22 +74,7 @@ describe("SocialAuthButtons Component", () => {
 
     expect(screen.getByRole("button", { name: /sign up with google/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /sign up with apple/i })).toBeInTheDocument();
-  });
-
-  it("expands secondary providers (Facebook, Instagram, TikTok, LinkedIn) when toggle is clicked", () => {
-    render(
-      <AuthProvider>
-        <SocialAuthButtons mode="login" />
-      </AuthProvider>
-    );
-
-    const toggleBtn = screen.getByRole("button", { name: /more social accounts/i });
-    fireEvent.click(toggleBtn);
-
-    expect(screen.getByRole("button", { name: /continue with facebook/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /continue with instagram/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /continue with tiktok/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /continue with linkedin/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign up with facebook/i })).toBeInTheDocument();
   });
 
   it("calls API endpoint /auth/social/url/ when a provider is selected", async () => {

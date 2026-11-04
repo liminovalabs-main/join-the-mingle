@@ -28,12 +28,12 @@ function formatCardTime(t: string): string {
 
 function ageLabel(mingle: Mingle): string {
   if (mingle.age_min && mingle.age_max && (mingle.age_min > 18 || mingle.age_max < 90)) {
-    return `Ages ${mingle.age_min}\u2013${mingle.age_max}`;
+    return `Age ${mingle.age_min}–${mingle.age_max}`;
   }
   if (mingle.age_min && mingle.age_min > 18) {
-    return `Ages ${mingle.age_min}+`;
+    return `Age ${mingle.age_min}+`;
   }
-  return "";
+  return "All Ages 18+";
 }
 
 export function MingleCard({ mingle, attendees = [], isVisitor = false }: MingleCardProps) {
@@ -42,7 +42,6 @@ export function MingleCard({ mingle, attendees = [], isVisitor = false }: Mingle
   const remaining = mingle.spots_remaining !== undefined ? mingle.spots_remaining : Math.max(0, mingle.capacity - confirmedCount);
   const ageText = ageLabel(mingle);
   const attendeeCount = Math.max(confirmedCount, effectiveAttendees.length);
-  const avatarSlots = isVisitor ? Math.min(attendeeCount, 4) : Math.min(effectiveAttendees.length, 4);
   const priceDisplay = parseFloat(mingle.ticket_price).toFixed(0);
 
   const imageUrl = getMingleImageUrl(mingle.hero_image, mingle.experience_type);
@@ -62,7 +61,7 @@ export function MingleCard({ mingle, attendees = [], isVisitor = false }: Mingle
           priority={false}
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/25" />
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4 z-10">
           <span className="rounded-full bg-brand-navy/85 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-ivory backdrop-blur">
@@ -72,6 +71,15 @@ export function MingleCard({ mingle, attendees = [], isVisitor = false }: Mingle
             £{priceDisplay}
           </span>
         </div>
+
+        {/* Clear Age Group badge directly on cover image */}
+        {ageText && (
+          <div className="absolute inset-x-0 bottom-0 p-4 z-10 flex items-end justify-between">
+            <span className="rounded-full bg-brand-navy/90 border border-white/20 px-3.5 py-1 text-xs font-bold text-white shadow-md backdrop-blur-md">
+              {ageText}
+            </span>
+          </div>
+        )}
 
         {isPast && (
           <div className="absolute inset-0 bg-brand-navy/60 backdrop-blur-[2px] flex items-center justify-center z-20">
@@ -98,67 +106,73 @@ export function MingleCard({ mingle, attendees = [], isVisitor = false }: Mingle
           <span className="shrink-0">
             {formatCardDate(mingle.event_date)} · {formatCardTime(mingle.start_time)}
           </span>
-          {ageText && (
-            <span className="rounded-full bg-brand-stone/60 px-2 sm:px-2.5 py-0.5 text-[11px] sm:text-xs font-semibold text-brand-navy shrink-0">
-              {ageText}
-            </span>
-          )}
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <div className="flex -space-x-1.5 sm:-space-x-2 items-center shrink-0">
+        {/* Attendees Section: Larger avatars (40px), not intertwined, showing all confirmed attendees */}
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold text-brand-navy">
+            <span className="uppercase tracking-wider text-muted-foreground text-[11px]">
+              {confirmedCount > 0 ? `Attendees (${confirmedCount})` : "Be the first to join"}
+            </span>
+            {isPast ? (
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Past Event
+              </span>
+            ) : remaining > 0 ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-navy">
+                <Users className="h-3.5 w-3.5 text-brand-coral" />
+                {remaining} left
+              </span>
+            ) : (
+              <span className="rounded-full bg-brand-navy px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-ivory">
+                Full
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 pt-1">
             {isVisitor
-              ? Array.from({ length: Math.min(attendeeCount, 4) }).map((_, i) => (
+              ? Array.from({ length: Math.max(attendeeCount, 1) }).map((_, i) => (
                   <span
                     key={`blurred-${i}`}
-                    className="flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-stone to-brand-navy/30 ring-2 ring-white w-8 h-8 sm:w-9 sm:h-9"
+                    className="flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-stone to-brand-navy/30 ring-2 ring-white w-10 h-10 shadow-xs"
                     aria-hidden="true"
+                    title="Sign up to view attendee profiles"
                   >
-                    <User className="h-4 w-4 text-brand-ivory/80 blur-[2px]" />
+                    <User className="h-5 w-5 text-brand-ivory/80 blur-[2px]" />
                   </span>
                 ))
-              : effectiveAttendees.slice(0, 4).map((p) => {
+              : effectiveAttendees.map((p) => {
                   const avatarSrc = formatAvatarUrl(p.photo);
                   return (
                     <Avatar
                       key={p.id}
-                      className="w-8 h-8 sm:w-9 sm:h-9 border-2 border-white ring-2 ring-white shrink-0 shadow-xs"
+                      className="w-10 h-10 border-2 border-white ring-2 ring-brand-coral/20 shrink-0 shadow-xs"
                       title={p.display_name}
                     >
                       {avatarSrc && <AvatarImage src={avatarSrc} alt={p.display_name} className="object-cover" />}
-                      <AvatarFallback className="text-[10px] sm:text-xs bg-brand-coral/10 text-brand-coral font-bold">
-                        {p.display_name?.slice(0, 2).toUpperCase() || "M"}
+                      <AvatarFallback className="text-xs bg-brand-coral/10 text-brand-coral font-bold">
+                        {p.display_name?.slice(0, 2).toUpperCase() || "m"}
                       </AvatarFallback>
                     </Avatar>
                   );
                 })}
-            {Array.from({ length: Math.max(0, Math.min(remaining, 4 - avatarSlots)) }).map((_, i) => (
-              <span
-                key={`empty-${i}`}
-                className="shrink-0 rounded-full border border-dashed border-brand-stone bg-transparent ring-2 ring-white w-8 h-8 sm:w-9 sm:h-9"
-                aria-hidden="true"
-              />
-            ))}
             {attendeeCount === 0 && remaining > 0 && (
-              <span className="ml-1 self-center text-xs text-muted-foreground truncate">Be the first to join</span>
+              <span className="text-xs text-muted-foreground italic py-1">
+                Open table &mdash; reserve your seat!
+              </span>
             )}
           </div>
-
-          {isPast ? (
-            <span className="shrink-0 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Past Event
-            </span>
-          ) : remaining > 0 ? (
-            <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-navy">
-              <Users className="h-3.5 w-3.5 text-brand-coral" />
-              {remaining} left
-            </span>
-          ) : (
-            <span className="shrink-0 rounded-full bg-brand-navy px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.16em] text-brand-ivory">
-              Full
-            </span>
-          )}
         </div>
+
+        {/* Clear Call-To-Action on home page & catalog for visitors */}
+        {isVisitor && (
+          <div className="mt-3.5 pt-2">
+            <span className="inline-flex w-full items-center justify-center rounded-full bg-brand-coral/10 border border-brand-coral/40 px-3.5 py-2 text-xs font-bold text-brand-coral hover:bg-brand-coral hover:text-white transition-colors text-center shadow-2xs">
+              Create an account to join this mingle!
+            </span>
+          </div>
+        )}
       </div>
     </Link>
   );

@@ -91,7 +91,7 @@ export default function Home() {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <h2 className="font-heading text-3xl font-extrabold tracking-tight text-brand-navy md:text-5xl">
-              Find your next Mingle
+              Find your next mingle<span className="text-brand-coral">.</span>
             </h2>
             <p className="mt-2 text-muted-foreground md:text-lg">
               Real experiences, real people, right now in London.
@@ -173,7 +173,7 @@ export default function Home() {
                 How It Works
               </span>
               <h2 className="mt-2 font-heading text-3xl font-extrabold text-brand-navy md:text-4xl">
-                Four steps to your next great mingle
+                Four steps to your next great mingle<span className="text-brand-coral">.</span>
               </h2>
               <p className="mt-2 text-sm text-muted-foreground md:text-base max-w-xl">
                 From finding an experience you love to connecting double-blind afterward &mdash; no awkwardness, just real rooms.
@@ -190,7 +190,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Step 1 */}
-            <div className="group rounded-3xl bg-[#FCFBF6] p-6 border border-border/70 hover:shadow-md transition-all">
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
               <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
                 <JoinIllustration className="w-full h-full" />
               </div>
@@ -201,12 +201,12 @@ export default function Home() {
                 Join in seconds
               </h3>
               <p className="text-xs leading-relaxed text-muted-foreground">
-                Quick verified sign-up. UK GDPR protected &mdash; zero public PII exposure.
+                Quick verified sign-up. Private and secure &mdash; zero public PII exposure.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="group rounded-3xl bg-[#FCFBF6] p-6 border border-border/70 hover:shadow-md transition-all">
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
               <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
                 <FindIllustration className="w-full h-full" />
               </div>
@@ -222,7 +222,7 @@ export default function Home() {
             </div>
 
             {/* Step 3 */}
-            <div className="group rounded-3xl bg-[#FCFBF6] p-6 border border-border/70 hover:shadow-md transition-all">
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
               <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
                 <MingleIllustration className="w-full h-full" />
               </div>
@@ -238,7 +238,7 @@ export default function Home() {
             </div>
 
             {/* Step 4 */}
-            <div className="group rounded-3xl bg-[#FCFBF6] p-6 border border-border/70 hover:shadow-md transition-all">
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
               <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
                 <MingleAgainIllustration className="w-full h-full" />
               </div>

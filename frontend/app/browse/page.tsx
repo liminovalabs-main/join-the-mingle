@@ -109,7 +109,7 @@ export default function BrowsePage() {
           <Compass className="w-4 h-4" /> London Experiences
         </div>
         <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-brand-navy">
-          Browse Mingles
+          browse mingles<span className="text-brand-coral">.</span>
         </h1>
         <p className="mt-2 text-sm sm:text-base text-muted-foreground">
           Real experiences, real people, right now across London boroughs.
@@ -121,7 +121,7 @@ export default function BrowsePage() {
         <div className="mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl border border-brand-coral/20 bg-brand-coral/5 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
           <div>
             <h3 className="font-heading text-base sm:text-lg font-bold text-brand-navy">
-              New to Mingler?
+              new to mingler?
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
               Sign up to see attendee rosters, save your spot at dinners and cocktail tastings, and connect afterwards.

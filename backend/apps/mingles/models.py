@@ -26,14 +26,15 @@ class Mingle(BaseModel):
         ('cancelled', 'Cancelled'),
     )
     EXPERIENCE_TYPE_CHOICES = (
-        ('dinner', 'Dinner Party'),
-        ('cocktails', 'Cocktail Evening'),
-        ('wine_tasting', 'Wine Tasting'),
-        ('brunch', 'Brunch'),
-        ('cooking', 'Cooking Class'),
-        ('games', 'Games Night'),
-        ('cultural', 'Cultural Experience'),
-        ('wellness', 'Wellness & Mindfulness'),
+        ('cultural', 'Arts & Culture'),
+        ('games', 'Games & Trivia'),
+        ('cooking', 'Cooking Classes'),
+        ('wine_tasting', 'Wine Tastings'),
+        ('wellness', 'Wellness'),
+        ('physical_activities', 'Physical Activities'),
+        ('cocktails', 'Cocktail Evenings'),
+        ('dinner', 'Dinner Parties'),
+        ('brunch', 'Brunches'),
         ('other', 'Other'),
     )
 

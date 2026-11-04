@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { apiClient, extractErrorMessage } from "@/lib/api/client";
 import {
@@ -195,6 +196,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const showWelcomeToast = () => {
+    toast(
+      <div className="flex items-center gap-1.5 text-white text-sm font-semibold">
+        <span>Welcome to mingler! Start browsing mingles</span>
+        <Link
+          href="/browse"
+          className="underline font-black text-white hover:opacity-90 underline-offset-2"
+        >
+          here
+        </Link>
+      </div>
+    );
+  };
+
   const handleSocialCallback = async (
     provider: SocialProvider,
     code: string,
@@ -211,10 +226,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (res.data.tokens && res.data.user) {
         saveSession(res.data.tokens, res.data.user, res.data.profile);
-        const welcomeMsg = res.data.is_new_user
-          ? "Welcome to Mingler! Account created successfully."
-          : res.data.message || "Social login successful.";
-        toast.success(welcomeMsg);
+        if (res.data.is_new_user) {
+          showWelcomeToast();
+        } else {
+          toast.success(res.data.message || "Social login successful.");
+        }
         closeModal();
         return true;
       }
@@ -234,7 +250,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (res.data.tokens && res.data.user) {
         saveSession(res.data.tokens, res.data.user, res.data.profile);
-        toast.success("Welcome back to Mingler!");
+        toast.success("Welcome back to mingler!");
         closeModal();
         return true;
       }
@@ -280,7 +296,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (res.data.tokens && res.data.user) {
         saveSession(res.data.tokens, res.data.user, res.data.profile);
-        toast.success("Email verified successfully! Welcome to Mingler.");
+        showWelcomeToast();
         closeModal();
         return true;
       }

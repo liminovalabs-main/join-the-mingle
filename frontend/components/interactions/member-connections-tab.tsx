@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Heart, Users, ExternalLink, Calendar, MapPin, Sparkles } from "lucide-react";
+import { Users, ExternalLink, Calendar, MapPin, Sparkles } from "lucide-react";
+import { OverlappingCirclesMark } from "@/components/brand/mingler-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,8 +46,8 @@ export function MemberConnectionsTab() {
   return (
     <section className="text-left space-y-6">
       <div>
-        <div className="flex items-center gap-2 mb-1.5">
-          <Heart className="w-5 h-5 text-brand-coral fill-brand-coral" />
+        <div className="flex items-center gap-2.5 mb-1.5">
+          <OverlappingCirclesMark className="h-5 w-auto shrink-0" />
           <h2 className="font-heading text-xl sm:text-2xl font-black text-brand-navy">
             People I'd Mingle With Again ({connections.length})
           </h2>
@@ -128,10 +129,10 @@ export function MemberConnectionsTab() {
                       </Link>
                       <Badge
                         variant="secondary"
-                        className="rounded-full bg-brand-coral/10 text-brand-coral border-transparent text-[10px] font-bold uppercase tracking-wider px-2 py-0.5"
+                        className="rounded-full bg-brand-coral/15 text-brand-coral border-brand-coral/30 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 inline-flex items-center gap-1.5"
                       >
-                        <Heart className="w-3 h-3 fill-brand-coral mr-1" />
-                        Mutual Match
+                        <OverlappingCirclesMark className="h-3 w-auto" />
+                        <span>minglers connected !</span>
                       </Badge>
                     </div>
 

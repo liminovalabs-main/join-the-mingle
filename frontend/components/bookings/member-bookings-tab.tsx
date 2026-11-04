@@ -294,7 +294,7 @@ export function MemberBookingsTab() {
                     <Link href={`/after-mingle/${b.mingle.id}`}>
                       <Button className="rounded-full bg-brand-coral hover:bg-brand-coral/90 text-white px-3.5 h-8 text-[11px] font-bold uppercase tracking-wider">
                         <Sparkles className="w-3.5 h-3.5 mr-1" />
-                        Review &amp; Match
+                        Review &amp; Connect
                       </Button>
                     </Link>
                   )}

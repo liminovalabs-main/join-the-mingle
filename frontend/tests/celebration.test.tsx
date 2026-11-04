@@ -72,7 +72,7 @@ describe("ConnectionCelebration Component", () => {
     expect(
       screen.getByText("You and Elena would like to mingle again!")
     ).toBeDefined();
-    expect(screen.getByText("View connection")).toBeDefined();
+    expect(screen.getByText(/View connections/i)).toBeDefined();
     expect(screen.getByText("Nice!")).toBeDefined();
   });
 
@@ -86,7 +86,7 @@ describe("ConnectionCelebration Component", () => {
     );
 
     expect(
-      screen.getByText("You and 2 Minglers would like to mingle again!")
+      screen.getByText(/You and 2 minglers would like to mingle again!/i)
     ).toBeDefined();
   });
 

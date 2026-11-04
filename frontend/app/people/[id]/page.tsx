@@ -78,7 +78,7 @@ function PersonProfileContent() {
           <Lock className="h-7 w-7" />
         </div>
         <h1 className="mt-5 font-heading text-3xl font-black text-brand-navy tracking-tight">
-          Mingler Profiles are for Members
+          mingler profiles are for members<span className="text-brand-coral">.</span>
         </h1>
         <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
           Create an account or log in to see who is going to this mingle and open attendee profiles.

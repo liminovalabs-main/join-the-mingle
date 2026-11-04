@@ -15,9 +15,9 @@ const FAQS: FAQItem[] = [
       "Yes, absolutely! Over 70% of minglers attend solo. Our partner venues set aside dedicated tables for groups of 6–10, and the entire format is designed so you feel comfortable and welcomed the moment you arrive. No awkward forced games or name badges.",
   },
   {
-    question: "How does double-blind matching work?",
+    question: "How does connecting after a mingle work?",
     answer:
-      "After the experience ends, open your dashboard to review your fellow attendees. Privately tap the people you'd enjoy seeing again. Only when two attendees mutually select each other are social links (Instagram handle, LinkedIn) revealed. If you pick someone and they don't pick back, they will never know.",
+      "After the experience ends, open your dashboard to review your fellow attendees. Privately tap the people you'd enjoy seeing again. Only when two attendees mutually select each other are they connected, and social links (Instagram handle, LinkedIn) revealed. If you pick someone and they don't pick back, they will never know.",
   },
   {
     question: "How are mingles curated?",

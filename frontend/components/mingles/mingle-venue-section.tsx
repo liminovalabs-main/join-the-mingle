@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock, MapPin, Store } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { getVenue } from "@/lib/api/venues";
 import { MingleVenueSummary } from "@/types/mingle";
 import { Venue } from "@/types/venue";
@@ -87,27 +87,6 @@ export function MingleVenueSection({
         <p className="mt-4 whitespace-pre-line text-sm sm:text-base leading-relaxed text-muted-foreground">
           {venue.description}
         </p>
-      )}
-
-      {validHours.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-border/50">
-          <h3 className="flex items-center gap-2 font-heading text-sm sm:text-base font-bold text-brand-navy mb-3">
-            <Clock className="h-4 w-4 text-brand-coral" /> Opening Hours
-          </h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-            {validHours.map((h) => (
-              <li
-                key={h.id || h.day_of_week}
-                className="text-xs sm:text-sm text-muted-foreground flex items-center justify-between p-2.5 rounded-xl bg-brand-ivory/50"
-              >
-                <span className="font-semibold text-brand-navy">{h.day_name}</span>
-                <span>
-                  {h.open_time?.slice(0, 5)} &ndash; {h.close_time?.slice(0, 5)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
       )}
     </div>
   );

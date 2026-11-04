@@ -4,7 +4,8 @@ import React, { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, Cake, Check, Clock, Heart, MapPin, Sparkles } from "lucide-react";
+import { ArrowLeft, Calendar, Cake, Check, Clock, MapPin, Sparkles } from "lucide-react";
+import { OverlappingCirclesMark } from "@/components/brand/mingler-logo";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -262,9 +263,12 @@ function AfterMingleContent() {
 
             {connectedPeople.length > 0 ? (
               <div className="mb-6 space-y-3">
-                <h3 className="text-sm font-bold text-brand-navy uppercase tracking-wider">
-                  You both want to mingle again!
-                </h3>
+                <div className="flex items-center gap-2">
+                  <OverlappingCirclesMark className="h-5 w-auto" />
+                  <h3 className="text-sm font-bold text-brand-navy uppercase tracking-wider">
+                    minglers connected !
+                  </h3>
+                </div>
                 <div className="space-y-3">
                   {connectedPeople.map((person) => {
                     const firstName = person.display_name?.split(" ")[0] || "Mingler";
@@ -291,9 +295,9 @@ function AfterMingleContent() {
                             <div className="font-heading text-sm font-bold text-brand-navy truncate">
                               {firstName}
                             </div>
-                            <div className="flex items-center gap-1 text-xs font-semibold text-brand-coral mt-0.5">
-                              <Check className="h-3.5 w-3.5 shrink-0" />
-                              <span>You both want to mingle again</span>
+                            <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-coral mt-0.5">
+                              <OverlappingCirclesMark className="h-3 w-auto" />
+                              <span>minglers connected !</span>
                             </div>
                           </div>
                         </div>

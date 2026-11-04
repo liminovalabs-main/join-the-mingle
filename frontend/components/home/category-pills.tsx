@@ -1,7 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { Utensils, GlassWater, Wine, Coffee, ChefHat, Sparkles, Trophy, Flower2 } from "lucide-react";
+import {
+  Sparkles,
+  Trophy,
+  ChefHat,
+  Wine,
+  Flower2,
+  Activity,
+  GlassWater,
+  Utensils,
+  Coffee,
+} from "lucide-react";
 
 export interface CategoryOption {
   key: string;
@@ -11,14 +21,15 @@ export interface CategoryOption {
 
 export const CATEGORIES: CategoryOption[] = [
   { key: "all", label: "All Experiences" },
-  { key: "dinner", label: "Dinner Parties", icon: Utensils },
-  { key: "cocktails", label: "Cocktail Evenings", icon: GlassWater },
-  { key: "wine_tasting", label: "Wine Tastings", icon: Wine },
-  { key: "brunch", label: "Brunches", icon: Coffee },
-  { key: "cooking", label: "Cooking Classes", icon: ChefHat },
-  { key: "games", label: "Games & Trivia", icon: Trophy },
   { key: "cultural", label: "Arts & Culture", icon: Sparkles },
+  { key: "games", label: "Games & Trivia", icon: Trophy },
+  { key: "cooking", label: "Cooking Classes", icon: ChefHat },
+  { key: "wine_tasting", label: "Wine Tastings", icon: Wine },
   { key: "wellness", label: "Wellness", icon: Flower2 },
+  { key: "physical_activities", label: "Physical Activities", icon: Activity },
+  { key: "cocktails", label: "Cocktail Evenings", icon: GlassWater },
+  { key: "dinner", label: "Dinner Parties", icon: Utensils },
+  { key: "brunch", label: "Brunches", icon: Coffee },
 ];
 
 interface CategoryPillsProps {

@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Check, Heart } from "lucide-react";
+import { Check } from "lucide-react";
+import { OverlappingCirclesMark } from "@/components/brand/mingler-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ReportDialog } from "./report-dialog";
 import { PublicProfile } from "@/types";
@@ -85,7 +85,7 @@ export function AttendeeReviewCard({
           </>
         ) : (
           <>
-            <Heart className="h-4 w-4" />
+            <OverlappingCirclesMark className="h-4 w-auto" />
             <span>I'd mingle with them again</span>
           </>
         )}
