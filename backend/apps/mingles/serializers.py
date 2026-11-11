@@ -55,7 +55,7 @@ class MingleListSerializer(serializers.ModelSerializer):
         hero = getattr(instance, 'hero_image', None)
         if hero:
             str_hero = str(hero)
-            if str_hero.startswith(('http://', 'https://')):
+            if str_hero.startswith(('http://', 'https://', '/')):
                 ret['hero_image'] = str_hero
         return ret
 
