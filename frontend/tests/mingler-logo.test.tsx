@@ -28,11 +28,22 @@ describe("Mingler Brand Components", () => {
     expect(screen.getByText("London")).toBeInTheDocument();
   });
 
-  it("renders MinglerLogo with signature branding styles", () => {
+  it("renders MinglerLogo with signature branding styles and without trailing dot", () => {
     const { container } = render(<MinglerLogo />);
     const logoWrapper = container.firstChild as HTMLElement;
     expect(logoWrapper).toHaveClass("font-heading");
     expect(logoWrapper).toHaveClass("font-black");
     expect(logoWrapper).toHaveClass("text-brand-ivory");
+    // Assert no trailing period
+    expect(container.textContent).not.toContain(".");
   });
+
+  it("renders MinglerPlainLogo with client image asset", () => {
+    render(<MinglerLogo useImage />);
+    const img = screen.getByAltText("mingler");
+    expect(img).toBeInTheDocument();
+    expect(img.getAttribute("src")).toContain("mingler-logo-transparent.png");
+  });
+
+
 });

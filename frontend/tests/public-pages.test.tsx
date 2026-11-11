@@ -74,27 +74,27 @@ describe("Public Pages & Brand Surfaces (Base44 Fidelity)", () => {
   });
 
   describe("How It Works Page (/how-it-works)", () => {
-    it("renders the hero headline and Base44 master infographic banner", () => {
+    it("renders the hero headline and four-step visual preview banner", () => {
       render(<HowItWorksPage />);
       expect(screen.getByText(/Real people\. Great rooms\./i)).toBeInTheDocument();
       expect(screen.getByText(/Zero awkwardness\./i)).toBeInTheDocument();
-      const banner = screen.getByAltText(/Four steps to your next great mingle/i);
-      expect(banner).toBeInTheDocument();
+      const step1Img = screen.getAllByAltText(/Step 1: Join in seconds/i)[0];
+      expect(step1Img).toBeInTheDocument();
     });
 
-    it("renders all four steps with Base44 titles and descriptions", () => {
+    it("renders all four steps with titles and descriptions", () => {
       render(<HowItWorksPage />);
       expect(screen.getByText("Step 1")).toBeInTheDocument();
-      expect(screen.getByText("Join in seconds")).toBeInTheDocument();
+      expect(screen.getAllByText(/Join in seconds/i).length).toBeGreaterThanOrEqual(1);
 
       expect(screen.getByText("Step 2")).toBeInTheDocument();
       expect(screen.getAllByText(/Find your mingle/i).length).toBeGreaterThanOrEqual(1);
 
       expect(screen.getByText("Step 3")).toBeInTheDocument();
-      expect(screen.getByText("Show up and mingle")).toBeInTheDocument();
+      expect(screen.getAllByText(/Show up (and|&) mingle/i).length).toBeGreaterThanOrEqual(1);
 
       expect(screen.getByText("Step 4")).toBeInTheDocument();
-      expect(screen.getByText("Mingle again")).toBeInTheDocument();
+      expect(screen.getAllByText(/Mingle again/i).length).toBeGreaterThanOrEqual(1);
     });
 
     it("renders the Mingler guarantee section covering safety and privacy", () => {

@@ -7,14 +7,11 @@ import { MingleCard } from "@/components/mingles/mingle-card";
 import { useAuth } from "@/hooks/use-auth";
 import { getMingles } from "@/lib/api/mingles";
 import { Mingle } from "@/types/mingle";
+import Image from "next/image";
 import { HeroBackdrop } from "@/components/home/hero-backdrop";
 import { CategoryPills } from "@/components/home/category-pills";
 import { DictionaryEntry } from "@/components/brand/dictionary-entry";
 import { VenuePartnerCta } from "@/components/home/venue-partner-cta";
-import { JoinIllustration } from "@/components/howitworks/illustrations/join-illustration";
-import { FindIllustration } from "@/components/howitworks/illustrations/find-illustration";
-import { MingleIllustration } from "@/components/howitworks/illustrations/mingle-illustration";
-import { MingleAgainIllustration } from "@/components/howitworks/illustrations/mingle-again-illustration";
 
 export default function Home() {
   const { user } = useAuth();
@@ -190,69 +187,102 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Step 1 */}
-            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
-              <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
-                <JoinIllustration className="w-full h-full" />
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="aspect-square w-full rounded-2xl bg-brand-stone/10 mb-5 border border-border/40 relative overflow-hidden">
+                  <Image
+                    src="/images/steps/step-1-join.jpg"
+                    alt="Step 1: Join in seconds - verified profile"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-brand-coral">
+                  01. Join
+                </span>
+                <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
+                  Join in seconds
+                </h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Quick verified sign-up. Private and secure &mdash; zero public PII exposure.
+                </p>
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-coral">
-                01. Join
-              </span>
-              <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
-                Join in seconds
-              </h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Quick verified sign-up. Private and secure &mdash; zero public PII exposure.
-              </p>
             </div>
 
             {/* Step 2 */}
-            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
-              <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
-                <FindIllustration className="w-full h-full" />
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="aspect-square w-full rounded-2xl bg-brand-stone/10 mb-5 border border-border/40 relative overflow-hidden">
+                  <Image
+                    src="/images/steps/step-2-find.jpg"
+                    alt="Step 2: Find your mingle - handpicked experiences"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#1F2E29]">
+                  02. Find
+                </span>
+                <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
+                  Find your mingle
+                </h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Dine, play, create, learn. Handpicked experiences at top London venues.
+                </p>
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[#1F2E29]">
-                02. Find
-              </span>
-              <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
-                Find your mingle
-              </h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Dine, play, create, learn. Handpicked experiences at top London venues.
-              </p>
             </div>
 
             {/* Step 3 */}
-            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
-              <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
-                <MingleIllustration className="w-full h-full" />
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="aspect-square w-full rounded-2xl bg-brand-stone/10 mb-5 border border-border/40 relative overflow-hidden">
+                  <Image
+                    src="/images/steps/step-3-mingle.jpg"
+                    alt="Step 3: Show up & mingle - intimate social tables"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-brand-blue">
+                  03. Mingle
+                </span>
+                <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
+                  Show up & mingle
+                </h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Intimate tables of 6–10. Come solo or bring friends &mdash; everyone is here to connect.
+                </p>
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-blue">
-                03. Mingle
-              </span>
-              <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
-                Show up & mingle
-              </h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Intimate tables of 6–10. Come solo or bring friends &mdash; everyone is here to connect.
-              </p>
             </div>
 
             {/* Step 4 */}
-            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all">
-              <div className="aspect-square w-full rounded-2xl bg-white p-4 mb-5 border border-border/40 flex items-center justify-center overflow-hidden">
-                <MingleAgainIllustration className="w-full h-full" />
+            <div className="group rounded-3xl bg-white p-6 border border-border/70 hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="aspect-square w-full rounded-2xl bg-brand-stone/10 mb-5 border border-border/40 relative overflow-hidden">
+                  <Image
+                    src="/images/steps/step-4-connect.jpg"
+                    alt="Step 4: Mingle again - double-blind mutual connections"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+                  04. Connect
+                </span>
+                <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
+                  Mingle again
+                </h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Privately select attendees post-event. Socials unlock only when feeling is mutual.
+                </p>
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
-                04. Connect
-              </span>
-              <h3 className="font-heading text-lg font-bold text-brand-navy mt-1 mb-2">
-                Mingle again
-              </h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Privately select attendees post-event. Socials unlock only when feeling is mutual.
-              </p>
             </div>
           </div>
+
         </div>
       </section>
 

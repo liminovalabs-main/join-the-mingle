@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="bg-brand-navy text-brand-ivory border-t border-brand-ivory/10">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-12 md:flex-row md:items-center">
         <div>
-          <MinglerLogo size="text-xl" />
+          <MinglerLogo useImage size="text-xl" />
           <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-ivory/50">
             The Physical Social Network
           </p>

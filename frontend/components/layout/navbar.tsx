@@ -52,8 +52,8 @@ export function Navbar() {
 
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-20">
         {/* Brand Wordmark Logo */}
-        <Link href="/" aria-label="mingler — Home" className="leading-none">
-          <MinglerLogo size="text-2xl md:text-3xl" />
+        <Link href="/" aria-label="mingler — Home" className="leading-none flex items-center">
+          <MinglerLogo useImage size="text-2xl md:text-3xl" />
         </Link>
 
         {/* Desktop Navigation Links */}

@@ -2,21 +2,45 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Shield, Sparkles, CheckCircle2 } from "lucide-react";
-import { JoinIllustration } from "@/components/howitworks/illustrations/join-illustration";
-import { FindIllustration } from "@/components/howitworks/illustrations/find-illustration";
-import { MingleIllustration } from "@/components/howitworks/illustrations/mingle-illustration";
-import { MingleAgainIllustration } from "@/components/howitworks/illustrations/mingle-again-illustration";
 import { FaqAccordion } from "@/components/howitworks/faq-accordion";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How It Works | Mingler — The Physical Social Network",
+  title: "How It Works | mingler — The Physical Social Network",
   description:
     "Four simple steps to your next great mingle in London. Discover curated experiences, meet great people around intimate tables, and connect double-blind.",
 };
 
-const STEPS_IMG =
-  "https://media.base44.com/images/public/6ab24cde0395ca67b11cfcd9/9b2a7909c_how-it-works-blue.png";
+const FOUR_STEPS = [
+  {
+    step: "01",
+    tag: "Join",
+    title: "Join in seconds",
+    image: "/images/steps/step-1-join.jpg",
+    alt: "Step 1: Join in seconds - verified profile",
+  },
+  {
+    step: "02",
+    tag: "Find",
+    title: "Find your mingle",
+    image: "/images/steps/step-2-find.jpg",
+    alt: "Step 2: Find your mingle - handpicked activities",
+  },
+  {
+    step: "03",
+    tag: "Mingle",
+    title: "Show up & mingle",
+    image: "/images/steps/step-3-mingle.jpg",
+    alt: "Step 3: Show up and mingle - intimate table experiences",
+  },
+  {
+    step: "04",
+    tag: "Connect",
+    title: "Mingle again",
+    image: "/images/steps/step-4-connect.jpg",
+    alt: "Step 4: Mingle again - connect double-blind",
+  },
+];
 
 export default function HowItWorksPage() {
   return (
@@ -32,7 +56,7 @@ export default function HowItWorksPage() {
         {/* Editorial Eyebrow & Hero Header */}
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8D8D8D]">
-            How Mingler Works
+            How mingler Works
           </p>
           <h1 className="mt-4 font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#1A2624] leading-[1.05]">
             Real people. Great rooms.
@@ -40,21 +64,33 @@ export default function HowItWorksPage() {
             <span className="text-brand-coral">Zero awkwardness.</span>
           </h1>
           <p className="mt-6 text-base sm:text-lg leading-relaxed text-[#1A2624]/75 max-w-2xl">
-            Mingler replaces endless texting and swipe-fatigue with real conversations over great food, drinks, and activities across London. Here is how it happens in 4 simple steps.
+            mingler replaces endless texting and swipe-fatigue with real conversations over great food, drinks, and activities across London. Here is how it happens in 4 simple steps.
           </p>
         </div>
 
-        {/* Base44 Signature Graphic Banner */}
-        <div className="mt-12 overflow-hidden rounded-3xl border border-[#EBEAE5] bg-[#FCFBF6] shadow-sm">
-          <Image
-            src={STEPS_IMG}
-            alt="Four steps to your next great mingle: Join in seconds, Find your mingle, Show up and mingle, Mingle again."
-            width={1200}
-            height={400}
-            priority
-            className="w-full h-auto"
-            sizes="(max-width: 1200px) 100vw, 1200px"
-          />
+        {/* 4-Step Visual Preview Banner */}
+        <div className="mt-12 overflow-hidden rounded-3xl border border-[#EBEAE5] bg-[#FCFBF6] p-4 sm:p-6 shadow-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {FOUR_STEPS.map((s) => (
+              <div key={s.step} className="group flex flex-col items-center text-center">
+                <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-brand-stone/10 border border-border/40 shadow-xs mb-3">
+                  <Image
+                    src={s.image}
+                    alt={s.alt}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 50vw, 25vw"
+                  />
+                </div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Step {s.step} &bull; {s.tag}
+                </span>
+                <p className="font-heading text-xs sm:text-sm font-bold text-brand-navy mt-0.5">
+                  {s.title}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* 4-Step Interactive Card Grid */}
@@ -84,8 +120,16 @@ export default function HowItWorksPage() {
               </ul>
             </div>
             <div className="lg:col-span-6 order-1 lg:order-2 flex justify-center">
-              <div className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 border border-border/70 shadow-sm">
-                <JoinIllustration />
+              <div className="w-full max-w-md rounded-3xl bg-white p-4 sm:p-5 border border-border/70 shadow-sm overflow-hidden">
+                <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-brand-stone/10">
+                  <Image
+                    src="/images/steps/step-1-join.jpg"
+                    alt="Step 1: Join in seconds - verified profile"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 450px"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -93,8 +137,16 @@ export default function HowItWorksPage() {
           {/* Step 2: Find your mingle */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-6 flex justify-center">
-              <div className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 border border-border/70 shadow-sm">
-                <FindIllustration />
+              <div className="w-full max-w-md rounded-3xl bg-white p-4 sm:p-5 border border-border/70 shadow-sm overflow-hidden">
+                <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-brand-stone/10">
+                  <Image
+                    src="/images/steps/step-2-find.jpg"
+                    alt="Step 2: Find your mingle - handpicked activities"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 450px"
+                  />
+                </div>
               </div>
             </div>
             <div className="lg:col-span-6">
@@ -146,8 +198,16 @@ export default function HowItWorksPage() {
               </ul>
             </div>
             <div className="lg:col-span-6 order-1 lg:order-2 flex justify-center">
-              <div className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 border border-border/70 shadow-sm">
-                <MingleIllustration />
+              <div className="w-full max-w-md rounded-3xl bg-white p-4 sm:p-5 border border-border/70 shadow-sm overflow-hidden">
+                <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-brand-stone/10">
+                  <Image
+                    src="/images/steps/step-3-mingle.jpg"
+                    alt="Step 3: Show up & mingle - curated group tables"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 450px"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -155,10 +215,19 @@ export default function HowItWorksPage() {
           {/* Step 4: Mingle again */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-6 flex justify-center">
-              <div className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 border border-border/70 shadow-sm">
-                <MingleAgainIllustration />
+              <div className="w-full max-w-md rounded-3xl bg-white p-4 sm:p-5 border border-border/70 shadow-sm overflow-hidden">
+                <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-brand-stone/10">
+                  <Image
+                    src="/images/steps/step-4-connect.jpg"
+                    alt="Step 4: Mingle again - connect double-blind post-mingle"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 450px"
+                  />
+                </div>
               </div>
             </div>
+
             <div className="lg:col-span-6">
               <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800">
                 Step 4

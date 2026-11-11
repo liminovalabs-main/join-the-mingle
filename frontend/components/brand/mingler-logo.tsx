@@ -1,4 +1,5 @@
 import * as React from "react";
+import Image from "next/image";
 
 /**
  * The official Mingler overlapping circles mark:
@@ -98,22 +99,56 @@ export function MinglerWord({
 }
 
 /**
- * The clean "mingler" wordmark paired with the official overlapping circles logo mark.
- * Always lowercase "mingler", with a circular coral dot.
+ * The official client plain inverted logo for dark/blue backgrounds.
+ * Uses the exact graphic asset provided by the client with authentic proportions.
+ */
+export function MinglerPlainLogo({
+  className = "",
+  heightClass = "h-7 sm:h-8",
+  priority = true,
+}: {
+  className?: string;
+  heightClass?: string;
+  priority?: boolean;
+}) {
+  return (
+    <div className={`relative inline-flex items-center ${className}`}>
+      <Image
+        src="/images/brand/mingler-logo-transparent.png"
+        alt="mingler"
+        width={136}
+        height={47}
+        priority={priority}
+        className={`${heightClass} w-auto object-contain select-none`}
+      />
+    </div>
+  );
+}
+
+/**
+ * The clean "mingler" wordmark.
+ * Always lowercase "mingler", with a circular coral dot only on the 'i'.
+ * No trailing period per client brand directive.
  */
 export function MinglerLogo({
   className = "",
   size = "text-2xl md:text-3xl",
-  showMark = true,
+  showMark = false,
+  useImage = false,
   dotClass = "bg-brand-coral",
   stemClass = "bg-brand-ivory",
 }: {
   className?: string;
   size?: string;
   showMark?: boolean;
+  useImage?: boolean;
   dotClass?: string;
   stemClass?: string;
 }) {
+  if (useImage) {
+    return <MinglerPlainLogo className={className} />;
+  }
+
   return (
     <div
       className={`font-heading font-black text-brand-ivory inline-flex items-center gap-2.5 leading-none select-none ${className}`}
@@ -123,8 +158,8 @@ export function MinglerLogo({
         <MinglerWord dotClass={dotClass} stemClass={stemClass}>
           mingler
         </MinglerWord>
-        <span className="text-brand-coral inline-block font-black rounded-full">.</span>
       </span>
     </div>
   );
 }
+
