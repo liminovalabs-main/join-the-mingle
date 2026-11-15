@@ -4,6 +4,8 @@ Fixes Base44 Defect #3 (past-event bookings allowed) via strict Date Guard.
 Prevents race-condition overbooking via PostgreSQL select_for_update() row locking.
 """
 import logging
+from datetime import datetime
+from decimal import Decimal
 from typing import Optional
 from django.db import transaction
 from django.db.models import Sum
@@ -104,32 +106,51 @@ class BookingService:
                     )
                 })
 
-            # 5. Price Snapshotting and Creation
+            # 5. Price Snapshotting and Creation with £2 Booking Fee
             unit_price = mingle.ticket_price
-            total_amount = unit_price * places_booked
+            booking_fee = Decimal('2.00')
+            total_amount = (unit_price * places_booked) + booking_fee
 
             booking = Booking.objects.create(
                 mingle=mingle,
                 profile=profile,
                 places_booked=places_booked,
                 unit_price=unit_price,
+                booking_fee=booking_fee,
                 total_amount=total_amount,
                 status='pending',
             )
 
             logger.info(
-                "Created pending Booking %s for Profile %s (%d places @ £%s)",
+                "Created pending Booking %s for Profile %s (%d places @ £%s + £%s fee = £%s)",
                 booking.id,
                 profile.display_name,
                 places_booked,
+                unit_price,
+                booking_fee,
                 total_amount,
             )
             return booking
 
     @classmethod
-    def cancel_booking(cls, booking: Booking, profile: Profile) -> Booking:
-        """Cancel an upcoming reservation and release capacity."""
-        if booking.profile != profile:
+    def cancel_booking(
+        cls,
+        booking: Booking,
+        profile: Profile,
+        is_venue_cancellation: bool = False,
+        is_host_declined: bool = False,
+    ) -> Booking:
+        """Cancel an upcoming reservation and release capacity according to refund policy.
+
+        Policy:
+            - Greater than cancellation_cutoff_hours (default 48h): Full refund including booking fee.
+            - Within cancellation_cutoff_hours: Non-refundable (unless cancelled by venue/host).
+            - Venue cancellation or host declined: Always eligible for full refund.
+        """
+        user = profile.user
+        is_admin_or_staff = user.is_staff or user.role == 'admin'
+
+        if booking.profile != profile and not is_admin_or_staff:
             raise exceptions.PermissionDenied("You do not have permission to cancel this booking.")
 
         if booking.status == 'cancelled':
@@ -138,10 +159,43 @@ class BookingService:
         if booking.status == 'refunded':
             raise exceptions.ValidationError({'booking': "This booking has already been refunded."})
 
-        # Cannot cancel events that have already taken place
-        today = timezone.now().date()
-        if booking.mingle.event_date < today:
-            raise exceptions.ValidationError({'booking': "Cannot cancel a booking for an event that has already occurred."})
+        # Calculate cutoff window relative to mingle start time
+        now = timezone.now()
+        event_time = booking.mingle.start_time
+        event_datetime = datetime.combine(booking.mingle.event_date, event_time)
+        if timezone.is_naive(event_datetime):
+            event_datetime = timezone.make_aware(event_datetime, timezone.get_current_timezone())
+
+        if now >= event_datetime:
+            raise exceptions.ValidationError({'booking': "Cannot cancel a booking for an event that has already occurred or started."})
+
+        cutoff_hours = getattr(booking.mingle, 'cancellation_cutoff_hours', 48)
+        hours_until_event = (event_datetime - now).total_seconds() / 3600.0
+
+        is_exempt_from_cutoff = is_venue_cancellation or is_host_declined or is_admin_or_staff
+
+        if not is_exempt_from_cutoff and hours_until_event < cutoff_hours:
+            raise exceptions.ValidationError({
+                'booking': (
+                    f"Cancellations within {cutoff_hours} hours of the event start are non-refundable "
+                    "under Mingler's cancellation policy."
+                )
+            })
+
+        # Process refund if payment was already captured
+        if booking.status == 'confirmed':
+            payment = getattr(booking, 'payment', None)
+            if payment and payment.payment_status == 'succeeded':
+                from apps.payments.services import StripeService
+                refund_result = StripeService.refund_payment(payment, reason="requested_by_customer")
+                payment.payment_status = 'refunded'
+                payment.refund_id = refund_result.get('refund_id')
+                payment.amount_refunded = refund_result.get('amount', payment.amount_paid)
+                payment.save(update_fields=['payment_status', 'refund_id', 'amount_refunded', 'updated_at'])
+                booking.status = 'refunded'
+                booking.save(update_fields=['status', 'updated_at'])
+                logger.info("Refunded Booking %s and Payment %s for Profile %s (£%s)", booking.id, payment.id, profile.display_name, payment.amount_paid)
+                return booking
 
         booking.status = 'cancelled'
         booking.save(update_fields=['status', 'updated_at'])

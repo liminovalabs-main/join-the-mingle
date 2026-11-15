@@ -72,6 +72,10 @@ class Mingle(BaseModel):
         default=99,
         help_text='Maximum age limit.',
     )
+    cancellation_cutoff_hours = models.PositiveIntegerField(
+        default=48,
+        help_text='Cutoff window in hours before event start time within which cancellations are non-refundable.',
+    )
     hero_image = models.ImageField(
         upload_to='mingles/',
         max_length=500,

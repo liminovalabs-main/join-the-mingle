@@ -143,19 +143,36 @@ class StripeWebhookView(APIView):
     def post(self, request):
         payload = request.body
         sig_header = request.headers.get('Stripe-Signature', '')
-        webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', '')
+        live_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', '')
+        test_secret = getattr(settings, 'STRIPE_TEST_WEBHOOK_SECRET', '')
 
-        # Construct and cryptographically verify the event
-        try:
-            if webhook_secret and sig_header:
-                event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
-            else:
-                # If secret is unset in dev/test, decode JSON directly with security warning
-                logger.warning("Processing Stripe webhook without signature verification (dev/testing mode).")
+        # Construct and cryptographically verify the event (supports live and test secrets)
+        event = None
+        verification_errors = []
+
+        if live_secret and sig_header:
+            try:
+                event = stripe.Webhook.construct_event(payload, sig_header, live_secret)
+            except (ValueError, stripe.error.SignatureVerificationError) as err:
+                verification_errors.append(f"live_secret: {err}")
+
+        if not event and test_secret and sig_header:
+            try:
+                event = stripe.Webhook.construct_event(payload, sig_header, test_secret)
+            except (ValueError, stripe.error.SignatureVerificationError) as err:
+                verification_errors.append(f"test_secret: {err}")
+
+        if not event and (live_secret or test_secret) and sig_header:
+            logger.warning("Stripe webhook signature verification failed: %s", " | ".join(verification_errors))
+            return Response({'error': f"Invalid signature or payload: {' | '.join(verification_errors)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not event:
+            # If secret is unset in dev/test, decode JSON directly with security warning
+            logger.warning("Processing Stripe webhook without signature verification (dev/testing mode).")
+            try:
                 event = json.loads(payload.decode('utf-8'))
-        except (ValueError, stripe.error.SignatureVerificationError) as err:
-            logger.warning("Stripe webhook signature verification failed: %s", err)
-            return Response({'error': f"Invalid signature or payload: {str(err)}"}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({'error': f"Malformed JSON: {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
         event_id = event.get('id')
         event_type = event.get('type')
@@ -206,7 +223,40 @@ class StripeWebhookView(APIView):
                     except Booking.DoesNotExist:
                         logger.error("Booking %s from webhook session metadata does not exist.", booking_id)
 
-            # ─── 2. Checkout Session Expired / Failed (Release Seats) ──
+            # ─── 2. Payment Intent Succeeded ───────────────────────────
+            elif event_type == 'payment_intent.succeeded':
+                intent = event.get('data', {}).get('object', {})
+                intent_id = intent.get('id')
+                if intent_id:
+                    payment = Payment.objects.filter(stripe_payment_intent_id=intent_id).first()
+                    if payment and payment.payment_status != 'succeeded':
+                        payment.payment_status = 'succeeded'
+                        payment.save(update_fields=['payment_status', 'updated_at'])
+                        logger.info("Payment %s confirmed via payment_intent.succeeded", payment.id)
+
+            # ─── 3. Charge Refunded (Full / Partial Refund) ────────────
+            elif event_type == 'charge.refunded':
+                charge = event.get('data', {}).get('object', {})
+                payment_intent_id = charge.get('payment_intent')
+                amount_refunded_cents = charge.get('amount_refunded', 0)
+                amount_refunded_decimal = Decimal(amount_refunded_cents) / 100
+
+                if payment_intent_id:
+                    try:
+                        payment = Payment.objects.select_related('booking').get(stripe_payment_intent_id=payment_intent_id)
+                        payment.payment_status = 'refunded'
+                        payment.amount_refunded = amount_refunded_decimal
+                        payment.save(update_fields=['payment_status', 'amount_refunded', 'updated_at'])
+
+                        booking = payment.booking
+                        if booking.status != 'refunded':
+                            booking.status = 'refunded'
+                            booking.save(update_fields=['status', 'updated_at'])
+                            logger.info("Booking %s marked as refunded via charge.refunded event (£%s)", booking.id, amount_refunded_decimal)
+                    except Payment.DoesNotExist:
+                        logger.warning("Payment with intent %s not found for refund event", payment_intent_id)
+
+            # ─── 4. Checkout Session Expired / Failed (Release Seats) ──
             elif event_type in ('checkout.session.expired', 'payment_intent.payment_failed'):
                 session = event.get('data', {}).get('object', {})
                 booking_id = session.get('metadata', {}).get('booking_id') or session.get('client_reference_id')

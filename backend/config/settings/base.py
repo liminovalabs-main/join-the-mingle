@@ -227,6 +227,7 @@ CELERY_TASK_EAGER_PROPAGATES = True
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY', '')
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+STRIPE_TEST_WEBHOOK_SECRET = os.environ.get('STRIPE_TEST_WEBHOOK_SECRET', '')
 
 # ──────────────────────────────────────────────
 # Email

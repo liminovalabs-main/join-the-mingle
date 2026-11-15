@@ -3,6 +3,8 @@
 Tracks Stripe checkout sessions, payment intents, and ensures
 idempotent webhook processing via StripePaymentEvent deduplication.
 """
+from decimal import Decimal
+
 from django.db import models
 
 from apps.core.models import BaseModel
@@ -40,6 +42,18 @@ class Payment(BaseModel):
     payment_status = models.CharField(
         max_length=20,
         default='succeeded',
+    )
+    refund_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text='Stripe Refund ID (re_xxx).',
+    )
+    amount_refunded = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        help_text='Total amount refunded in GBP (£).',
     )
 
     class Meta:

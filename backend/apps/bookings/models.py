@@ -3,6 +3,8 @@
 Handles ticket reservations with concurrency-safe capacity checks
 and date guard validation to prevent past-event bookings.
 """
+from decimal import Decimal
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -48,10 +50,16 @@ class Booking(BaseModel):
         decimal_places=2,
         help_text='Snapshot of ticket price at booking time.',
     )
+    booking_fee = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        default=Decimal('2.00'),
+        help_text='Mingler platform booking fee in GBP (£).',
+    )
     total_amount = models.DecimalField(
         max_digits=8,
         decimal_places=2,
-        help_text='unit_price × places_booked.',
+        help_text='(unit_price × places_booked) + booking_fee.',
     )
     status = models.CharField(
         max_length=20,
