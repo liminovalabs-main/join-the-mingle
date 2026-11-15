@@ -3,8 +3,8 @@
     admin off
 }
 
-# Production Reverse Proxy for Mingler Platform
-mingler.co.uk, www.mingler.co.uk {
+# Production Reverse Proxy for Mingler Platform (Handbook Chapter 07)
+{$DOMAIN:mingler.co.uk} {
     encode zstd gzip
 
     # Production Security Headers
@@ -28,17 +28,9 @@ mingler.co.uk, www.mingler.co.uk {
         file_server
     }
 
-    # Backend API, Admin, Health, and OpenAPI schema routes
-    handle /health/* {
-        reverse_proxy backend:8000
-    }
-    handle /health {
-        reverse_proxy backend:8000
-    }
-    handle /api/* {
-        reverse_proxy backend:8000
-    }
-    handle /admin/* {
+    # Route API, Admin, and Health probes to Django backend
+    @django path /api /api/* /admin /admin/* /health /health/*
+    handle @django {
         reverse_proxy backend:8000
     }
 
@@ -46,4 +38,9 @@ mingler.co.uk, www.mingler.co.uk {
     handle {
         reverse_proxy frontend:3000
     }
+}
+
+# Permanent 301 Redirect for www to apex domain
+{$WWW_DOMAIN:www.mingler.co.uk} {
+    redir https://{$DOMAIN:mingler.co.uk}{uri} permanent
 }
