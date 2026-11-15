@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Next.js App
+# Multi-stage production build for Next.js App
 FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -11,7 +11,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ARG NEXT_PUBLIC_API_URL=https://mingler.co.uk/api/v1
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN npm run build
 
 FROM node:20-alpine AS runner

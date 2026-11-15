@@ -16,6 +16,7 @@ frontend/.env.test.local
 frontend/.env.production.local
 # Explicitly permit template example files:
 !.env.example
+!.env.production.example
 !backend/.env.example
 !frontend/.env.example
 

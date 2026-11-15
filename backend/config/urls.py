@@ -5,6 +5,7 @@ Swagger and ReDoc documentation available at /api/docs/ and /api/redoc/.
 """
 from django.contrib import admin
 from django.urls import include, path
+from apps.core.views import HealthCheckView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -12,6 +13,10 @@ from drf_spectacular.views import (
 )
 
 urlpatterns = [
+    # Health checks for container orchestration and Caddy smoke tests
+    path('health/', HealthCheckView.as_view(), name='health-check'),
+    path('api/v1/health/', HealthCheckView.as_view(), name='api-v1-health-check'),
+
     # Django Admin
     path('admin/', admin.site.urls),
 

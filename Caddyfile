@@ -1,0 +1,49 @@
+{
+    email hello@mingler.co.uk
+    admin off
+}
+
+# Production Reverse Proxy for Mingler Platform
+mingler.co.uk, www.mingler.co.uk {
+    encode zstd gzip
+
+    # Production Security Headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # High-speed static files directly from shared volume
+    handle_path /static/* {
+        root * /var/www/static
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Uploaded media assets directly from shared volume
+    handle_path /media/* {
+        root * /var/www/media
+        file_server
+    }
+
+    # Backend API, Admin, Health, and OpenAPI schema routes
+    handle /health/* {
+        reverse_proxy backend:8000
+    }
+    handle /health {
+        reverse_proxy backend:8000
+    }
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+    handle /admin/* {
+        reverse_proxy backend:8000
+    }
+
+    # Next.js Frontend (SSR & Static pages)
+    handle {
+        reverse_proxy frontend:3000
+    }
+}
