@@ -272,12 +272,14 @@ export function MemberBookingsTab() {
                     </span>
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                        b.status === "cancelled"
+                        b.status === "refunded"
+                          ? "bg-purple-100 text-purple-800 border border-purple-200"
+                          : b.status === "cancelled"
                           ? "bg-stone-200 text-stone-700"
                           : "bg-brand-stone/30 text-brand-navy"
                       }`}
                     >
-                      {b.status_display || b.status}
+                      {b.status === "refunded" ? "Refunded" : b.status_display || b.status}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground flex items-center gap-3">
@@ -332,6 +334,37 @@ export function MemberBookingsTab() {
               {cancellingBooking?.places_booked}{" "}
               {cancellingBooking?.places_booked === 1 ? "place" : "places"} will be immediately released to other members.
             </DialogDescription>
+
+            {/* 48-Hour Refund Policy Guidance */}
+            {(() => {
+              if (!cancellingBooking) return null;
+              try {
+                const eventTime = new Date(`${cancellingBooking.mingle.event_date}T${cancellingBooking.mingle.start_time || "00:00:00"}`);
+                const cutoff = cancellingBooking.mingle.cancellation_cutoff_hours ?? 48;
+                const hoursLeft = (eventTime.getTime() - Date.now()) / (1000 * 60 * 60);
+                if (hoursLeft >= cutoff) {
+                  return (
+                    <div className="mt-3 rounded-2xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-950 text-left flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Full Refund Guaranteed:</strong> Because you are cancelling more than {cutoff} hours before the experience, a 100% full refund (£{parseFloat(cancellingBooking.total_amount || "0").toFixed(2)}) will be credited to your original payment method via Stripe.
+                      </span>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="mt-3 rounded-2xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-950 text-left flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Late Cancellation Notice:</strong> This experience starts within {cutoff} hours. Under Mingler&apos;s cancellation policy, cancellations within {cutoff} hours are non-refundable.
+                      </span>
+                    </div>
+                  );
+                }
+              } catch {
+                return null;
+              }
+            })()}
           </DialogHeader>
 
           <div className="mt-3">

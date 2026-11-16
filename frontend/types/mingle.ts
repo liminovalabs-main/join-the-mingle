@@ -43,6 +43,7 @@ export interface Mingle {
   age_min?: number;
   age_max?: number;
   curator_notes?: string;
+  cancellation_cutoff_hours?: number;
   created_at: string;
   updated_at?: string;
 }

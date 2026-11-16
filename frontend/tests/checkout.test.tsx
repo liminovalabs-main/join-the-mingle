@@ -74,7 +74,7 @@ describe("CheckoutPage Component (Part F4)", () => {
     });
   });
 
-  it("renders experience details and default 1 place at £45.00", async () => {
+  it("renders experience details and default 1 place at £45.00 plus £2.00 booking fee", async () => {
     (getMingle as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mockUpcomingMingle);
 
     render(<CheckoutPage />);
@@ -84,6 +84,10 @@ describe("CheckoutPage Component (Part F4)", () => {
       expect(screen.getByText("The Crypt Bar, Covent Garden")).toBeDefined();
       expect(screen.getByTestId("places-count").textContent).toBe("1");
       expect(screen.getAllByText("£45.00").length).toBeGreaterThan(0);
+      expect(screen.getByText("Platform booking fee")).toBeDefined();
+      expect(screen.getByText("£2.00")).toBeDefined();
+      expect(screen.getAllByText("£47.00").length).toBeGreaterThan(0);
+      expect(screen.getByText(/Free cancellation/i)).toBeDefined();
     });
   });
 
@@ -188,10 +192,10 @@ describe("CheckoutPage Component (Part F4)", () => {
     render(<CheckoutPage />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Pay £45\.00/i })).toBeDefined();
+      expect(screen.getByRole("button", { name: /Pay £47\.00/i })).toBeDefined();
     });
 
-    const payBtn = screen.getByRole("button", { name: /Pay £45\.00/i });
+    const payBtn = screen.getByRole("button", { name: /Pay £47\.00/i });
     fireEvent.click(payBtn);
 
     await waitFor(() => {

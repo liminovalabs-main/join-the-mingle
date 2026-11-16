@@ -14,6 +14,7 @@ import {
   Sparkles,
   Users,
   AlertTriangle,
+  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AttendeesSection } from "@/components/mingles/attendees-section";
@@ -165,6 +166,11 @@ function MingleDetailContent() {
       icon: Users,
       label: "Group Size",
       value: `${mingle.capacity} places (${remaining} remaining)`,
+    },
+    {
+      icon: ShieldCheck,
+      label: "Cancellation",
+      value: `Full refund up to ${mingle.cancellation_cutoff_hours || 48}h before`,
     },
   ];
 

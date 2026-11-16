@@ -105,6 +105,7 @@ class MingleDetailSerializer(MingleListSerializer):
             'age_min',
             'age_max',
             'curator_notes',
+            'cancellation_cutoff_hours',
             'updated_at',
         ]
 

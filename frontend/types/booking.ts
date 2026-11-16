@@ -7,6 +7,7 @@ export interface Booking {
   mingle: Mingle;
   places_booked: number;
   unit_price: string;
+  booking_fee?: string;
   total_amount: string;
   status: BookingStatus;
   status_display: string;

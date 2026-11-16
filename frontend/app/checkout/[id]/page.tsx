@@ -141,7 +141,9 @@ function CheckoutContent() {
   const remaining = mingle.spots_remaining ?? Math.max(0, mingle.capacity - (mingle.confirmed_attendees_count || 0));
   const maxPlaces = Math.max(1, Math.min(remaining, 5));
   const unitPrice = parseFloat(mingle.ticket_price || "0");
-  const totalPrice = unitPrice * places;
+  const BOOKING_FEE_GBP = 2.0;
+  const ticketSubtotal = unitPrice * places;
+  const totalPrice = ticketSubtotal + BOOKING_FEE_GBP;
 
   const handlePlacesChange = (newVal: number) => {
     if (newVal >= 1 && newVal <= maxPlaces) {
@@ -413,11 +415,14 @@ function CheckoutContent() {
                 <span>
                   £{unitPrice.toFixed(2)} &times; {places} {places === 1 ? "place" : "places"}
                 </span>
-                <span className="font-medium text-brand-navy">£{totalPrice.toFixed(2)}</span>
+                <span className="font-medium text-brand-navy">£{ticketSubtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>Booking fee</span>
-                <span className="font-medium text-emerald-700">£0.00</span>
+                <span className="flex items-center gap-1.5">
+                  Platform booking fee
+                  <span className="text-[10px] text-muted-foreground bg-brand-ivory px-1.5 py-0.5 rounded-sm">Flat</span>
+                </span>
+                <span className="font-medium text-brand-navy">£{BOOKING_FEE_GBP.toFixed(2)}</span>
               </div>
             </div>
 
@@ -474,8 +479,16 @@ function CheckoutContent() {
               </Button>
             )}
 
+            {/* 48-Hour Cancellation Guarantee Banner */}
+            <div className="mt-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 p-3 text-[11px] text-emerald-950 leading-relaxed text-left flex items-start gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <span>
+                <strong>Free cancellation:</strong> 100% full refund (including booking fee) if cancelled up to {mingle.cancellation_cutoff_hours || 48} hours before the experience.
+              </span>
+            </div>
+
             <p className="mt-3 text-[11px] text-center text-muted-foreground leading-normal">
-              By confirming your reservation you agree to Mingler&apos;s cancellation policy.
+              By confirming your reservation you agree to Mingler&apos;s 48-hour cancellation terms.
             </p>
           </div>
         </div>
